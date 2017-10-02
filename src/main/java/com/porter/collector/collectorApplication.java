@@ -2,6 +2,7 @@ package com.porter.collector;
 
 import com.porter.collector.health.BasicHealthCheck;
 import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -20,7 +21,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
 
     @Override
     public void initialize(final Bootstrap<collectorConfiguration> bootstrap) {
-        // TODO: application initialization
+        bootstrap.addBundle(new AssetsBundle("/app", "/", "index.html"));
     }
 
     @Override

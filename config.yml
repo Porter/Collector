@@ -40,3 +40,6 @@ logging:
   level: INFO
   loggers:
     com.porter.collector: DEBUG
+
+server:
+  rootPath: '/api/*'
