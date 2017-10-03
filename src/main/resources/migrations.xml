@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+  <changeSet id="1" author="Porter">
+
+    <createTable tableName="users">
+      <column name="id" type="bigint" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="username" type="varchar(256)">
+        <constraints nullable="false" unique="true" />
+      </column>
+      <column name="password" type="varchar(256)">
+        <constraints nullable="false" />
+      </column>
+      <column name="name" type="varchar(256)" />
+      <column name="created_at" type="datetime" defaultValueDate="current_timestamp">
+        <constraints nullable="false" />
+      </column>
+
+    </createTable>
+
+  </changeSet>
+
+  <changeSet id="2" author="Porter">
+
+    <createTable tableName="collections">
+      <column name="id" type="bigint" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="name" type="varchar(256)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="collections" baseColumnNames="user_id"
+                             constraintName="users_collections_one_to_many"
+                             referencedTableName="users"
+                             referencedColumnNames="id" />
+
+  </changeSet>
+</databaseChangeLog>
