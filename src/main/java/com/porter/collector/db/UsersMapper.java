@@ -13,7 +13,7 @@ public class UsersMapper implements ResultSetMapper<User>{
         return ImmutableUser
                 .builder()
                 .id(resultSet.getLong("id"))
-                .name(resultSet.getString("name"))
+                .email(resultSet.getString("email"))
                 .hashedPassword(resultSet.getString("password"))
                 .userName(resultSet.getString("username"))
                 .build();

@@ -1,6 +1,8 @@
 package com.porter.collector.db;
 
 import com.porter.collector.db.ImmutableCollection;
+import com.porter.collector.errors.CollectionExistsException;
+import com.porter.collector.errors.UserNameExistsException;
 import helper.BaseTest;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,7 +28,7 @@ public class CollectionsDaoTest extends BaseTest {
 
     @Test
     public void insert() throws Exception {
-        User user = usersDao.insert("name", "pass", "port");
+        User user = usersDao.insert("email", "name", "pass");
         Collection collection = collectionsDao.insert("test", user);
         Collection expected = ImmutableCollection
                 .builder()
@@ -39,25 +41,18 @@ public class CollectionsDaoTest extends BaseTest {
         Assert.assertEquals(expected, collection);
     }
 
-    @Test
+    @Test(expected = CollectionExistsException.class)
     public void insertDuplicateNames() throws Exception {
-        User user = usersDao.insert("name", "pass", "port");
+        User user = usersDao.insert("email", "name", "pass");
 
         collectionsDao.insert("test", user);
-
-        try {
-            collectionsDao.insert("test", user);
-            fail("Should have thrown an error");
-        }
-        catch (UnableToExecuteStatementException e) {
-            assertTrue(e.getMessage().contains("duplicate key value violates unique constraint \"collections_user_id_name_key\""));
-        }
+        collectionsDao.insert("test", user);
     }
 
     @Test
     public void insertDuplicateNamesDifferentUsers() throws Exception {
-        User user1 = usersDao.insert("user1", "pass", "port");
-        User user2 = usersDao.insert("user2", "pass", "port");
+        User user1 = usersDao.insert("user1", "name1", "pass");
+        User user2 = usersDao.insert("user2", "name2", "pass");
 
         Collection collection1 = collectionsDao.insert("test", user1);
         Collection collection2 = collectionsDao.insert("test", user2);
@@ -68,7 +63,7 @@ public class CollectionsDaoTest extends BaseTest {
 
     @Test
     public void findById() throws Exception {
-        User user = usersDao.insert("name", "pass", "port");
+        User user = usersDao.insert("email", "name", "pass");
         Long id = collectionsDao.insert("test", user).id();
 
         Collection collection = collectionsDao.findById(id);

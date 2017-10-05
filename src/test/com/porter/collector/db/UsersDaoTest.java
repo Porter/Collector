@@ -1,5 +1,7 @@
 package com.porter.collector.db;
 
+import com.porter.collector.errors.EmailExistsException;
+import com.porter.collector.errors.UserNameExistsException;
 import helper.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,22 +20,22 @@ public class UsersDaoTest extends BaseTest {
 
     @Test
     public void insert() throws Exception {
-        User user = usersDao.insert("name", "pass", "port");
+        User user = usersDao.insert("pmh192@gmail.com","name", "pass");
 
+        assertEquals(user.email(), "pmh192@gmail.com");
         assertEquals(user.userName(),"name");
-        assertEquals(user.name(), "port");
     }
 
-    @Test()
+    @Test(expected = UserNameExistsException.class)
     public void duplicateUserNames() {
-        usersDao.insert("username", "f", "f");
+        usersDao.insert("mail2", "f", "f");
+        usersDao.insert("mail", "f", "f");
+    }
 
-        try {
-            usersDao.insert("username", "f", "f");
-        }
-        catch (UnableToExecuteStatementException e) {
-            assertTrue(e.getMessage().contains("duplicate key value violates unique constraint \"users_username_key\""));
-        }
+    @Test(expected = EmailExistsException.class)
+    public void duplicateEmails() {
+        usersDao.insert("mail", "ffff", "f");
+        usersDao.insert("mail", "f", "f");
     }
 
     @Test
@@ -49,12 +51,12 @@ public class UsersDaoTest extends BaseTest {
 
     @Test
     public void get() throws Exception {
-        Long id = usersDao.insert("name", "pass", "port").id();
+        Long id = usersDao.insert("pmh192@gmail.com","name", "pass").id();
 
         User user = usersDao.findById(id);
         assertEquals(id.longValue(), user.id());
         assertEquals("name", user.userName());
-        assertEquals("port", user.name());
+        assertEquals("pmh192@gmail.com", user.email());
 
         assertTrue(user.correctPassword("pass"));
         assertFalse(user.correctPassword("passasd"));

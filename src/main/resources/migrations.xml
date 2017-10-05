@@ -51,4 +51,12 @@
   <changeSet id="3" author="Porter">
     <addUniqueConstraint tableName="collections" columnNames="user_id, name" />
   </changeSet>
+
+  <changeSet id="4" author="Porter">
+    <addColumn tableName="users">
+      <column name="email" type="varchar(256)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>

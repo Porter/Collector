@@ -1,7 +1,9 @@
 package com.porter.collector;
 
 import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
+import com.porter.collector.db.UsersDao;
 import com.porter.collector.health.BasicHealthCheck;
+import com.porter.collector.resources.UserResource;
 import io.dropwizard.Application;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
@@ -40,6 +42,12 @@ public class collectorApplication extends Application<collectorConfiguration> {
 
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "connection");
+
+        UsersDao usersDao =  jdbi.onDemand(UsersDao.class);
+
+        environment.jersey().register(new UserResource(usersDao));
+
+
     }
 
 }

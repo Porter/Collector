@@ -1,6 +1,9 @@
 package com.porter.collector.db;
 
 import com.porter.collector.db.ImmutableCollection;
+import com.porter.collector.errors.CollectionExistsException;
+import com.porter.collector.errors.UserNameExistsException;
+import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
@@ -14,7 +17,16 @@ public abstract class CollectionsDao {
     abstract long executeInsert(@Bind("name") String name, @Bind("user_id") Long userId);
 
     public Collection insert(String name, User user) {
-        Long id = executeInsert(name, user.id());
+        Long id = null;
+        try {
+            id = executeInsert(name, user.id());
+        }
+        catch (UnableToExecuteStatementException e) {
+            String message = e.getMessage();
+            if (message.contains("duplicate key value violates unique constraint \"collections_user_id_name_key\"")) {
+                throw new CollectionExistsException(e);
+            }
+        }
         return ImmutableCollection
                 .builder()
                 .id(id)
