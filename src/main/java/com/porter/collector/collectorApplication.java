@@ -1,8 +1,8 @@
 package com.porter.collector;
 
+import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
 import com.porter.collector.health.BasicHealthCheck;
 import io.dropwizard.Application;
-import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.migrations.MigrationsBundle;
@@ -23,7 +23,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
 
     @Override
     public void initialize(final Bootstrap<collectorConfiguration> bootstrap) {
-        bootstrap.addBundle(new AssetsBundle("/app", "/", "index.html"));
+        bootstrap.addBundle(new ConfiguredAssetsBundle("/app", "/", "index.html"));
 
         bootstrap.addBundle(new MigrationsBundle<collectorConfiguration>() {
             @Override
