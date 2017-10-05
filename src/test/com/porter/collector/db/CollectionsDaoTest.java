@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -51,6 +52,18 @@ public class CollectionsDaoTest extends BaseTest {
         catch (UnableToExecuteStatementException e) {
             assertTrue(e.getMessage().contains("duplicate key value violates unique constraint \"collections_user_id_name_key\""));
         }
+    }
+
+    @Test
+    public void insertDuplicateNamesDifferentUsers() throws Exception {
+        User user1 = usersDao.insert("user1", "pass", "port");
+        User user2 = usersDao.insert("user2", "pass", "port");
+
+        Collection collection1 = collectionsDao.insert("test", user1);
+        Collection collection2 = collectionsDao.insert("test", user2);
+
+        assertEquals(user1, collection1.user());
+        assertEquals(user2, collection2.user());
     }
 
     @Test
