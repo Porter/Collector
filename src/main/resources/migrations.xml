@@ -47,4 +47,8 @@
                              referencedColumnNames="id" />
 
   </changeSet>
+
+  <changeSet id="3" author="Porter">
+    <addUniqueConstraint tableName="collections" columnNames="user_id, name" />
+  </changeSet>
 </databaseChangeLog>
