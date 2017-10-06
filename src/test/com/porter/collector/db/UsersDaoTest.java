@@ -1,6 +1,8 @@
 package com.porter.collector.db;
 
 import com.porter.collector.errors.EmailExistsException;
+import com.porter.collector.errors.InvalidEmailException;
+import com.porter.collector.errors.InvalidUserNameException;
 import com.porter.collector.errors.UserNameExistsException;
 import helper.BaseTest;
 import org.junit.Before;
@@ -28,14 +30,14 @@ public class UsersDaoTest extends BaseTest {
 
     @Test(expected = UserNameExistsException.class)
     public void duplicateUserNames() {
-        usersDao.insert("mail2", "f", "f");
-        usersDao.insert("mail", "f", "f");
+        usersDao.insert("e1@e.com", "f", "f");
+        usersDao.insert("e2@e.com", "f", "f");
     }
 
     @Test(expected = EmailExistsException.class)
     public void duplicateEmails() {
-        usersDao.insert("mail", "ffff", "f");
-        usersDao.insert("mail", "f", "f");
+        usersDao.insert("e@j.com", "ffff", "f");
+        usersDao.insert("e@j.com", "f", "f");
     }
 
     @Test
@@ -47,6 +49,31 @@ public class UsersDaoTest extends BaseTest {
         catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("Password can not be empty"));
         }
+    }
+
+    @Test(expected = InvalidEmailException.class)
+    public void invalidEmail() {
+        usersDao.insert("invalid_email", "name", "pass");
+    }
+
+    @Test(expected = InvalidUserNameException.class)
+    public void emailAsUserName(){
+        usersDao.insert("test@place.com", "email@place.com", "F");
+    }
+
+    @Test(expected = InvalidUserNameException.class)
+    public void emptyUserName(){
+        usersDao.insert("test@place.com", "", "F");
+    }
+
+    @Test
+    public void passwordHashed() {
+        User user = usersDao.insert("e@k.com", "i", "test");
+
+        assertTrue(user.correctPassword("test"));
+        assertFalse(user.correctPassword("testasdf"));
+
+        assertNotEquals("test", user.hashedPassword());
     }
 
     @Test

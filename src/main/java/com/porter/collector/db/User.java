@@ -3,6 +3,7 @@ package com.porter.collector.db;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
+import org.mindrot.jbcrypt.BCrypt;
 
 @Value.Immutable
 @JsonSerialize(as = ImmutableUser.class)
@@ -15,6 +16,6 @@ public abstract class User {
     abstract String email();
 
     public boolean correctPassword(String pass) {
-        return pass != null && pass.equals(hashedPassword());
+        return BCrypt.checkpw(pass, hashedPassword());
     }
 }

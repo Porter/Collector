@@ -20,8 +20,6 @@ public class UserTest {
 
         ObjectMapper mapper = Jackson.newObjectMapper();
         String res = mapper.writeValueAsString(user);
-        System.out.println(res);
-
         assertNotEquals(res, "{}");
     }
 }

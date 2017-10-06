@@ -2,7 +2,11 @@ package com.porter.collector.db;
 
 import com.porter.collector.db.ImmutableUser;
 import com.porter.collector.errors.EmailExistsException;
+import com.porter.collector.errors.InvalidEmailException;
+import com.porter.collector.errors.InvalidUserNameException;
 import com.porter.collector.errors.UserNameExistsException;
+import com.porter.collector.util.Email;
+import org.mindrot.jbcrypt.BCrypt;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
@@ -18,14 +22,22 @@ public abstract class UsersDao {
                                 @Bind("username") String username,
                                 @Bind("pw") String password);
 
-    public User insert(String email, String username, String password) {
-        if (password.isEmpty()) {
+    public User insert(String email, String username, String plainTextPassword) {
+        if (plainTextPassword.isEmpty()) {
             throw new IllegalArgumentException("Password can not be empty");
         }
+        if (!Email.isValidAddress(email)) {
+            throw new InvalidEmailException();
+        }
+        if (username.isEmpty() || Email.isValidAddress(username)) {
+            throw new InvalidUserNameException();
+        }
 
-        Long id = null;
+        String hashedPassword = BCrypt.hashpw(plainTextPassword, BCrypt.gensalt());
+
+        Long id;
         try {
-            id = executeInsert(email, username, password);
+            id = executeInsert(email, username, hashedPassword);
         }
         catch (UnableToExecuteStatementException e) {
             String message = e.getMessage();
@@ -42,7 +54,7 @@ public abstract class UsersDao {
                 .builder()
                 .id(id)
                 .userName(username)
-                .hashedPassword(password)
+                .hashedPassword(hashedPassword)
                 .email(email)
                 .build();
     }

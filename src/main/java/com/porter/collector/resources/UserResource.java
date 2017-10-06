@@ -27,4 +27,10 @@ public class UserResource {
         User user = usersDao.insert(email, username, password);
         return user;
     }
+
+    @POST
+    @Path("/login")
+    public User auth(@FormParam("login") String login, @FormParam("password") String password) {
+        return null;
+    }
 }
