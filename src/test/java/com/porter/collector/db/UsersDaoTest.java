@@ -4,10 +4,9 @@ import com.porter.collector.errors.EmailExistsException;
 import com.porter.collector.errors.InvalidEmailException;
 import com.porter.collector.errors.InvalidUserNameException;
 import com.porter.collector.errors.UserNameExistsException;
-import helper.BaseTest;
+import com.porter.collector.helper.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
-import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 
 import static org.junit.Assert.*;
 

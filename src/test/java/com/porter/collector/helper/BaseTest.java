@@ -1,4 +1,4 @@
-package helper;
+package com.porter.collector.helper;
 
 import org.junit.Before;
 import org.skife.jdbi.v2.DBI;

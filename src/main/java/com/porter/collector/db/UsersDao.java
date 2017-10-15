@@ -1,6 +1,5 @@
 package com.porter.collector.db;
 
-import com.porter.collector.db.ImmutableUser;
 import com.porter.collector.errors.EmailExistsException;
 import com.porter.collector.errors.InvalidEmailException;
 import com.porter.collector.errors.InvalidUserNameException;
