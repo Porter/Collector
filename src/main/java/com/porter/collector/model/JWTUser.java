@@ -15,7 +15,7 @@ public abstract class JWTUser extends SimpleUser {
     private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 
     @Nullable
-    public static JWTUser fromJWT(String jwt) {
+    public static SimpleUser fromJWT(String jwt) {
        Jws<Claims> parsed;
        try {
            parsed = Jwts.parser().setSigningKey(key).parseClaimsJws(jwt);
@@ -38,12 +38,12 @@ public abstract class JWTUser extends SimpleUser {
                .build();
     }
 
-    public static String toJWT(JWTUser jwtUser) {
+    public static String toJWT(SimpleUser user) {
         return Jwts.builder()
                 .setSubject("Joe")
-                .claim("id", jwtUser.id())
-                .claim("email", jwtUser.email())
-                .claim("username", jwtUser.userName())
+                .claim("id", user.id())
+                .claim("email", user.email())
+                .claim("username", user.userName())
                 .signWith(signatureAlgorithm, key)
                 .compact();
     }

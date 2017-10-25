@@ -37,7 +37,7 @@ public class JWTUserTest {
 
         String jwt = JWTUser.toJWT(jwtUser);
 
-        JWTUser actual = JWTUser.fromJWT(jwt);
+        SimpleUser actual = JWTUser.fromJWT(jwt);
 
         assertEquals(actual, jwtUser);
     }
@@ -52,7 +52,7 @@ public class JWTUserTest {
                 .signWith(SignatureAlgorithm.HS256, MacProvider.generateKey())
                 .compact();
 
-        JWTUser jwtUser = JWTUser.fromJWT(s);
+        SimpleUser jwtUser = JWTUser.fromJWT(s);
 
         assertNull(jwtUser);
     }
@@ -67,7 +67,7 @@ public class JWTUserTest {
                 .signWith(SignatureAlgorithm.HS512, "wrong key")
                 .compact();
 
-        JWTUser jwtUser = JWTUser.fromJWT(s);
+        SimpleUser jwtUser = JWTUser.fromJWT(s);
 
         assertNull(jwtUser);
     }
