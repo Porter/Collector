@@ -3,6 +3,7 @@ package com.porter.collector.db;
 import com.porter.collector.db.ImmutableCollection;
 import com.porter.collector.errors.CollectionExistsException;
 import com.porter.collector.errors.UserNameExistsException;
+import com.porter.collector.model.User;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;

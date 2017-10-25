@@ -1,5 +1,6 @@
 package com.porter.collector.db;
 
+import com.porter.collector.model.User;
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;

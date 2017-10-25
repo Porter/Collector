@@ -5,6 +5,7 @@ import com.porter.collector.errors.InvalidEmailException;
 import com.porter.collector.errors.InvalidUserNameException;
 import com.porter.collector.errors.UserNameExistsException;
 import com.porter.collector.helper.BaseTest;
+import com.porter.collector.model.User;
 import org.junit.Before;
 import org.junit.Test;
 

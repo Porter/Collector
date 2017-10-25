@@ -1,8 +1,8 @@
 package com.porter.collector.resources;
 
 
-import com.porter.collector.db.User;
 import com.porter.collector.db.UsersDao;
+import com.porter.collector.model.User;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

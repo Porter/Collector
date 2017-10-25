@@ -1,4 +1,4 @@
-package com.porter.collector.db;
+package com.porter.collector.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -10,10 +10,10 @@ import org.mindrot.jbcrypt.BCrypt;
 @JsonDeserialize(as = ImmutableUser.class)
 public abstract class User {
 
-    abstract long id();
-    abstract String userName();
-    abstract String hashedPassword();
-    abstract String email();
+    public abstract long id();
+    public abstract String userName();
+    public abstract String hashedPassword();
+    public abstract String email();
 
     public boolean correctPassword(String pass) {
         return BCrypt.checkpw(pass, hashedPassword());

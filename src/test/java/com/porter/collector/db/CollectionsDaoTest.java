@@ -2,6 +2,7 @@ package com.porter.collector.db;
 
 import com.porter.collector.errors.CollectionExistsException;
 import com.porter.collector.helper.BaseTest;
+import com.porter.collector.model.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

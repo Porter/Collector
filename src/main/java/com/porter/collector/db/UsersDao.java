@@ -4,6 +4,8 @@ import com.porter.collector.errors.EmailExistsException;
 import com.porter.collector.errors.InvalidEmailException;
 import com.porter.collector.errors.InvalidUserNameException;
 import com.porter.collector.errors.UserNameExistsException;
+import com.porter.collector.model.ImmutableUser;
+import com.porter.collector.model.User;
 import com.porter.collector.util.Email;
 import org.mindrot.jbcrypt.BCrypt;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;

@@ -1,7 +1,7 @@
 package com.porter.collector.db;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.porter.collector.db.ImmutableUser;
+import com.porter.collector.model.ImmutableUser;
 import com.porter.collector.helper.BaseTest;
 import io.dropwizard.jackson.Jackson;
 import org.junit.Test;
