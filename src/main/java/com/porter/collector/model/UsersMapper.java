@@ -1,7 +1,5 @@
 package com.porter.collector.model;
 
-import com.porter.collector.model.ImmutableUser;
-import com.porter.collector.model.User;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 

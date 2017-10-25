@@ -8,12 +8,9 @@ import org.mindrot.jbcrypt.BCrypt;
 @Value.Immutable
 @JsonSerialize(as = ImmutableUser.class)
 @JsonDeserialize(as = ImmutableUser.class)
-public abstract class User {
+public abstract class User extends SimpleUser {
 
-    public abstract long id();
-    public abstract String userName();
     public abstract String hashedPassword();
-    public abstract String email();
 
     public boolean correctPassword(String pass) {
         return BCrypt.checkpw(pass, hashedPassword());
