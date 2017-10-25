@@ -1,4 +1,4 @@
-package com.porter.collector.db;
+package com.porter.collector.model;
 
 import com.porter.collector.model.ImmutableUser;
 import com.porter.collector.model.User;

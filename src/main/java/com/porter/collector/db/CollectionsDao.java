@@ -1,9 +1,7 @@
 package com.porter.collector.db;
 
 import com.porter.collector.errors.CollectionExistsException;
-import com.porter.collector.model.Collection;
-import com.porter.collector.model.ImmutableCollection;
-import com.porter.collector.model.User;
+import com.porter.collector.model.*;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
