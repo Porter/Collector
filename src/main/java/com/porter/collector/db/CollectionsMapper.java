@@ -3,7 +3,7 @@ package com.porter.collector.db;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 
-import com.porter.collector.db.ImmutableCollection;
+import com.porter.collector.model.ImmutableCollection;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
