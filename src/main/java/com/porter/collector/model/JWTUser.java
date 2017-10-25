@@ -2,25 +2,40 @@ package com.porter.collector.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.immutables.value.Value;
+
+import javax.annotation.Nullable;
 
 @Value.Immutable
 @JsonSerialize(as = ImmutableJWTUser.class)
 @JsonDeserialize(as = ImmutableJWTUser.class)
 public abstract class JWTUser extends SimpleUser {
     private static final String key = "secret";
+    private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 
+    @Nullable
     public static JWTUser fromJWT(String jwt) {
-        Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(jwt).getBody();
+       Jws<Claims> parsed;
+       try {
+           parsed = Jwts.parser().setSigningKey(key).parseClaimsJws(jwt);
 
-        return ImmutableJWTUser.builder()
-                .id(claims.get("id", Long.class))
-                .email(claims.get("email", String.class))
-                .userName(claims.get("username", String.class))
-                .build();
+           boolean correctAlgorithm = parsed.getHeader().getAlgorithm().equals(signatureAlgorithm.getValue());
+           if (!correctAlgorithm) {
+               return null;
+           }
+       }
+       catch (SignatureException e) {
+           return null;
+       }
+
+       Claims claims = parsed.getBody();
+
+       return ImmutableJWTUser.builder()
+               .id(claims.get("id", Long.class))
+               .email(claims.get("email", String.class))
+               .userName(claims.get("username", String.class))
+               .build();
     }
 
     public static String toJWT(JWTUser jwtUser) {
@@ -29,7 +44,7 @@ public abstract class JWTUser extends SimpleUser {
                 .claim("id", jwtUser.id())
                 .claim("email", jwtUser.email())
                 .claim("username", jwtUser.userName())
-                .signWith(SignatureAlgorithm.HS512, key)
+                .signWith(signatureAlgorithm, key)
                 .compact();
     }
 }
