@@ -1,6 +1,6 @@
 package com.porter.collector.errors;
 
-public class InvalidEmailException extends RuntimeException {
+public class InvalidEmailException extends SignUpException {
     public InvalidEmailException() {
 
     }

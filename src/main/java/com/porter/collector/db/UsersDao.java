@@ -1,9 +1,6 @@
 package com.porter.collector.db;
 
-import com.porter.collector.errors.EmailExistsException;
-import com.porter.collector.errors.InvalidEmailException;
-import com.porter.collector.errors.InvalidUserNameException;
-import com.porter.collector.errors.UserNameExistsException;
+import com.porter.collector.errors.*;
 import com.porter.collector.model.ImmutableUser;
 import com.porter.collector.model.User;
 import com.porter.collector.model.UsersMapper;
@@ -24,9 +21,9 @@ public abstract class UsersDao {
                                 @Bind("username") String username,
                                 @Bind("pw") String password);
 
-    public User insert(String email, String username, String plainTextPassword) {
+    public User insert(String email, String username, String plainTextPassword) throws SignUpException {
         if (plainTextPassword.isEmpty()) {
-            throw new IllegalArgumentException("Password can not be empty");
+            throw new SignUpException(new IllegalArgumentException("Password can not be empty"));
         }
         if (!Email.isValidAddress(email)) {
             throw new InvalidEmailException();

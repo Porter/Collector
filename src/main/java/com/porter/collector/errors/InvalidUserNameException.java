@@ -1,6 +1,6 @@
 package com.porter.collector.errors;
 
-public class InvalidUserNameException extends RuntimeException {
+public class InvalidUserNameException extends SignUpException {
 
     public InvalidUserNameException() {
 

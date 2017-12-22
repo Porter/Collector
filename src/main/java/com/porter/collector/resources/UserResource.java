@@ -2,6 +2,7 @@ package com.porter.collector.resources;
 
 
 import com.porter.collector.db.UsersDao;
+import com.porter.collector.errors.SignUpException;
 import com.porter.collector.model.JWTUser;
 import com.porter.collector.model.User;
 
@@ -25,8 +26,17 @@ public class UserResource {
     public String create(@FormParam("email") String email,
                            @FormParam("username") String username,
                            @FormParam("password") String password) {
-        User user = usersDao.insert(email, username, password);
-        return JWTUser.toJWT(user);
+        try {
+            User user = usersDao.insert(email, username, password);
+            return JWTUser.toJWT(user);
+        }
+        catch (SignUpException e) {
+            return e.getMessage();
+        }
+        catch (Exception e) {
+            System.out.println(e);
+            return "e";
+        }
     }
 
     @POST
