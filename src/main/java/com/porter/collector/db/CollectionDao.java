@@ -9,7 +9,7 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
-public abstract class CollectionsDao {
+public abstract class CollectionDao {
 
     @SqlUpdate("INSERT INTO collections (name, user_id) VALUES (:name, :user_id)")
     @GetGeneratedKeys
@@ -36,7 +36,7 @@ public abstract class CollectionsDao {
     }
 
     @SqlQuery("SELECT * FROM collections WHERE id=:id")
-    @Mapper(CollectionsMapper.class)
+    @Mapper(CollectionMapper.class)
     abstract ImmutableCollection executeFindById(@Bind("id") Long id);
 
     @SqlQuery("SELECT * FROM users WHERE id=:id")

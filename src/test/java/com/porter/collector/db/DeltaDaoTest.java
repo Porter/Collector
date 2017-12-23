@@ -9,33 +9,57 @@ import org.junit.Test;
 
 public class DeltaDaoTest extends BaseTest {
 
-    private CollectionsDao collectionsDao;
-    private UsersDao usersDao;
+    private CollectionDao collectionDao;
+    private UserDao userDao;
     private DeltaDao deltaDao;
     private SourceDao sourceDao;
+    private CategoryDao categoryDao;
 
     @Before
     public void getDAOs() {
-        collectionsDao = getJdbi().onDemand(CollectionsDao.class);
-        usersDao       = getJdbi().onDemand(UsersDao.class);
+        collectionDao = getJdbi().onDemand(CollectionDao.class);
+        userDao = getJdbi().onDemand(UserDao.class);
         deltaDao       = getJdbi().onDemand(DeltaDao.class);
         sourceDao      = getJdbi().onDemand(SourceDao.class);
+        categoryDao    = getJdbi().onDemand(CategoryDao.class);
     }
 
 
     @Test
-    public void insert_findById() throws Exception {
-        User user = usersDao.insert("a@g.com", "name", "pass");
-        Collection collection = collectionsDao.insert("test", user);
+    public void insert_findById_NoCategory() throws Exception {
+        User user = userDao.insert("a@g.com", "name", "pass");
+        Collection collection = collectionDao.insert("test", user);
         Long sourceId = sourceDao.insert("source", collection.id()).id();
-        Long id = deltaDao.insert("money", collection.id(), sourceId).id();
+        Long id = deltaDao.insert("money", 10L, collection.id(), sourceId).id();
 
         Delta expected = ImmutableDelta
                 .builder()
                 .id(id)
                 .name("money")
+                .amount(10L)
                 .collectionId(collection.id())
                 .sourceId(sourceId)
+                .build();
+
+        Assert.assertEquals(expected, deltaDao.findById(id));
+    }
+
+    @Test
+    public void insert_findById_WithCategory() throws Exception {
+        User user = userDao.insert("a@g.com", "name", "pass");
+        Collection collection = collectionDao.insert("test", user);
+        Long sourceId = sourceDao.insert("source", collection.id()).id();
+        Long categoryId = categoryDao.insert("category", collection.id()).id();
+        Long id = deltaDao.insert("money", 10L, collection.id(), sourceId, categoryId).id();
+
+        Delta expected = ImmutableDelta
+                .builder()
+                .id(id)
+                .name("money")
+                .amount(10L)
+                .collectionId(collection.id())
+                .sourceId(sourceId)
+                .categoryId(categoryId)
                 .build();
 
         Assert.assertEquals(expected, deltaDao.findById(id));

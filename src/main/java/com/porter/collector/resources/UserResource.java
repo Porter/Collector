@@ -1,7 +1,7 @@
 package com.porter.collector.resources;
 
 
-import com.porter.collector.db.UsersDao;
+import com.porter.collector.db.UserDao;
 import com.porter.collector.errors.SignUpException;
 import com.porter.collector.model.JWTUser;
 import com.porter.collector.model.User;
@@ -13,10 +13,10 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    private final UsersDao usersDao;
+    private final UserDao userDao;
 
-    public UserResource(UsersDao usersDao) {
-        this.usersDao = usersDao;
+    public UserResource(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     @POST
@@ -27,7 +27,7 @@ public class UserResource {
                            @FormParam("username") String username,
                            @FormParam("password") String password) {
         try {
-            User user = usersDao.insert(email, username, password);
+            User user = userDao.insert(email, username, password);
             return JWTUser.toJWT(user);
         }
         catch (SignUpException e) {

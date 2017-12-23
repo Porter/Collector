@@ -13,7 +13,7 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
-public abstract class UsersDao {
+public abstract class UserDao {
 
     @SqlUpdate("INSERT INTO users (email, username, password) VALUES (:email, :username, :pw)")
     @GetGeneratedKeys

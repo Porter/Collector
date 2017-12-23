@@ -10,4 +10,8 @@ public abstract class Delta {
     public abstract String name();
     public abstract long collectionId();
     public abstract long sourceId();
+    public abstract Long amount();
+
+    @Nullable
+    public abstract Long categoryId();
 }

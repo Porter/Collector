@@ -12,22 +12,22 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 
-public class CollectionsDaoTest extends BaseTest {
+public class CollectionDaoTest extends BaseTest {
 
-    private CollectionsDao collectionsDao;
-    private UsersDao usersDao;
+    private CollectionDao collectionDao;
+    private UserDao userDao;
 
     @Before
     public void getDAOs() {
-        collectionsDao = getJdbi().onDemand(CollectionsDao.class);
-        usersDao       = getJdbi().onDemand(UsersDao.class);
+        collectionDao = getJdbi().onDemand(CollectionDao.class);
+        userDao = getJdbi().onDemand(UserDao.class);
     }
 
 
     @Test
     public void insert() throws Exception {
-        User user = usersDao.insert("a@g.com", "name", "pass");
-        Collection collection = collectionsDao.insert("test", user);
+        User user = userDao.insert("a@g.com", "name", "pass");
+        Collection collection = collectionDao.insert("test", user);
         Collection expected = ImmutableCollection
                 .builder()
                 .id(collection.id())
@@ -41,19 +41,19 @@ public class CollectionsDaoTest extends BaseTest {
 
     @Test(expected = CollectionExistsException.class)
     public void insertDuplicateNames() throws Exception {
-        User user = usersDao.insert("o@p.com", "name", "pass");
+        User user = userDao.insert("o@p.com", "name", "pass");
 
-        collectionsDao.insert("test", user);
-        collectionsDao.insert("test", user);
+        collectionDao.insert("test", user);
+        collectionDao.insert("test", user);
     }
 
     @Test
     public void insertDuplicateNamesDifferentUsers() throws Exception {
-        User user1 = usersDao.insert("o@p.com", "name1", "pass");
-        User user2 = usersDao.insert("i@j.com", "name2", "pass");
+        User user1 = userDao.insert("o@p.com", "name1", "pass");
+        User user2 = userDao.insert("i@j.com", "name2", "pass");
 
-        Collection collection1 = collectionsDao.insert("test", user1);
-        Collection collection2 = collectionsDao.insert("test", user2);
+        Collection collection1 = collectionDao.insert("test", user1);
+        Collection collection2 = collectionDao.insert("test", user2);
 
         assertEquals(user1, collection1.user());
         assertEquals(user2, collection2.user());
@@ -61,10 +61,10 @@ public class CollectionsDaoTest extends BaseTest {
 
     @Test
     public void findById() throws Exception {
-        User user = usersDao.insert("i@p.com", "name", "pass");
-        Long id = collectionsDao.insert("test", user).id();
+        User user = userDao.insert("i@p.com", "name", "pass");
+        Long id = collectionDao.insert("test", user).id();
 
-        Collection collection = collectionsDao.findById(id);
+        Collection collection = collectionDao.findById(id);
 
         Collection expected = ImmutableCollection
                 .builder()

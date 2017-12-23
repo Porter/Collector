@@ -23,16 +23,12 @@ public class BaseTest {
 
     @Before
     public void reset() {
-        Handle handle = getJdbi().open();
         String[] tableNames = new String[]{"users", "collections"};
 
-        try {
+        try (Handle handle = getJdbi().open()) {
             for (String tableName : tableNames) {
                 handle.execute("TRUNCATE " + tableName + " CASCADE");
             }
-        }
-        finally {
-            handle.close();
         }
     }
 }

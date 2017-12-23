@@ -111,4 +111,36 @@
                              referencedColumnNames="id" />
 
   </changeSet>
+
+  <changeSet id="8" author="Porter">
+    <addColumn tableName="deltas">
+      <column name="amount" type="bigint"/>
+    </addColumn>
+
+    <addColumn tableName="deltas">
+      <column name="category_id" type="bigint"/>
+    </addColumn>
+
+    <createTable tableName="categories">
+      <column name="id" type="bigint" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="name" type="varchar(256)">
+        <constraints nullable="false" />
+      </column>
+      <column name="collection_id" type="bigint">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="deltas" baseColumnNames="category_id"
+                             constraintName="deltas_categories_many_to_one"
+                             referencedTableName="categories"
+                             referencedColumnNames="id" />
+
+    <addForeignKeyConstraint baseTableName="categories" baseColumnNames="collection_id"
+                             constraintName="categories_collections_many_to_one"
+                             referencedTableName="collections"
+                             referencedColumnNames="id" />
+  </changeSet>
 </databaseChangeLog>

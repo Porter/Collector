@@ -1,23 +1,26 @@
 package com.porter.collector.db;
 
 import com.porter.collector.helper.BaseTest;
-import com.porter.collector.model.*;
+import com.porter.collector.model.Category;
+import com.porter.collector.model.Collection;
+import com.porter.collector.model.ImmutableCategory;
+import com.porter.collector.model.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 
-public class SourceDaoTest extends BaseTest {
+public class CategoryDaoTest extends BaseTest {
 
     private CollectionDao collectionDao;
     private UserDao userDao;
-    private SourceDao sourceDao;
+    private CategoryDao categoryDao;
 
     @Before
     public void getDAOs() {
         collectionDao = getJdbi().onDemand(CollectionDao.class);
         userDao = getJdbi().onDemand(UserDao.class);
-        sourceDao      = getJdbi().onDemand(SourceDao.class);
+        categoryDao = getJdbi().onDemand(CategoryDao.class);
     }
 
 
@@ -25,15 +28,15 @@ public class SourceDaoTest extends BaseTest {
     public void insert_findById() throws Exception {
         User user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user);
-        Long id = sourceDao.insert("source", collection.id()).id();
+        Category category = categoryDao.insert("category", collection.id());
 
-        Source expected = ImmutableSource
+        Category expected = ImmutableCategory
                 .builder()
-                .id(id)
-                .name("source")
+                .id(category.id())
+                .name("category")
                 .collectionId(collection.id())
                 .build();
 
-        Assert.assertEquals(expected, sourceDao.findById(id));
+        Assert.assertEquals(expected, categoryDao.findById(category.id()));
     }
 }

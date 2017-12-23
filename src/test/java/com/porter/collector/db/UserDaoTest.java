@@ -8,18 +8,18 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class UsersDaoTest extends BaseTest {
+public class UserDaoTest extends BaseTest {
 
-    private UsersDao usersDao;
+    private UserDao userDao;
 
     @Before
     public void getDao() {
-        usersDao = getJdbi().onDemand(UsersDao.class);
+        userDao = getJdbi().onDemand(UserDao.class);
     }
 
     @Test
     public void insert() throws Exception {
-        User user = usersDao.insert("pmh192@gmail.com","name", "pass");
+        User user = userDao.insert("pmh192@gmail.com","name", "pass");
 
         assertEquals(user.email(), "pmh192@gmail.com");
         assertEquals(user.userName(),"name");
@@ -27,20 +27,20 @@ public class UsersDaoTest extends BaseTest {
 
     @Test(expected = UserNameExistsException.class)
     public void duplicateUserNames() throws Exception{
-        usersDao.insert("e1@e.com", "f", "f");
-        usersDao.insert("e2@e.com", "f", "f");
+        userDao.insert("e1@e.com", "f", "f");
+        userDao.insert("e2@e.com", "f", "f");
     }
 
     @Test(expected = EmailExistsException.class)
     public void duplicateEmails() throws Exception {
-        usersDao.insert("e@j.com", "ffff", "f");
-        usersDao.insert("e@j.com", "f", "f");
+        userDao.insert("e@j.com", "ffff", "f");
+        userDao.insert("e@j.com", "f", "f");
     }
 
     @Test
     public void emptyPassword() throws Exception {
         try {
-            usersDao.insert("username", "", "");
+            userDao.insert("username", "", "");
             fail("Should have thrown an error");
         }
         catch (SignUpException e) {
@@ -50,22 +50,22 @@ public class UsersDaoTest extends BaseTest {
 
     @Test(expected = InvalidEmailException.class)
     public void invalidEmail() throws Exception{
-        usersDao.insert("invalid_email", "name", "pass");
+        userDao.insert("invalid_email", "name", "pass");
     }
 
     @Test(expected = InvalidUserNameException.class)
     public void emailAsUserName() throws Exception {
-        usersDao.insert("test@place.com", "email@place.com", "F");
+        userDao.insert("test@place.com", "email@place.com", "F");
     }
 
     @Test(expected = InvalidUserNameException.class)
     public void emptyUserName() throws Exception {
-        usersDao.insert("test@place.com", "", "F");
+        userDao.insert("test@place.com", "", "F");
     }
 
     @Test
     public void passwordHashed() throws Exception {
-        User user = usersDao.insert("e@k.com", "i", "test");
+        User user = userDao.insert("e@k.com", "i", "test");
 
         assertTrue(user.correctPassword("test"));
         assertFalse(user.correctPassword("testasdf"));
@@ -75,9 +75,9 @@ public class UsersDaoTest extends BaseTest {
 
     @Test
     public void get() throws Exception {
-        Long id = usersDao.insert("pmh192@gmail.com","name", "pass").id();
+        Long id = userDao.insert("pmh192@gmail.com","name", "pass").id();
 
-        User user = usersDao.findById(id);
+        User user = userDao.findById(id);
         assertEquals(id.longValue(), user.id());
         assertEquals("name", user.userName());
         assertEquals("pmh192@gmail.com", user.email());
