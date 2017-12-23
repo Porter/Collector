@@ -6,15 +6,14 @@ import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DeltaMapper implements ResultSetMapper<ImmutableDelta> {
+public class SourcesMapper implements ResultSetMapper<ImmutableSource> {
     @Override
-    public ImmutableDelta map(int i, ResultSet resultSet, StatementContext statementContext) throws SQLException {
-        return ImmutableDelta
+    public ImmutableSource map(int i, ResultSet resultSet, StatementContext statementContext) throws SQLException {
+        return ImmutableSource
                 .builder()
                 .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))
                 .collectionId(resultSet.getLong("collection_id"))
-                .sourceId(resultSet.getLong("source_id"))
                 .build();
     }
 }

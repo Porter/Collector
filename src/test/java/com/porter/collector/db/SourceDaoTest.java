@@ -7,18 +7,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class DeltaDaoTest extends BaseTest {
+public class SourceDaoTest extends BaseTest {
 
     private CollectionsDao collectionsDao;
     private UsersDao usersDao;
-    private DeltaDao deltaDao;
     private SourceDao sourceDao;
 
     @Before
     public void getDAOs() {
         collectionsDao = getJdbi().onDemand(CollectionsDao.class);
         usersDao       = getJdbi().onDemand(UsersDao.class);
-        deltaDao       = getJdbi().onDemand(DeltaDao.class);
         sourceDao      = getJdbi().onDemand(SourceDao.class);
     }
 
@@ -27,17 +25,15 @@ public class DeltaDaoTest extends BaseTest {
     public void insert_findById() throws Exception {
         User user = usersDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionsDao.insert("test", user);
-        Long sourceId = sourceDao.insert("source", collection.id()).id();
-        Long id = deltaDao.insert("money", collection.id(), sourceId).id();
+        Long id = sourceDao.insert("source", collection.id()).id();
 
-        Delta expected = ImmutableDelta
+        Source expected = ImmutableSource
                 .builder()
                 .id(id)
-                .name("money")
+                .name("source")
                 .collectionId(collection.id())
-                .sourceId(sourceId)
                 .build();
 
-        Assert.assertEquals(expected, deltaDao.findById(id));
+        Assert.assertEquals(expected, sourceDao.findById(id));
     }
 }

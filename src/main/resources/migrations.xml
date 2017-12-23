@@ -79,4 +79,36 @@
                              referencedColumnNames="id" />
 
   </changeSet>
+
+  <changeSet id="6" author="Porter">
+    <createTable tableName="sources">
+      <column name="id" type="bigint" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="name" type="varchar(256)">
+        <constraints nullable="false" />
+      </column>
+      <column name="collection_id" type="bigint">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+
+    <addForeignKeyConstraint baseTableName="sources" baseColumnNames="collection_id"
+                             constraintName="sources_collections_many_to_one"
+                             referencedTableName="collections"
+                             referencedColumnNames="id" />
+  </changeSet>
+
+  <changeSet id="7" author="Porter">
+    <addColumn tableName="deltas">
+      <column name="source_id" type="bigint"/>
+    </addColumn>
+
+    <addForeignKeyConstraint baseTableName="deltas" baseColumnNames="source_id"
+                             constraintName="deltas_sources_many_to_one"
+                             referencedTableName="sources"
+                             referencedColumnNames="id" />
+
+  </changeSet>
 </databaseChangeLog>

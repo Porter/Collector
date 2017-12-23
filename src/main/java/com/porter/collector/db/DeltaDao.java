@@ -13,17 +13,19 @@ import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
 public abstract class DeltaDao {
 
-    @SqlUpdate("INSERT INTO deltas (name, collection_id) VALUES (:name, :collectionId);")
+    @SqlUpdate("INSERT INTO deltas (name, collection_id, source_id) VALUES (:name, :collectionId, :sourceId);")
     @GetGeneratedKeys
     abstract long executeInsert(@Bind("name") String name,
-                                @Bind("collectionId") Long collectionId);
+                                @Bind("collectionId") Long collectionId,
+                                @Bind("sourceId") Long sourceId);
 
-    public Delta insert(String name, Long collectionId) {
-        Long id = executeInsert(name, collectionId);
+    public Delta insert(String name, Long collectionId, Long sourceId) {
+        Long id = executeInsert(name, collectionId, sourceId);
         return ImmutableDelta.builder()
                 .id(id)
                 .name(name)
                 .collectionId(collectionId)
+                .sourceId(sourceId)
                 .build();
     }
 
