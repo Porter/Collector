@@ -25,6 +25,11 @@
                     <a href="/collection?id={{collection.id}}">{{collection.name}}</a>
                 </li>
             </ul>
+
+            <form action="/api/collections/new" method="post">
+                <input type="text" name="name" />
+                <input type="submit" name="New" />
+            </form>
         </div>
     </div>
 
@@ -35,7 +40,7 @@
     var app = angular.module("app", []);
 
     app.controller('collectionsController', function($scope, $http) {
-        $http.get("/collections/all")
+        $http.get("/api/collections/all")
         .then(function(response) {
             $scope.collections = response.data;
         });

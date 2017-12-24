@@ -62,4 +62,8 @@ public abstract class UserDao {
     @SqlQuery("SELECT * FROM users WHERE id=:id")
     @Mapper(UsersMapper.class)
     public abstract User findById(@Bind("id") Long id);
+
+    @SqlQuery("SELECT * FROM users WHERE username=:login OR email=:login LIMIT 1;")
+    @Mapper(UsersMapper.class)
+    public abstract User findByLogin(@Bind("login") String login);
 }

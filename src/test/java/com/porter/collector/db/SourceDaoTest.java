@@ -24,7 +24,7 @@ public class SourceDaoTest extends BaseTest {
     @Test
     public void insert_findById() throws Exception {
         User user = userDao.insert("a@g.com", "name", "pass");
-        Collection collection = collectionDao.insert("test", user);
+        Collection collection = collectionDao.insert("test", user.id());
         Long id = sourceDao.insert("source", collection.id()).id();
 
         Source expected = ImmutableSource

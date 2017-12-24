@@ -27,7 +27,7 @@ public class CategoryDaoTest extends BaseTest {
     @Test
     public void insert_findById() throws Exception {
         User user = userDao.insert("a@g.com", "name", "pass");
-        Collection collection = collectionDao.insert("test", user);
+        Collection collection = collectionDao.insert("test", user.id());
         Category category = categoryDao.insert("category", collection.id());
 
         Category expected = ImmutableCategory

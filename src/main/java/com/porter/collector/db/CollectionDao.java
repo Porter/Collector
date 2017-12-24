@@ -9,29 +9,33 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
+import java.util.List;
+
 public abstract class CollectionDao {
 
     @SqlUpdate("INSERT INTO collections (name, user_id) VALUES (:name, :user_id)")
     @GetGeneratedKeys
     abstract long executeInsert(@Bind("name") String name, @Bind("user_id") Long userId);
 
-    public Collection insert(String name, User user) {
-        Long id = null;
+    public Collection insert(String name, Long userId) {
+        Long id;
         try {
-            id = executeInsert(name, user.id());
+            id = executeInsert(name, userId);
         }
         catch (UnableToExecuteStatementException e) {
             String message = e.getMessage();
             if (message.contains("duplicate key value violates unique constraint \"collections_user_id_name_key\"")) {
                 throw new CollectionExistsException(e);
             }
+            else {
+                throw e;
+            }
         }
         return ImmutableCollection
                 .builder()
                 .id(id)
                 .name(name)
-                .user(user)
-                .userId(user.id())
+                .userId(userId)
                 .build();
     }
 
@@ -39,13 +43,15 @@ public abstract class CollectionDao {
     @Mapper(CollectionMapper.class)
     abstract ImmutableCollection executeFindById(@Bind("id") Long id);
 
-    @SqlQuery("SELECT * FROM users WHERE id=:id")
-    @Mapper(UsersMapper.class)
-    abstract User executeFindUserById(@Bind("id") Long id);
-
     public Collection findById(Long id) {
-        ImmutableCollection collection = executeFindById(id);
-
-        return collection.withUser(executeFindUserById(collection.userId()));
+        return executeFindById(id);
     }
+
+    @SqlQuery("SELECT * FROM collections;")
+    @Mapper(CollectionMapper.class)
+    public abstract List<Collection> findAll();
+
+    @SqlQuery("SELECT * FROM collections WHERE user_id=:id;")
+    @Mapper(CollectionMapper.class)
+    public abstract List<Collection> findAllWithUserId(@Bind("id") Long id);
 }

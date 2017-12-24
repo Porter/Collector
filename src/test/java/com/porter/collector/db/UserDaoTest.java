@@ -87,4 +87,16 @@ public class UserDaoTest extends BaseTest {
 
     }
 
+    @Test
+    public void findByLogin() throws Exception {
+        User user = userDao.insert("pmh192@gmail.com","name", "pass");
+
+        User user0 = userDao.findByLogin("pmh192@gmail.com");
+        User user1 = userDao.findByLogin("name");
+        User user2 = userDao.findByLogin("somethin");
+
+        assertEquals(user, user0);
+        assertEquals(user, user1);
+        assertNull(user2);
+    }
 }
