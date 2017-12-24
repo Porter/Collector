@@ -8,7 +8,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 <body>
 
-<div ng-app="app">
+<div ng-app="app" ng-controller="collectionsController">
     <ng-include src="'partials/header.html'"></ng-include>
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
@@ -20,8 +20,11 @@
             </div>
         </div>
         <div class="col-sm-9 col-md-10">
-            <p>Name : <input type="text" ng-model="name"></p>
-            <h1>Hello {{name}}</h1>
+            <ul>
+                <li ng-repeat="collection in collections">
+                    <a href="/collection?id={{collection.id}}">{{collection.name}}</a>
+                </li>
+            </ul>
         </div>
     </div>
 
@@ -29,7 +32,14 @@
 
 
 <script>
-    var collectorApp = angular.module("app", []);
+    var app = angular.module("app", []);
+
+    app.controller('collectionsController', function($scope, $http) {
+        $http.get("/collections/all")
+        .then(function(response) {
+            $scope.collections = response.data;
+        });
+    });
 </script>
 
 </body>
