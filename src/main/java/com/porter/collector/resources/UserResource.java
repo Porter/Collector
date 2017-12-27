@@ -46,12 +46,9 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response auth(@FormParam("login") String login, @FormParam("password") String password) {
         User user = userDao.findByLogin(login);
-        System.out.println(user);
         if (user == null) {
             return Response.ok(ImmutableMap.of("error", "User not found")).build();
         }
-        System.out.println(user.correctPassword("test"));
-        System.out.println(password);
         if (!user.correctPassword(password)) {
             return Response.ok(ImmutableMap.of("error", "Incorrect password")).build();
         }
