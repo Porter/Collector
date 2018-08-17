@@ -1,9 +1,6 @@
 package com.porter.collector.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.jsonwebtoken.*;
-import org.immutables.value.Value;
 
 import javax.annotation.Nullable;
 
@@ -28,7 +25,7 @@ public abstract class JWTUser extends SimpleUser {
 
        Claims claims = parsed.getBody();
 
-       return ImmutableJWTUser.builder()
+       return ImmutableUserWithoutPassword.builder()
                .id(claims.get("id", Long.class))
                .email(claims.get("email", String.class))
                .userName(claims.get("username", String.class))

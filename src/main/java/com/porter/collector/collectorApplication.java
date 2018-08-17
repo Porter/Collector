@@ -1,25 +1,28 @@
 package com.porter.collector;
 
 import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
+import com.porter.collector.auth.MyAuthFilter;
 import com.porter.collector.db.CollectionDao;
 import com.porter.collector.db.UserDao;
 import com.porter.collector.health.BasicHealthCheck;
-import com.porter.collector.model.ImmutableUser;
 import com.porter.collector.model.ImmutableUserWithPassword;
+import com.porter.collector.model.ImmutableUserWithoutPassword;
 import com.porter.collector.model.UserWithPassword;
+import com.porter.collector.model.UserWithoutPassword;
 import com.porter.collector.resources.CollectionResource;
 import com.porter.collector.resources.UserResource;
 import io.dropwizard.Application;
-import io.dropwizard.auth.AuthenticationException;
-import io.dropwizard.auth.Authenticator;
-import io.dropwizard.auth.basic.BasicCredentials;
+import io.dropwizard.auth.*;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.skife.jdbi.v2.DBI;
 
+import java.security.AuthProvider;
+import java.security.Principal;
 import java.util.Optional;
 
 public class collectorApplication extends Application<collectorConfiguration> {
@@ -56,25 +59,41 @@ public class collectorApplication extends Application<collectorConfiguration> {
         UserDao userDao =  jdbi.onDemand(UserDao.class);
         CollectionDao collectionDao = jdbi.onDemand(CollectionDao.class);
 
+        environment.jersey().register(new AuthDynamicFeature(
+                new MyAuthFilter.Builder<UserWithoutPassword>()
+                        .setAuthenticator(new ExampleAuthenticator())
+                        .setAuthorizer(new ExampleAuthorizer())
+                        .buildAuthFilter()
+
+        ));
+
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(UserWithoutPassword.class));
+        environment.jersey().register(RolesAllowedDynamicFeature.class);
+
         environment.jersey().register(new UserResource(userDao));
         environment.jersey().register(new CollectionResource(collectionDao));
 
     }
 
-    public class ExampleAuthenticator implements Authenticator<BasicCredentials, UserWithPassword> {
+    public class ExampleAuthenticator implements Authenticator<String, UserWithoutPassword> {
         @Override
-        public Optional<UserWithPassword> authenticate(BasicCredentials credentials) throws AuthenticationException {
-            if ("secret".equals(credentials.getPassword())) {
-                UserWithPassword user = ImmutableUserWithPassword.builder()
-                        .userName("fake")
-                        .email("fake@fake.com")
-                        .id(0L)
-                        .hashedPassword("")
-                        .build();
-                return Optional.of(user);
-            }
-            return Optional.empty();
+        public Optional<UserWithoutPassword> authenticate(String jwt) throws AuthenticationException {
+            UserWithoutPassword user = ImmutableUserWithoutPassword.builder()
+                    .userName("fake")
+                    .email("fake@fake.com")
+                    .id(0L)
+                    .build();
+            return Optional.of(user);
         }
     }
+
+    public class ExampleAuthorizer implements Authorizer<UserWithoutPassword> {
+        @Override
+        public boolean authorize(UserWithoutPassword user, String role) {
+            return true;
+        }
+    }
+
+
 
 }

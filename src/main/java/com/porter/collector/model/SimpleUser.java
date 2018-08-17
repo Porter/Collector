@@ -1,7 +1,5 @@
 package com.porter.collector.model;
 
-import org.immutables.value.Value;
-
 import java.security.Principal;
 
 

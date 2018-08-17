@@ -13,13 +13,13 @@ public class JWTUserTest {
     @Test
     public void toJWT() throws Exception {
 
-        JWTUser jwtUser = ImmutableJWTUser.builder()
+        UserWithoutPassword user = ImmutableUserWithoutPassword.builder()
                 .userName("username")
                 .id(1L)
                 .email("pmh192@gmail.com")
                 .build();
 
-        String jwt = JWTUser.toJWT(jwtUser);
+        String jwt = JWTUser.toJWT(user);
 
         assertEquals("eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MSwiZW1haWwiOiJwbW" +
                 "gxOTJAZ21haWwuY29tIiwidXNlcm5hbWUiOiJ1c2VybmFtZSJ9.UN" +
@@ -30,17 +30,17 @@ public class JWTUserTest {
     @Test
     public void fromJWT() throws Exception {
 
-        JWTUser jwtUser = ImmutableJWTUser.builder()
+        UserWithoutPassword user = ImmutableUserWithoutPassword.builder()
                 .userName("username")
                 .id(1L)
                 .email("pmh192@gmail.com")
                 .build();
 
-        String jwt = JWTUser.toJWT(jwtUser);
+        String jwt = JWTUser.toJWT(user);
 
         SimpleUser actual = JWTUser.fromJWT(jwt);
 
-        assertEquals(actual, jwtUser);
+        assertEquals(actual, user);
     }
 
     @Test
