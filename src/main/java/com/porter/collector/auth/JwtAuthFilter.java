@@ -3,22 +3,26 @@ package com.porter.collector.auth;
 import io.dropwizard.auth.AuthFilter;
 import io.dropwizard.auth.AuthenticationException;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Optional;
 
-public class MyAuthFilter<P extends Principal> extends AuthFilter<String, P> {
+public class JwtAuthFilter<P extends Principal> extends AuthFilter<String, P> {
 
     @Override
     public void filter(ContainerRequestContext containerRequestContext) throws IOException {
-        Optional<P> p = null;
-        try { p = authenticator.authenticate("jwt"); }
-        catch (AuthenticationException e) { }
+
+        String jwt = containerRequestContext.getHeaderString("jwt");
+
+        Optional<P> p = Optional.empty();
+        try { p = authenticator.authenticate(jwt); }
+        catch (AuthenticationException ignored) { }
 
 
-        if (p != null && p.isPresent()) {
+        if (p.isPresent()) {
             final P p2 = p.get();
             containerRequestContext.setSecurityContext(new SecurityContext() {
                 @Override
@@ -42,12 +46,14 @@ public class MyAuthFilter<P extends Principal> extends AuthFilter<String, P> {
                 }
             });
         }
+
+        throw new WebApplicationException(unauthorizedHandler.buildResponse(prefix, realm));
     }
 
-    public static class Builder<P extends Principal> extends AuthFilterBuilder<String, P, MyAuthFilter<P>> {
+    public static class Builder<P extends Principal> extends AuthFilterBuilder<String, P, JwtAuthFilter<P>> {
         @Override
-        protected MyAuthFilter<P> newInstance() {
-            return new MyAuthFilter<P>();
+        protected JwtAuthFilter<P> newInstance() {
+            return new JwtAuthFilter<P>();
         }
     }
 }

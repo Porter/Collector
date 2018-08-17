@@ -9,7 +9,7 @@ public abstract class JWTUser extends SimpleUser {
     private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 
     @Nullable
-    public static SimpleUser fromJWT(String jwt) {
+    public static UserWithoutPassword fromJWT(String jwt) {
        Jws<Claims> parsed;
        try {
            parsed = Jwts.parser().setSigningKey(key).parseClaimsJws(jwt);
@@ -19,7 +19,7 @@ public abstract class JWTUser extends SimpleUser {
                return null;
            }
        }
-       catch (SignatureException e) {
+       catch (SignatureException | IllegalArgumentException e) {
            return null;
        }
 
