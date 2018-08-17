@@ -27,7 +27,7 @@ public class DeltaDaoTest extends BaseTest {
 
     @Test
     public void insert_findById_NoCategory() throws Exception {
-        User user = userDao.insert("a@g.com", "name", "pass");
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
         Long sourceId = sourceDao.insert("source", collection.id()).id();
         Long id = deltaDao.insert("money", 10L, collection.id(), sourceId).id();
@@ -46,7 +46,7 @@ public class DeltaDaoTest extends BaseTest {
 
     @Test
     public void insert_findById_WithCategory() throws Exception {
-        User user = userDao.insert("a@g.com", "name", "pass");
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
         Long sourceId = sourceDao.insert("source", collection.id()).id();
         Long categoryId = categoryDao.insert("category", collection.id()).id();

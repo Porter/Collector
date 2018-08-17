@@ -7,9 +7,6 @@ import org.immutables.value.Value;
 
 import javax.annotation.Nullable;
 
-@Value.Immutable
-@JsonSerialize(as = ImmutableJWTUser.class)
-@JsonDeserialize(as = ImmutableJWTUser.class)
 public abstract class JWTUser extends SimpleUser {
     private static final String key = "secret";
     private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
@@ -40,7 +37,6 @@ public abstract class JWTUser extends SimpleUser {
 
     public static String toJWT(SimpleUser user) {
         return Jwts.builder()
-                .setSubject("Joe")
                 .claim("id", user.id())
                 .claim("email", user.email())
                 .claim("username", user.userName())

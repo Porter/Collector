@@ -11,5 +11,5 @@ public abstract class Collection {
     public abstract long userId();
 
     @Nullable
-    public abstract User user();
+    public abstract UserWithPassword user();
 }

@@ -21,9 +21,10 @@ public class JWTUserTest {
 
         String jwt = JWTUser.toJWT(jwtUser);
 
-        assertEquals("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJKb2UiLCJpZCI6MSwiZW1haWwiOiJ" +
-                "wbWgxOTJAZ21haWwuY29tIiwidXNlcm5hbWUiOiJ1c2VybmFtZSJ9.KxzGgElmOnQl-Qn7lEE7" +
-                "JgzE8lOiaJMfGRKS4IjZMjnpnQ4QIfgwcqjO_tfi9lHD69eUjSLoNsdwDJZSfBuHPw", jwt);
+        assertEquals("eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MSwiZW1haWwiOiJwbW" +
+                "gxOTJAZ21haWwuY29tIiwidXNlcm5hbWUiOiJ1c2VybmFtZSJ9.UN" +
+                "gP_QIygQ9i5gopK0VJVSGHNwbDsUQxZ5oBfpNEjH-V8lgTdheytVHbvGOYj6L" +
+                "4135448pUPD6_I9XJqjuKYg", jwt);
     }
 
     @Test
@@ -45,7 +46,6 @@ public class JWTUserTest {
     @Test
     public void fromJWTBadAlgorithm() throws Exception {
         String s = Jwts.builder()
-                .setSubject("Joe")
                 .claim("id", 1L)
                 .claim("email", "mail")
                 .claim("username", "name")
@@ -60,7 +60,6 @@ public class JWTUserTest {
     @Test
     public void fromJWTBadKey() throws Exception {
         String s = Jwts.builder()
-                .setSubject("Joe")
                 .claim("id", 1L)
                 .claim("email", "mail")
                 .claim("username", "name")

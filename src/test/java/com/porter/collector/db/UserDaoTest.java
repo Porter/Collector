@@ -2,7 +2,7 @@ package com.porter.collector.db;
 
 import com.porter.collector.errors.*;
 import com.porter.collector.helper.BaseTest;
-import com.porter.collector.model.User;
+import com.porter.collector.model.UserWithPassword;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,7 +19,7 @@ public class UserDaoTest extends BaseTest {
 
     @Test
     public void insert() throws Exception {
-        User user = userDao.insert("pmh192@gmail.com","name", "pass");
+        UserWithPassword user = userDao.insert("pmh192@gmail.com","name", "pass");
 
         assertEquals(user.email(), "pmh192@gmail.com");
         assertEquals(user.userName(),"name");
@@ -65,7 +65,7 @@ public class UserDaoTest extends BaseTest {
 
     @Test
     public void passwordHashed() throws Exception {
-        User user = userDao.insert("e@k.com", "i", "test");
+        UserWithPassword user = userDao.insert("e@k.com", "i", "test");
 
         assertTrue(user.correctPassword("test"));
         assertFalse(user.correctPassword("testasdf"));
@@ -77,7 +77,7 @@ public class UserDaoTest extends BaseTest {
     public void get() throws Exception {
         Long id = userDao.insert("pmh192@gmail.com","name", "pass").id();
 
-        User user = userDao.findById(id);
+        UserWithPassword user = userDao.findById(id);
         assertEquals(id.longValue(), user.id());
         assertEquals("name", user.userName());
         assertEquals("pmh192@gmail.com", user.email());
@@ -89,11 +89,11 @@ public class UserDaoTest extends BaseTest {
 
     @Test
     public void findByLogin() throws Exception {
-        User user = userDao.insert("pmh192@gmail.com","name", "pass");
+        UserWithPassword user = userDao.insert("pmh192@gmail.com","name", "pass");
 
-        User user0 = userDao.findByLogin("pmh192@gmail.com");
-        User user1 = userDao.findByLogin("name");
-        User user2 = userDao.findByLogin("somethin");
+        UserWithPassword user0 = userDao.findByLogin("pmh192@gmail.com");
+        UserWithPassword user1 = userDao.findByLogin("name");
+        UserWithPassword user2 = userDao.findByLogin("somethin");
 
         assertEquals(user, user0);
         assertEquals(user, user1);

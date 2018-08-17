@@ -6,9 +6,9 @@ import org.immutables.value.Value;
 import org.mindrot.jbcrypt.BCrypt;
 
 @Value.Immutable
-@JsonSerialize(as = ImmutableUser.class)
-@JsonDeserialize(as = ImmutableUser.class)
-public abstract class User extends SimpleUser {
+@JsonSerialize(as = ImmutableUserWithPassword.class)
+@JsonDeserialize(as = ImmutableUserWithPassword.class)
+public abstract class UserWithPassword extends SimpleUser {
 
     public abstract String hashedPassword();
 

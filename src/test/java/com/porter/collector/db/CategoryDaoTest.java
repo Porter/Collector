@@ -4,7 +4,7 @@ import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.Category;
 import com.porter.collector.model.Collection;
 import com.porter.collector.model.ImmutableCategory;
-import com.porter.collector.model.User;
+import com.porter.collector.model.UserWithPassword;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class CategoryDaoTest extends BaseTest {
 
     @Test
     public void insert_findById() throws Exception {
-        User user = userDao.insert("a@g.com", "name", "pass");
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
         Category category = categoryDao.insert("category", collection.id());
 

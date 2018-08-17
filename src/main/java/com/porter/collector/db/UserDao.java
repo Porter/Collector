@@ -2,7 +2,8 @@ package com.porter.collector.db;
 
 import com.porter.collector.errors.*;
 import com.porter.collector.model.ImmutableUser;
-import com.porter.collector.model.User;
+import com.porter.collector.model.ImmutableUserWithPassword;
+import com.porter.collector.model.UserWithPassword;
 import com.porter.collector.model.UsersMapper;
 import com.porter.collector.util.Email;
 import org.mindrot.jbcrypt.BCrypt;
@@ -21,7 +22,7 @@ public abstract class UserDao {
                                 @Bind("username") String username,
                                 @Bind("pw") String password);
 
-    public User insert(String email, String username, String plainTextPassword) throws SignUpException {
+    public UserWithPassword insert(String email, String username, String plainTextPassword) throws SignUpException {
         if (plainTextPassword.isEmpty()) {
             throw new SignUpException(new IllegalArgumentException("Password can not be empty"));
         }
@@ -49,7 +50,7 @@ public abstract class UserDao {
 
             throw e;
         }
-        return ImmutableUser
+        return ImmutableUserWithPassword
                 .builder()
                 .id(id)
                 .userName(username)
@@ -61,9 +62,9 @@ public abstract class UserDao {
 
     @SqlQuery("SELECT * FROM users WHERE id=:id")
     @Mapper(UsersMapper.class)
-    public abstract User findById(@Bind("id") Long id);
+    public abstract UserWithPassword findById(@Bind("id") Long id);
 
     @SqlQuery("SELECT * FROM users WHERE username=:login OR email=:login LIMIT 1;")
     @Mapper(UsersMapper.class)
-    public abstract User findByLogin(@Bind("login") String login);
+    public abstract UserWithPassword findByLogin(@Bind("login") String login);
 }

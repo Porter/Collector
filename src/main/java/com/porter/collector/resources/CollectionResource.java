@@ -2,11 +2,10 @@ package com.porter.collector.resources;
 
 import com.porter.collector.db.CollectionDao;
 import com.porter.collector.model.Collection;
-import com.porter.collector.model.User;
+import com.porter.collector.model.UserWithPassword;
 import io.dropwizard.auth.Auth;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,7 +26,7 @@ public class CollectionResource {
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response list(@Auth User user) {
+    public Response list(@Auth UserWithPassword user) {
         List<Collection> collections = collectionDao.findAllWithUserId(user.id());
 
         return Response.ok(collections).build();
@@ -37,7 +36,7 @@ public class CollectionResource {
     @Path("/new")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response create(@Auth User user, @FormParam("name") @NotEmpty String name) {
+    public Response create(@Auth UserWithPassword user, @FormParam("name") @NotEmpty String name) {
         Collection collection = collectionDao.insert(name, user.id());
 
         return Response.ok(collection).build();

@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.porter.collector.db.UserDao;
 import com.porter.collector.errors.SignUpException;
 import com.porter.collector.model.JWTUser;
-import com.porter.collector.model.User;
+import com.porter.collector.model.UserWithPassword;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -29,7 +29,7 @@ public class UserResource {
                            @FormParam("username") String username,
                            @FormParam("password") String password) {
         try {
-            User user = userDao.insert(email, username, password);
+            UserWithPassword user = userDao.insert(email, username, password);
             return JWTUser.toJWT(user);
         }
         catch (SignUpException e) {
@@ -45,9 +45,9 @@ public class UserResource {
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response auth(@FormParam("login") String login, @FormParam("password") String password) {
-        User user = userDao.findByLogin(login);
+        UserWithPassword user = userDao.findByLogin(login);
         if (user == null) {
-            return Response.ok(ImmutableMap.of("error", "User not found")).build();
+            return Response.ok(ImmutableMap.of("error", "UserWithPassword not found")).build();
         }
         if (!user.correctPassword(password)) {
             return Response.ok(ImmutableMap.of("error", "Incorrect password")).build();

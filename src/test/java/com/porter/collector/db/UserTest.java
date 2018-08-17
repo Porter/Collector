@@ -3,6 +3,7 @@ package com.porter.collector.db;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.porter.collector.model.ImmutableUser;
 import com.porter.collector.helper.BaseTest;
+import com.porter.collector.model.ImmutableUserWithPassword;
 import io.dropwizard.jackson.Jackson;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ public class UserTest extends BaseTest {
 
     @Test
     public void deserialization() throws Exception {
-        ImmutableUser user = ImmutableUser
+        ImmutableUserWithPassword user = ImmutableUserWithPassword
                 .builder()
                 .userName("F")
                 .email("F")

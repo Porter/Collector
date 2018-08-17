@@ -5,7 +5,7 @@ import com.porter.collector.errors.CollectionExistsException;
 import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.Collection;
 import com.porter.collector.model.ImmutableCollection;
-import com.porter.collector.model.User;
+import com.porter.collector.model.UserWithPassword;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class CollectionDaoTest extends BaseTest {
 
     @Test
     public void insert() throws Exception {
-        User user = userDao.insert("a@g.com", "name", "pass");
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
         Collection expected = ImmutableCollection
                 .builder()
@@ -43,7 +43,7 @@ public class CollectionDaoTest extends BaseTest {
 
     @Test(expected = CollectionExistsException.class)
     public void insertDuplicateNames() throws Exception {
-        User user = userDao.insert("o@p.com", "name", "pass");
+        UserWithPassword user = userDao.insert("o@p.com", "name", "pass");
 
         collectionDao.insert("test", user.id());
         collectionDao.insert("test", user.id());
@@ -51,8 +51,8 @@ public class CollectionDaoTest extends BaseTest {
 
     @Test
     public void insertDuplicateNamesDifferentUsers() throws Exception {
-        User user1 = userDao.insert("o@p.com", "name1", "pass");
-        User user2 = userDao.insert("i@j.com", "name2", "pass");
+        UserWithPassword user1 = userDao.insert("o@p.com", "name1", "pass");
+        UserWithPassword user2 = userDao.insert("i@j.com", "name2", "pass");
 
         Collection collection1 = collectionDao.insert("test", user1.id());
         Collection collection2 = collectionDao.insert("test", user2.id());
@@ -63,7 +63,7 @@ public class CollectionDaoTest extends BaseTest {
 
     @Test
     public void findById() throws Exception {
-        User user = userDao.insert("i@p.com", "name", "pass");
+        UserWithPassword user = userDao.insert("i@p.com", "name", "pass");
         Long id = collectionDao.insert("test", user.id()).id();
 
         Collection collection = collectionDao.findById(id);
@@ -80,7 +80,7 @@ public class CollectionDaoTest extends BaseTest {
 
     @Test
     public void findAll() throws Exception {
-        User user = userDao.insert("i@p.com", "name", "pass");
+        UserWithPassword user = userDao.insert("i@p.com", "name", "pass");
         Long id1 = collectionDao.insert("test0", user.id()).id();
         Long id2 = collectionDao.insert("test1", user.id()).id();
         Long id3 = collectionDao.insert("test2", user.id()).id();
@@ -96,8 +96,8 @@ public class CollectionDaoTest extends BaseTest {
 
     @Test
     public void findAllWithUserId() throws Exception {
-        User user1 = userDao.insert("i1@p.com", "name", "pass");
-        User user2 = userDao.insert("i@p.com", "name2", "pass");
+        UserWithPassword user1 = userDao.insert("i1@p.com", "name", "pass");
+        UserWithPassword user2 = userDao.insert("i@p.com", "name2", "pass");
         Long id1 = collectionDao.insert("test0", user1.id()).id();
         Long id2 = collectionDao.insert("test1", user1.id()).id();
         Long id3 = collectionDao.insert("test2", user2.id()).id();
