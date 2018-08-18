@@ -1,7 +1,6 @@
 package com.porter.collector.db;
 
 import com.porter.collector.errors.*;
-import com.porter.collector.model.ImmutableUser;
 import com.porter.collector.model.ImmutableUserWithPassword;
 import com.porter.collector.model.UserWithPassword;
 import com.porter.collector.model.UsersMapper;

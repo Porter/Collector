@@ -1,6 +1,5 @@
 package com.porter.collector;
 
-import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
 import com.porter.collector.auth.JwtAuthenticator;
 import com.porter.collector.auth.JwtUnauthorizedHandler;
 import com.porter.collector.auth.JwtAuthFilter;
@@ -8,10 +7,12 @@ import com.porter.collector.auth.JwtAuthorizer;
 import com.porter.collector.db.CollectionDao;
 import com.porter.collector.db.UserDao;
 import com.porter.collector.health.BasicHealthCheck;
+import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.UserWithoutPassword;
 import com.porter.collector.resources.CollectionResource;
 import com.porter.collector.resources.UserResource;
 import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.db.PooledDataSourceFactory;
@@ -35,7 +36,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
 
     @Override
     public void initialize(final Bootstrap<collectorConfiguration> bootstrap) {
-        bootstrap.addBundle(new ConfiguredAssetsBundle("/app", "/", "index.html"));
+        bootstrap.addBundle(new AssetsBundle("/app", "/", "index.html"));
 
         bootstrap.addBundle(new MigrationsBundle<collectorConfiguration>() {
             @Override
@@ -57,7 +58,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
         CollectionDao collectionDao = jdbi.onDemand(CollectionDao.class);
 
         environment.jersey().register(new AuthDynamicFeature(
-                new JwtAuthFilter.Builder<UserWithoutPassword>()
+                new JwtAuthFilter.Builder<SimpleUser>()
                         .setAuthenticator(new JwtAuthenticator())
                         .setAuthorizer(new JwtAuthorizer())
                         .setUnauthorizedHandler(new JwtUnauthorizedHandler())
@@ -65,7 +66,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
 
         ));
 
-        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(UserWithoutPassword.class));
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(SimpleUser.class));
         environment.jersey().register(RolesAllowedDynamicFeature.class);
 
         environment.jersey().register(new UserResource(userDao));

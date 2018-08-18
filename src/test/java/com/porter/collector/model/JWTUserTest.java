@@ -44,6 +44,16 @@ public class JWTUserTest {
     }
 
     @Test
+    public void fromBadJWT() throws Exception {
+        assertNull(JWTUser.fromJWT("lskfjsalkdfj.sdf"));
+    }
+
+    @Test
+    public void fromNull() throws Exception {
+        assertNull(JWTUser.fromJWT(null));
+    }
+
+    @Test
     public void fromJWTBadAlgorithm() throws Exception {
         String s = Jwts.builder()
                 .claim("id", 1L)

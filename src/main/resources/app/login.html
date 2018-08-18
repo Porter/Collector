@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-US">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-cookies.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/main.css">
     <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
@@ -15,18 +16,18 @@
     <br/>
     <div class="row">
         <div class="col-sm-3"></div>
-        <div class="jumbotron col-sm-6">
-            <form class="form-horizontal" action="/api/user/login" method="post">
+        <div class="jumbotron col-sm-6" ng-controller="formControl">
+            <form class="form-horizontal" ng-submit="login(user)">
                 <div class="form-group row">
                     <label class="control-label col-sm-2" for="email">Login:</label>
                     <div class="col-sm-10">
-                        <input type="text" name="login" class="form-control" id="email" placeholder="Enter email">
+                        <input type="text" ng-model="user.name" class="form-control" id="email" placeholder="Enter email">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="control-label col-sm-2" for="pwd">Password:</label>
                     <div class="col-sm-10">
-                        <input type="password" name="password" class="form-control" id="pwd" placeholder="Enter password">
+                        <input type="password" ng-model="user.password" class="form-control" id="pwd" placeholder="Enter password">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -50,7 +51,26 @@
 
 
 <script>
-    var collectorApp = angular.module("app", []);
+    var collectorApp = angular.module("app", ["ngCookies"])
+        .controller("formControl", ["$scope", "$http", "$cookies", function($scope, $http, $cookies) {
+            $scope.login = function(user) {
+                var req = {
+                    method: "POST",
+                    url: "/api/users/login",
+                    data: $.param(user),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                };
+                $http(req)
+                .then(function(response) {
+                    if (response.status == 200) {
+                        if (response.data.jwt) {
+                            $cookies.put("jwt", response.data.jwt);
+                        }
+                        else { alert(response.data.error); }
+                    }
+                });
+            };
+        }]);
 </script>
 
 </body>

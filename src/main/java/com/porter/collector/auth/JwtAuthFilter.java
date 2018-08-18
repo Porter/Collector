@@ -46,8 +46,9 @@ public class JwtAuthFilter<P extends Principal> extends AuthFilter<String, P> {
                 }
             });
         }
-
-        throw new WebApplicationException(unauthorizedHandler.buildResponse(prefix, realm));
+        else {
+            throw new WebApplicationException(unauthorizedHandler.buildResponse(prefix, realm));
+        }
     }
 
     public static class Builder<P extends Principal> extends AuthFilterBuilder<String, P, JwtAuthFilter<P>> {

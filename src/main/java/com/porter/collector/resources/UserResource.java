@@ -44,10 +44,10 @@ public class UserResource {
     @POST
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response auth(@FormParam("login") String login, @FormParam("password") String password) {
-        UserWithPassword user = userDao.findByLogin(login);
+    public Response auth(@FormParam("name") String name, @FormParam("password") String password) {
+        UserWithPassword user = userDao.findByLogin(name);
         if (user == null) {
-            return Response.ok(ImmutableMap.of("error", "UserWithPassword not found")).build();
+            return Response.ok(ImmutableMap.of("error", "User not found")).build();
         }
         if (!user.correctPassword(password)) {
             return Response.ok(ImmutableMap.of("error", "Incorrect password")).build();

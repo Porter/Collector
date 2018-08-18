@@ -2,11 +2,11 @@ package com.porter.collector.resources;
 
 import com.porter.collector.db.CollectionDao;
 import com.porter.collector.model.Collection;
+import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.UserWithoutPassword;
 import io.dropwizard.auth.Auth;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.annotation.security.PermitAll;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,7 +27,7 @@ public class CollectionResource {
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response list(@Auth UserWithoutPassword user) {
+    public Response list(@Auth SimpleUser user) {
         List<Collection> collections = collectionDao.findAllWithUserId(user.id());
 
         return Response.ok(collections).build();
