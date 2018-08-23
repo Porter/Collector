@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-cookies.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<body>
+
+<div ng-app="app" ng-controller="collectionsController">
+    <ng-include src="'partials/header.html'"></ng-include>
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ng-include src="'partials/sidebar.html'"></ng-include>
+        </div>
+        <div class="col-sm-9 col-md-10">
+            <ul>
+                <li ng-repeat="source in sources">
+                    <a href="/source?id={{source.id}}">{{source.name}}</a>
+                </li>
+            </ul>
+
+            <form ng-submit="addSource(source)">
+                <select ng-model="source.collectionId">
+                    <option ng-repeat="collection in collections" value="{{collection.id}}">
+                        {{collection.name}}
+                    </option>
+                </select>
+                <input ng-model="source.name" type="text" name="name" />
+                <input type="submit" name="New" value="New"/>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    var app = angular.module("app", ["ngCookies"]);
+
+    app.controller('collectionsController', function($scope, $http, $cookies) {
+
+        jwt = $cookies.get("jwt");
+        var id = 4;
+
+        if (jwt) {
+            var sourceReq = {method: "GET", url: "/api/sources/" + id, headers: {jwt: jwt}};
+            $http(sourcesReq).then(function(response) {
+                $scope.source = response.data;
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -143,4 +143,29 @@
                              referencedTableName="collections"
                              referencedColumnNames="id" />
   </changeSet>
+
+  <changeSet id="9" author="Porter">
+    <addColumn tableName="sources">
+      <column name="user_id" type="bigint">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+
+    <addForeignKeyConstraint baseTableName="sources" baseColumnNames="user_id"
+                             constraintName="sources_users_many_to_one"
+                             referencedTableName="users"
+                             referencedColumnNames="id" />
+
+  </changeSet>
+
+  <changeSet id="10" author="Porter">
+    <addColumn tableName="sources">
+      <column name="value" type="text"></column>
+    </addColumn>
+    <addColumn tableName="sources">
+      <column name="type" type="bigint">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>

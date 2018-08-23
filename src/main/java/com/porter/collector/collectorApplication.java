@@ -5,12 +5,13 @@ import com.porter.collector.auth.JwtUnauthorizedHandler;
 import com.porter.collector.auth.JwtAuthFilter;
 import com.porter.collector.auth.JwtAuthorizer;
 import com.porter.collector.db.CollectionDao;
+import com.porter.collector.db.SourceDao;
 import com.porter.collector.db.UserDao;
 import com.porter.collector.health.BasicHealthCheck;
 import com.porter.collector.model.SimpleUser;
-import com.porter.collector.model.UserWithoutPassword;
-import com.porter.collector.resources.CollectionResource;
-import com.porter.collector.resources.UserResource;
+import com.porter.collector.resources.CollectionsResource;
+import com.porter.collector.resources.SourcesResource;
+import com.porter.collector.resources.UsersResource;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.AuthDynamicFeature;
@@ -56,6 +57,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
 
         UserDao userDao =  jdbi.onDemand(UserDao.class);
         CollectionDao collectionDao = jdbi.onDemand(CollectionDao.class);
+        SourceDao sourceDao = jdbi.onDemand(SourceDao.class);
 
         environment.jersey().register(new AuthDynamicFeature(
                 new JwtAuthFilter.Builder<SimpleUser>()
@@ -69,8 +71,9 @@ public class collectorApplication extends Application<collectorConfiguration> {
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(SimpleUser.class));
         environment.jersey().register(RolesAllowedDynamicFeature.class);
 
-        environment.jersey().register(new UserResource(userDao));
-        environment.jersey().register(new CollectionResource(collectionDao));
+        environment.jersey().register(new UsersResource(userDao));
+        environment.jersey().register(new CollectionsResource(collectionDao, sourceDao));
+        environment.jersey().register(new SourcesResource(sourceDao));
 
     }
 

@@ -13,11 +13,11 @@ import javax.ws.rs.core.Response;
 
 @Path(Urls.USER)
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-public class UserResource {
+public class UsersResource {
 
     private final UserDao userDao;
 
-    public UserResource(UserDao userDao) {
+    public UsersResource(UserDao userDao) {
         this.userDao = userDao;
     }
 

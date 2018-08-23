@@ -17,7 +17,7 @@ public abstract class CollectionDao {
     @GetGeneratedKeys
     abstract long executeInsert(@Bind("name") String name, @Bind("user_id") Long userId);
 
-    public Collection insert(String name, Long userId) {
+    public Collection insert(String name, Long userId) throws CollectionExistsException {
         Long id;
         try {
             id = executeInsert(name, userId);

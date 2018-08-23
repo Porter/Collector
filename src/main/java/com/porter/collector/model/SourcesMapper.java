@@ -14,6 +14,7 @@ public class SourcesMapper implements ResultSetMapper<ImmutableSource> {
                 .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))
                 .collectionId(resultSet.getLong("collection_id"))
+                .type(ValueTypes.values()[(int) resultSet.getLong("type")])
                 .build();
     }
 }

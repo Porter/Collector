@@ -12,7 +12,6 @@ public class JwtAuthenticator implements Authenticator<String, SimpleUser> {
     @Override
     public Optional<SimpleUser> authenticate(String jwt) {
         SimpleUser user = JWTUser.fromJWT(jwt);
-        System.out.println("Got user: " + user);
         return Optional.ofNullable(user);
     }
 }
