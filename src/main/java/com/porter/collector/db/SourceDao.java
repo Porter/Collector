@@ -17,14 +17,13 @@ public abstract class SourceDao {
     abstract long executeInsert(@Bind("name") String name,
                                 @Bind("user_id") Long userId,
                                 @Bind("collection_id") Long collectionId,
-                                @Bind("type") Long type);
+                                @Bind("type") int type);
 
     public Source insert(String name, Long userId, Long collectionId, ValueTypes type) throws IllegalAccessException {
         if (confirmUserOwnsCollection(collectionId, userId) == null) {
             throw new IllegalAccessException("You can no longer modify that collection");
         }
-        // TODO make type an int in db
-        Long id = executeInsert(name, userId, collectionId, (long) type.ordinal());
+        Long id = executeInsert(name, userId, collectionId, type.ordinal());
         return ImmutableSource.builder()
                 .id(id)
                 .name(name)

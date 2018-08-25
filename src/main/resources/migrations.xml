@@ -160,12 +160,13 @@
 
   <changeSet id="10" author="Porter">
     <addColumn tableName="sources">
-      <column name="value" type="text"></column>
+      <column name="value" type="text" />
     </addColumn>
     <addColumn tableName="sources">
-      <column name="type" type="bigint">
+      <column name="type" type="int">
         <constraints nullable="false" />
       </column>
     </addColumn>
   </changeSet>
+
 </databaseChangeLog>
