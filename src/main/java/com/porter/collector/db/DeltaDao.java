@@ -9,6 +9,8 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
+import java.util.List;
+
 public abstract class DeltaDao {
 
     @SqlUpdate("INSERT INTO deltas (name, collection_id, source_id, amount, category_id) VALUES " +
@@ -40,4 +42,8 @@ public abstract class DeltaDao {
     @SqlQuery("SELECT * FROM deltas WHERE id=:id")
     @Mapper(DeltaMapper.class)
     public abstract Delta findById(@Bind("id") Long id);
+
+    @SqlQuery("SELECT * FROM deltas WHERE source_id=:id")
+    @Mapper(DeltaMapper.class)
+    public abstract List<Delta> findBySourceId(@Bind("id") Long sourceId);
 }

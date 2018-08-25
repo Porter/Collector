@@ -1,6 +1,7 @@
 package com.porter.collector.db;
 
 import com.porter.collector.model.*;
+import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
@@ -18,7 +19,10 @@ public abstract class SourceDao {
                                 @Bind("collection_id") Long collectionId,
                                 @Bind("type") Long type);
 
-    public Source insert(String name, Long userId, Long collectionId, ValueTypes type) {
+    public Source insert(String name, Long userId, Long collectionId, ValueTypes type) throws IllegalAccessException {
+        if (confirmUserOwnsCollection(collectionId, userId) == null) {
+            throw new IllegalAccessException("You can no longer modify that collection");
+        }
         // TODO make type an int in db
         Long id = executeInsert(name, userId, collectionId, (long) type.ordinal());
         return ImmutableSource.builder()
@@ -28,6 +32,9 @@ public abstract class SourceDao {
                 .type(type)
                 .build();
     }
+
+    @SqlQuery("SELECT id FROM collections WHERE id=:id AND user_id=:userId")
+    abstract Long confirmUserOwnsCollection(@Bind("id") long collectionId, @Bind("userId") long userId);
 
 
     @SqlQuery("SELECT * FROM sources WHERE id=:id")

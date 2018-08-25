@@ -16,20 +16,16 @@
             <ng-include src="'partials/sidebar.html'"></ng-include>
         </div>
         <div class="col-sm-9 col-md-10">
+            {{source.name}}
             <ul>
-                <li ng-repeat="source in sources">
-                    <a href="/source?id={{source.id}}">{{source.name}}</a>
+                <li ng-repeat="value in values">
+                    {{value.name}}: {{value.amount}}
                 </li>
             </ul>
-
-            <form ng-submit="addSource(source)">
-                <select ng-model="source.collectionId">
-                    <option ng-repeat="collection in collections" value="{{collection.id}}">
-                        {{collection.name}}
-                    </option>
-                </select>
-                <input ng-model="source.name" type="text" name="name" />
-                <input type="submit" name="New" value="New"/>
+            <form ng-submit="addValue(value)">
+                <input ng-model="value.name" type="text" placeholder="name"/>
+                <input ng-model="value.amount" type="number" placeholder="amount" step="0.01"/>
+                <input type="submit" name="New" value="New" />
             </form>
         </div>
     </div>
@@ -40,15 +36,41 @@
 <script>
     var app = angular.module("app", ["ngCookies"]);
 
-    app.controller('collectionsController', function($scope, $http, $cookies) {
+    app.controller('collectionsController', function($scope, $http, $cookies, $location) {
 
         jwt = $cookies.get("jwt");
-        var id = 4;
+
+        url = new URL($location.absUrl());
+        id = url.searchParams.get("id");
+        collectionId = url.searchParams.get("collectionId");
+
+        $scope.addValue = function(value) {
+            value.collectionId = collectionId;
+
+            var req = {
+                method: "POST",
+                url: "/api/sources/" + id + "/values/new",
+                data: $.param(value),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    jwt: jwt
+                }
+            };
+            $http(req)
+                .then(function(resp) {
+                    console.log(resp);
+                });
+        }
 
         if (jwt) {
             var sourceReq = {method: "GET", url: "/api/sources/" + id, headers: {jwt: jwt}};
-            $http(sourcesReq).then(function(response) {
+            $http(sourceReq).then(function(response) {
                 $scope.source = response.data;
+            });
+
+            var valuesReq = {method: "GET", url: "/api/sources/" + id + "/values/all", headers: {jwt: jwt}};
+            $http(valuesReq).then(function(response) {
+                $scope.values = response.data;
             });
         }
     });

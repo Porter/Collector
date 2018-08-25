@@ -66,7 +66,10 @@ public class CollectionsResource {
                            @FormParam("type") int type) {
         Source source;
         try { source = sourceDao.insert(name, user.id(), collectionId, ValueTypes.values()[type]); }
-        catch (Exception e) { throw e; }
+        catch (Exception e) {
+            System.out.println(e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
 
         return Response.ok(source).build();
     }

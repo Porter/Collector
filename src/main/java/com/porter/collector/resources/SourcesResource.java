@@ -1,10 +1,9 @@
 package com.porter.collector.resources;
 
 import com.google.common.collect.ImmutableMap;
+import com.porter.collector.db.DeltaDao;
 import com.porter.collector.db.SourceDao;
-import com.porter.collector.model.SimpleUser;
-import com.porter.collector.model.Source;
-import com.porter.collector.model.ValueTypes;
+import com.porter.collector.model.*;
 import io.dropwizard.auth.Auth;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -12,17 +11,20 @@ import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path(Urls.SOURCE)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SourcesResource {
 
-    public SourcesResource(SourceDao sourceDao) {
+    public SourcesResource(SourceDao sourceDao, DeltaDao deltaDao) {
         this.sourceDao = sourceDao;
+        this.deltaDao = deltaDao;
     }
 
     private final SourceDao sourceDao;
+    private final DeltaDao deltaDao;
 
     @GET
     @Path("/all")
@@ -43,6 +45,30 @@ public class SourcesResource {
                     .build();
         }
         return Response.ok(sourceDao.findById(id)).build();
+    }
+
+    @GET
+    @Path("/{id}/values/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getValuesById(@Auth SimpleUser user, @PathParam("id") Long id) {
+        List<Delta> deltas = deltaDao.findBySourceId(id);
+        // TODO return 404 if id doesn't exist
+        // TODO check user owns source
+        return Response.ok(deltas).build();
+    }
+
+    @POST
+    @Path("/{id}/values/new")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response addValue(
+            @Auth SimpleUser user,
+            @PathParam("id") Long sourceId,
+            @FormParam("collectionId") Long collectionId,
+            @FormParam("name") String name,
+            @FormParam("amount") Long amount
+    ) {
+        Delta delta = deltaDao.insert(name, amount, collectionId, sourceId);
+        return Response.ok(delta).build();
     }
 
 

@@ -5,7 +5,9 @@ import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.*;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.List;
 
@@ -69,5 +71,26 @@ public class SourceDaoTest extends BaseTest {
         Assert.assertEquals(expected2, sourceDao.findAllFromUser(user2.id()));
     }
 
-    //TODO test bad user_id given
+    @Test
+    public void badUserId() throws Exception {
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage("java.lang.IllegalAccessException: You can no longer modify that collection");
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
+        Collection collection = collectionDao.insert("test", user.id());
+        sourceDao.insert("source", user.id() + 1, collection.id(), ValueTypes.INT);
+    }
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    // https://github.com/jdbi/jdbi/issues/566
+    @Test
+    public void incorrectUserId() throws Exception {
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage("java.lang.IllegalAccessException: You can no longer modify that collection");
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
+        UserWithPassword user2 = userDao.insert("a2@g.com", "name2", "pass");
+        Collection collection = collectionDao.insert("test", user.id());
+        sourceDao.insert("source", user2.id(), collection.id(), ValueTypes.INT);
+    }
 }
