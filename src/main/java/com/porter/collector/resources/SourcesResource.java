@@ -51,9 +51,15 @@ public class SourcesResource {
     @Path("/{id}/values/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getValuesById(@Auth SimpleUser user, @PathParam("id") Long id) {
+        Source source = sourceDao.findById(id);
+        if (source == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if (source.userId() != user.id()) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
         List<Delta> deltas = deltaDao.findBySourceId(id);
-        // TODO return 404 if id doesn't exist
-        // TODO check user owns source
         return Response.ok(deltas).build();
     }
 

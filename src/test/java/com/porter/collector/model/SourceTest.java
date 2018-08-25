@@ -14,6 +14,7 @@ public class SourceTest {
                 .id(0L)
                 .name("name")
                 .collectionId(1L)
+                .userId(2L)
                 .type(ValueTypes.FLOAT)
                 .build();
 

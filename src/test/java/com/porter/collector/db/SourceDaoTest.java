@@ -37,6 +37,7 @@ public class SourceDaoTest extends BaseTest {
                 .id(id)
                 .name("source")
                 .collectionId(collection.id())
+                .userId(user.id())
                 .type(ValueTypes.INT)
                 .build();
 

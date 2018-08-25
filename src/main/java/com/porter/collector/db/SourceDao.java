@@ -29,6 +29,7 @@ public abstract class SourceDao {
                 .id(id)
                 .name(name)
                 .collectionId(collectionId)
+                .userId(userId)
                 .type(type)
                 .build();
     }

@@ -11,5 +11,6 @@ public abstract class Source {
     public abstract long id();
     public abstract String name();
     public abstract long collectionId();
+    public abstract long userId();
     public abstract ValueTypes type();
 }
