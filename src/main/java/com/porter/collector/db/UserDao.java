@@ -5,23 +5,24 @@ import com.porter.collector.model.ImmutableUserWithPassword;
 import com.porter.collector.model.UserWithPassword;
 import com.porter.collector.model.UsersMapper;
 import com.porter.collector.util.Email;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.jdbi.v3.sqlobject.statement.UseRowMapper;
 import org.mindrot.jbcrypt.BCrypt;
-import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
-import org.skife.jdbi.v2.sqlobject.Bind;
-import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
-import org.skife.jdbi.v2.sqlobject.SqlQuery;
-import org.skife.jdbi.v2.sqlobject.SqlUpdate;
-import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
-public abstract class UserDao {
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
+
+public interface UserDao {
 
     @SqlUpdate("INSERT INTO users (email, username, password) VALUES (:email, :username, :pw)")
     @GetGeneratedKeys
-    abstract long executeInsert(@Bind("email") String email,
+    long executeInsert(@Bind("email") String email,
                                 @Bind("username") String username,
                                 @Bind("pw") String password);
 
-    public UserWithPassword insert(String email, String username, String plainTextPassword) throws SignUpException {
+    default UserWithPassword insert(String email, String username, String plainTextPassword) throws SignUpException {
         if (plainTextPassword.isEmpty()) {
             throw new SignUpException(new IllegalArgumentException("Password can not be empty"));
         }
@@ -60,10 +61,10 @@ public abstract class UserDao {
 
 
     @SqlQuery("SELECT * FROM users WHERE id=:id")
-    @Mapper(UsersMapper.class)
-    public abstract UserWithPassword findById(@Bind("id") Long id);
+    @UseRowMapper(UsersMapper.class)
+    UserWithPassword findById(@Bind("id") Long id);
 
     @SqlQuery("SELECT * FROM users WHERE username=:login OR email=:login LIMIT 1;")
-    @Mapper(UsersMapper.class)
-    public abstract UserWithPassword findByLogin(@Bind("login") String login);
+    @UseRowMapper(UsersMapper.class)
+    UserWithPassword findByLogin(@Bind("login") String login);
 }

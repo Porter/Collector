@@ -1,18 +1,20 @@
 package com.porter.collector.helper;
 
+import org.jdbi.v3.core.Handle;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import org.junit.Before;
-import org.skife.jdbi.v2.DBI;
-import org.skife.jdbi.v2.Handle;
 
 public class BaseTest {
 
-    private DBI jdbi;
+    private Jdbi jdbi;
 
     private void initJDBI() {
-        jdbi = new DBI("jdbc:postgresql://localhost/collector_test", "postgres", "postgres");
+        jdbi = Jdbi.create("jdbc:postgresql://localhost/collector_test", "postgres", "postgres");
+        jdbi.installPlugin(new SqlObjectPlugin());
     }
 
-    protected DBI getJdbi() {
+    protected Jdbi getJdbi() {
         if (jdbi == null) {
             initJDBI();
         }

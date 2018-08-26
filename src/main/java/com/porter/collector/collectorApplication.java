@@ -18,12 +18,12 @@ import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.db.PooledDataSourceFactory;
-import io.dropwizard.jdbi.DBIFactory;
+import org.jdbi.v3.core.Jdbi;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-import org.skife.jdbi.v2.DBI;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 public class collectorApplication extends Application<collectorConfiguration> {
 
@@ -53,8 +53,8 @@ public class collectorApplication extends Application<collectorConfiguration> {
         final BasicHealthCheck healthCheck = new BasicHealthCheck();
         environment.healthChecks().register("basic", healthCheck);
 
-        final DBIFactory factory = new DBIFactory();
-        final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "connection");
+        Jdbi jdbi = Jdbi.create(configuration.getDataSourceFactory().getUrl());
+        jdbi.installPlugin(new SqlObjectPlugin());
 
         UserDao userDao =  jdbi.onDemand(UserDao.class);
         CollectionDao collectionDao = jdbi.onDemand(CollectionDao.class);

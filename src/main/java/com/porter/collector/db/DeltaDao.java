@@ -3,30 +3,30 @@ package com.porter.collector.db;
 import com.porter.collector.model.Delta;
 import com.porter.collector.model.DeltaMapper;
 import com.porter.collector.model.ImmutableDelta;
-import org.skife.jdbi.v2.sqlobject.Bind;
-import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
-import org.skife.jdbi.v2.sqlobject.SqlQuery;
-import org.skife.jdbi.v2.sqlobject.SqlUpdate;
-import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.jdbi.v3.sqlobject.statement.UseRowMapper;
 
 import java.util.List;
 
-public abstract class DeltaDao {
+public interface DeltaDao {
 
     @SqlUpdate("INSERT INTO deltas (name, collection_id, source_id, amount, category_id) VALUES " +
             "(:name, :collectionId, :sourceId, :amount, :categoryId);")
     @GetGeneratedKeys
-    abstract long executeInsert(@Bind("name") String name,
+    long executeInsert(@Bind("name") String name,
                                 @Bind("amount") Long amount,
                                 @Bind("collectionId") Long collectionId,
                                 @Bind("sourceId") Long sourceId,
                                 @Bind("categoryId") Long categoryId);
 
-    public Delta insert(String name, Long amount, Long collectionId, Long sourceId) {
+    default Delta insert(String name, Long amount, Long collectionId, Long sourceId) {
         return insert(name, amount, collectionId, sourceId, null);
     }
 
-    public Delta insert(String name, Long amount, Long collectionId, Long sourceId, Long categoryId) {
+    default Delta insert(String name, Long amount, Long collectionId, Long sourceId, Long categoryId) {
         Long id = executeInsert(name, amount, collectionId, sourceId, categoryId);
         return ImmutableDelta.builder()
                 .id(id)
@@ -40,10 +40,10 @@ public abstract class DeltaDao {
 
 
     @SqlQuery("SELECT * FROM deltas WHERE id=:id")
-    @Mapper(DeltaMapper.class)
-    public abstract Delta findById(@Bind("id") Long id);
+    @UseRowMapper(DeltaMapper.class)
+    Delta findById(@Bind("id") Long id);
 
     @SqlQuery("SELECT * FROM deltas WHERE source_id=:id")
-    @Mapper(DeltaMapper.class)
-    public abstract List<Delta> findBySourceId(@Bind("id") Long sourceId);
+    @UseRowMapper(DeltaMapper.class)
+    List<Delta> findBySourceId(@Bind("id") Long sourceId);
 }

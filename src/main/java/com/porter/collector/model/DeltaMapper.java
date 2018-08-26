@@ -1,12 +1,12 @@
 package com.porter.collector.model;
 
-import org.skife.jdbi.v2.StatementContext;
-import org.skife.jdbi.v2.tweak.ResultSetMapper;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DeltaMapper implements ResultSetMapper<ImmutableDelta> {
+public class DeltaMapper implements RowMapper<ImmutableDelta> {
 
     private Long getNullable(ResultSet resultSet, String columnLabel) throws SQLException {
         Long value = resultSet.getLong(columnLabel);
@@ -15,7 +15,7 @@ public class DeltaMapper implements ResultSetMapper<ImmutableDelta> {
     }
 
     @Override
-    public ImmutableDelta map(int i, ResultSet resultSet, StatementContext statementContext) throws SQLException {
+    public ImmutableDelta map(ResultSet resultSet, StatementContext statementContext) throws SQLException {
         return ImmutableDelta
                 .builder()
                 .id(resultSet.getLong("id"))

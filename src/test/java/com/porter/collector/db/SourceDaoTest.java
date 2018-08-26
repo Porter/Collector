@@ -84,7 +84,6 @@ public class SourceDaoTest extends BaseTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    // https://github.com/jdbi/jdbi/issues/566
     @Test
     public void incorrectUserId() throws Exception {
         thrown.expect(RuntimeException.class);

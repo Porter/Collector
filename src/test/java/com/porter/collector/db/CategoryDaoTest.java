@@ -1,10 +1,7 @@
 package com.porter.collector.db;
 
 import com.porter.collector.helper.BaseTest;
-import com.porter.collector.model.Category;
-import com.porter.collector.model.Collection;
-import com.porter.collector.model.ImmutableCategory;
-import com.porter.collector.model.UserWithPassword;
+import com.porter.collector.model.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

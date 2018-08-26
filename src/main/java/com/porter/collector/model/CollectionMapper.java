@@ -1,14 +1,15 @@
 package com.porter.collector.model;
 
-import org.skife.jdbi.v2.StatementContext;
-import org.skife.jdbi.v2.tweak.ResultSetMapper;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CollectionMapper implements ResultSetMapper<ImmutableCollection> {
+public class CollectionMapper implements RowMapper<ImmutableCollection> {
+
     @Override
-    public ImmutableCollection map(int i, ResultSet resultSet, StatementContext statementContext) throws SQLException {
+    public ImmutableCollection map(ResultSet resultSet, StatementContext ctx) throws SQLException {
         return ImmutableCollection
                 .builder()
                 .id(resultSet.getLong("id"))
