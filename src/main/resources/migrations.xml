@@ -1,172 +1,172 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 
-  <changeSet id="1" author="Porter">
+    <changeSet id="1" author="Porter">
 
-    <createTable tableName="users">
-      <column name="id" type="bigint" autoIncrement="true">
-        <constraints primaryKey="true" nullable="false"/>
-      </column>
-      <column name="username" type="varchar(256)">
-        <constraints nullable="false" unique="true" />
-      </column>
-      <column name="password" type="varchar(256)">
-        <constraints nullable="false" />
-      </column>
-      <column name="name" type="varchar(256)" />
-      <column name="created_at" type="datetime" defaultValueDate="current_timestamp">
-        <constraints nullable="false" />
-      </column>
+        <createTable tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="varchar(256)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)"/>
+            <column name="created_at" type="datetime" defaultValueDate="current_timestamp">
+                <constraints nullable="false"/>
+            </column>
 
-    </createTable>
+        </createTable>
 
-  </changeSet>
+    </changeSet>
 
-  <changeSet id="2" author="Porter">
+    <changeSet id="2" author="Porter">
 
-    <createTable tableName="collections">
-      <column name="id" type="bigint" autoIncrement="true">
-        <constraints primaryKey="true" nullable="false" />
-      </column>
-      <column name="name" type="varchar(256)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="user_id" type="bigint">
-        <constraints nullable="false"/>
-      </column>
-    </createTable>
+        <createTable tableName="collections">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
 
-    <addForeignKeyConstraint baseTableName="collections" baseColumnNames="user_id"
-                             constraintName="users_collections_one_to_many"
-                             referencedTableName="users"
-                             referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="collections" baseColumnNames="user_id"
+                                 constraintName="users_collections_one_to_many"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
 
-  </changeSet>
+    </changeSet>
 
-  <changeSet id="3" author="Porter">
-    <addUniqueConstraint tableName="collections" columnNames="user_id, name" />
-  </changeSet>
+    <changeSet id="3" author="Porter">
+        <addUniqueConstraint tableName="collections" columnNames="user_id, name"/>
+    </changeSet>
 
-  <changeSet id="4" author="Porter">
-    <addColumn tableName="users">
-      <column name="email" type="varchar(256)">
-        <constraints nullable="false" unique="true"/>
-      </column>
-    </addColumn>
-  </changeSet>
+    <changeSet id="4" author="Porter">
+        <addColumn tableName="users">
+            <column name="email" type="varchar(256)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 
-  <changeSet id="5" author="Porter">
-    <createTable tableName="deltas">
-      <column name="id" type="bigint" autoIncrement="true">
-        <constraints primaryKey="true" nullable="false" />
-      </column>
-      <column name="name" type="varchar(256)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="collection_id" type="bigint">
-        <constraints nullable="false"/>
-      </column>
-    </createTable>
+    <changeSet id="5" author="Porter">
+        <createTable tableName="deltas">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="collection_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
 
-    <addForeignKeyConstraint baseTableName="deltas" baseColumnNames="collection_id"
-                             constraintName="deltas_collections_many_to_one"
-                             referencedTableName="collections"
-                             referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="deltas" baseColumnNames="collection_id"
+                                 constraintName="deltas_collections_many_to_one"
+                                 referencedTableName="collections"
+                                 referencedColumnNames="id"/>
 
-  </changeSet>
+    </changeSet>
 
-  <changeSet id="6" author="Porter">
-    <createTable tableName="sources">
-      <column name="id" type="bigint" autoIncrement="true">
-        <constraints primaryKey="true" nullable="false" />
-      </column>
-      <column name="name" type="varchar(256)">
-        <constraints nullable="false" />
-      </column>
-      <column name="collection_id" type="bigint">
-        <constraints nullable="false" />
-      </column>
-    </createTable>
+    <changeSet id="6" author="Porter">
+        <createTable tableName="sources">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="collection_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
 
 
-    <addForeignKeyConstraint baseTableName="sources" baseColumnNames="collection_id"
-                             constraintName="sources_collections_many_to_one"
-                             referencedTableName="collections"
-                             referencedColumnNames="id" />
-  </changeSet>
+        <addForeignKeyConstraint baseTableName="sources" baseColumnNames="collection_id"
+                                 constraintName="sources_collections_many_to_one"
+                                 referencedTableName="collections"
+                                 referencedColumnNames="id"/>
+    </changeSet>
 
-  <changeSet id="7" author="Porter">
-    <addColumn tableName="deltas">
-      <column name="source_id" type="bigint"/>
-    </addColumn>
+    <changeSet id="7" author="Porter">
+        <addColumn tableName="deltas">
+            <column name="source_id" type="bigint"/>
+        </addColumn>
 
-    <addForeignKeyConstraint baseTableName="deltas" baseColumnNames="source_id"
-                             constraintName="deltas_sources_many_to_one"
-                             referencedTableName="sources"
-                             referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="deltas" baseColumnNames="source_id"
+                                 constraintName="deltas_sources_many_to_one"
+                                 referencedTableName="sources"
+                                 referencedColumnNames="id"/>
 
-  </changeSet>
+    </changeSet>
 
-  <changeSet id="8" author="Porter">
-    <addColumn tableName="deltas">
-      <column name="amount" type="bigint"/>
-    </addColumn>
+    <changeSet id="8" author="Porter">
+        <addColumn tableName="deltas">
+            <column name="amount" type="bigint"/>
+        </addColumn>
 
-    <addColumn tableName="deltas">
-      <column name="category_id" type="bigint"/>
-    </addColumn>
+        <addColumn tableName="deltas">
+            <column name="category_id" type="bigint"/>
+        </addColumn>
 
-    <createTable tableName="categories">
-      <column name="id" type="bigint" autoIncrement="true">
-        <constraints primaryKey="true" nullable="false" />
-      </column>
-      <column name="name" type="varchar(256)">
-        <constraints nullable="false" />
-      </column>
-      <column name="collection_id" type="bigint">
-        <constraints nullable="false" />
-      </column>
-    </createTable>
+        <createTable tableName="categories">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="collection_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
 
-    <addForeignKeyConstraint baseTableName="deltas" baseColumnNames="category_id"
-                             constraintName="deltas_categories_many_to_one"
-                             referencedTableName="categories"
-                             referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="deltas" baseColumnNames="category_id"
+                                 constraintName="deltas_categories_many_to_one"
+                                 referencedTableName="categories"
+                                 referencedColumnNames="id"/>
 
-    <addForeignKeyConstraint baseTableName="categories" baseColumnNames="collection_id"
-                             constraintName="categories_collections_many_to_one"
-                             referencedTableName="collections"
-                             referencedColumnNames="id" />
-  </changeSet>
+        <addForeignKeyConstraint baseTableName="categories" baseColumnNames="collection_id"
+                                 constraintName="categories_collections_many_to_one"
+                                 referencedTableName="collections"
+                                 referencedColumnNames="id"/>
+    </changeSet>
 
-  <changeSet id="9" author="Porter">
-    <addColumn tableName="sources">
-      <column name="user_id" type="bigint">
-        <constraints nullable="false" />
-      </column>
-    </addColumn>
+    <changeSet id="9" author="Porter">
+        <addColumn tableName="sources">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
 
-    <addForeignKeyConstraint baseTableName="sources" baseColumnNames="user_id"
-                             constraintName="sources_users_many_to_one"
-                             referencedTableName="users"
-                             referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="sources" baseColumnNames="user_id"
+                                 constraintName="sources_users_many_to_one"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
 
-  </changeSet>
+    </changeSet>
 
-  <changeSet id="10" author="Porter">
-    <addColumn tableName="sources">
-      <column name="value" type="text" />
-    </addColumn>
-    <addColumn tableName="sources">
-      <column name="type" type="int">
-        <constraints nullable="false" />
-      </column>
-    </addColumn>
-  </changeSet>
+    <changeSet id="10" author="Porter">
+        <addColumn tableName="sources">
+            <column name="value" type="text"/>
+        </addColumn>
+        <addColumn tableName="sources">
+            <column name="type" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

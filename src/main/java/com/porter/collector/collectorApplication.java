@@ -78,11 +78,4 @@ public class collectorApplication extends Application<collectorConfiguration> {
         environment.jersey().register(new SourcesResource(sourceDao, deltaDao));
 
     }
-
-
-
-
-
-
-
 }
