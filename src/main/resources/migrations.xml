@@ -169,4 +169,36 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="11" author="Porter">
+        <createTable tableName="values">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="value" type="text" />
+            <column name="type" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="delta_id" type="bigint" />
+        </createTable>
+
+        <addColumn tableName="deltas">
+            <column name="value_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="deltas" baseColumnNames="value_id"
+                                 constraintName="delta_to_value"
+                                 referencedTableName="values" referencedColumnNames="id" />
+
+        <renameColumn tableName="deltas" oldColumnName="amount" newColumnName="value" />
+        <modifyDataType tableName="deltas" columnName="value" newDataType="text" />
+
+        <addColumn tableName="deltas">
+            <column name="type" type="int">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

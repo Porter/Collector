@@ -1,4 +1,11 @@
 package com.porter.collector.model;
 
-public class Value {
+import org.immutables.value.Value.Immutable;
+
+@Immutable
+public abstract class Value {
+    public abstract long id();
+    public abstract String value();
+    public abstract ValueTypes type();
+
 }

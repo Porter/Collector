@@ -22,8 +22,9 @@ public class DeltaMapper implements RowMapper<ImmutableDelta> {
                 .name(resultSet.getString("name"))
                 .collectionId(resultSet.getLong("collection_id"))
                 .sourceId(resultSet.getLong("source_id"))
-                .amount(resultSet.getLong("amount"))
+                .value(resultSet.getString("value"))
                 .categoryId(getNullable(resultSet,"category_id"))
+                .valueId(resultSet.getLong("value_id"))
                 .build();
     }
 }

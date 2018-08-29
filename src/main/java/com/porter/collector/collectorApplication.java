@@ -4,10 +4,7 @@ import com.porter.collector.auth.JwtAuthenticator;
 import com.porter.collector.auth.JwtUnauthorizedHandler;
 import com.porter.collector.auth.JwtAuthFilter;
 import com.porter.collector.auth.JwtAuthorizer;
-import com.porter.collector.db.CollectionDao;
-import com.porter.collector.db.DeltaDao;
-import com.porter.collector.db.SourceDao;
-import com.porter.collector.db.UserDao;
+import com.porter.collector.db.*;
 import com.porter.collector.health.BasicHealthCheck;
 import com.porter.collector.model.SimpleUser;
 import com.porter.collector.resources.CollectionsResource;
@@ -60,6 +57,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
         CollectionDao collectionDao = jdbi.onDemand(CollectionDao.class);
         SourceDao sourceDao = jdbi.onDemand(SourceDao.class);
         DeltaDao deltaDao = jdbi.onDemand(DeltaDao.class);
+        ValueDao valueDao = jdbi.onDemand(ValueDao.class);
 
         environment.jersey().register(new AuthDynamicFeature(
                 new JwtAuthFilter.Builder<SimpleUser>()

@@ -12,8 +12,11 @@ public abstract class Delta {
     public abstract String name();
     public abstract long collectionId();
     public abstract long sourceId();
-    public abstract Long amount();
+    public abstract String value();
 
     @Nullable
     public abstract Long categoryId();
+
+    @Nullable
+    public abstract Long valueId();
 }
