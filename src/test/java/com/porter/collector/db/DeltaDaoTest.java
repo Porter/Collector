@@ -33,7 +33,7 @@ public class DeltaDaoTest extends BaseTest {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
         Long sourceId = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
-        Delta delta = deltaDao.insert("money", 10L, collection.id(), sourceId);
+        Delta delta = deltaDao.insert("money", "10", collection.id(), sourceId);
         Long id = delta.id();
         Long valueId = delta.valueId();
 
@@ -56,7 +56,7 @@ public class DeltaDaoTest extends BaseTest {
         Collection collection = collectionDao.insert("test", user.id());
         Long sourceId = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
         Long categoryId = categoryDao.insert("category", collection.id()).id();
-        Delta delta = deltaDao.insert("money", 10L, collection.id(), sourceId, categoryId);
+        Delta delta = deltaDao.insert("money", "10", collection.id(), sourceId, categoryId);
         Long id = delta.id();
         Long valueId = delta.valueId();
 
@@ -80,9 +80,9 @@ public class DeltaDaoTest extends BaseTest {
         Collection collection = collectionDao.insert("test", user.id());
         Long sourceId = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
         Long sourceId2 = sourceDao.insert("source2", user.id(), collection.id(), ValueTypes.INT).id();
-        Delta one = deltaDao.insert("money", 10L, collection.id(), sourceId, null);
-        Delta two = deltaDao.insert("money", 1L, collection.id(), sourceId, null);
-        Delta other = deltaDao.insert("money", 5L, collection.id(), sourceId2, null);
+        Delta one = deltaDao.insert("money", "10", collection.id(), sourceId, null);
+        Delta two = deltaDao.insert("money", "1", collection.id(), sourceId, null);
+        Delta other = deltaDao.insert("money", "5", collection.id(), sourceId2, null);
 
         List<Delta> actual = deltaDao.findBySourceId(sourceId);
         List<Delta> expected = ImmutableList.of(one, two);

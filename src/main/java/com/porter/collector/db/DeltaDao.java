@@ -4,6 +4,7 @@ import com.porter.collector.model.Delta;
 import com.porter.collector.model.DeltaMapper;
 import com.porter.collector.model.ImmutableDelta;
 import com.porter.collector.model.ValueTypes;
+import com.porter.collector.model.Values.ValueType;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
@@ -15,30 +16,28 @@ import java.util.List;
 
 public interface DeltaDao {
 
-    @SqlUpdate("INSERT INTO values (value, type) VALUES (:value, :type);")
+    @SqlUpdate("INSERT INTO values (value) VALUES (:value);")
     @GetGeneratedKeys
-    long _executeValueInsert(@Bind("value") String value, @Bind("type") int type);
+    long _executeValueInsert(@Bind("value") String value);
 
-    @SqlUpdate("INSERT INTO deltas (name, collection_id, source_id, value, category_id, value_id, type) VALUES " +
-            "(:name, :collectionId, :sourceId, :value, :categoryId, :valueId, :type);")
+    @SqlUpdate("INSERT INTO deltas (name, collection_id, source_id, value, category_id, value_id) VALUES " +
+            "(:name, :collectionId, :sourceId, :value, :categoryId, :valueId);")
     @GetGeneratedKeys
     long executeInsert(@Bind("name") String name,
                        @Bind("collectionId") Long collectionId,
                        @Bind("sourceId") Long sourceId,
                        @Bind("value") String value,
                        @Bind("categoryId") Long categoryId,
-                       @Bind("valueId") Long valueId,
-                       @Bind("type") int type);
+                       @Bind("valueId") Long valueId);
 
-    default Delta insert(String name, Long amount, Long collectionId, Long sourceId) {
-        return insert(name, amount, collectionId, sourceId, null);
+    default Delta insert(String name, String value, Long collectionId, Long sourceId) {
+        return insert(name, value, collectionId, sourceId, null);
     }
 
     @Transaction
-    default Delta insert(String name, Long amount, Long collectionId, Long sourceId, Long categoryId) {
-        String value = "" + amount;
-        long valueId = _executeValueInsert(value, ValueTypes.FLOAT.ordinal());
-        Long id = executeInsert(name, collectionId, sourceId, value, categoryId, valueId, ValueTypes.FLOAT.ordinal());
+    default Delta insert(String name, String value, Long collectionId, Long sourceId, Long categoryId) {
+        long valueId = _executeValueInsert(value);
+        Long id = executeInsert(name, collectionId, sourceId, value, categoryId, valueId);
         return ImmutableDelta.builder()
                 .id(id)
                 .name(name)

@@ -9,19 +9,17 @@ import org.jdbi.v3.sqlobject.statement.UseRowMapper;
 
 public interface ValueDao {
 
-    @SqlUpdate("INSERT INTO values (value, type) VALUES (:value, :type)")
+    @SqlUpdate("INSERT INTO values (value) VALUES (:value)")
     @GetGeneratedKeys
-    long executeInsert(@Bind("value") String value,
-                       @Bind("type") int type);
+    long executeInsert(@Bind("value") String value);
 
-    default Value insert(String value, ValueTypes type) {
-        long id = executeInsert(value, type.ordinal());
+    default Value insert(String value) {
+        long id = executeInsert(value);
 
         return ImmutableValue
                 .builder()
                 .id(id)
                 .value(value)
-                .type(type)
                 .build();
     }
 

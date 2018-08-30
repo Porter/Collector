@@ -75,9 +75,9 @@ public class SourcesResource {
             @PathParam("id") Long sourceId,
             @FormParam("collectionId") Long collectionId,
             @FormParam("name") String name,
-            @FormParam("amount") Long amount) {
+            @FormParam("amount") String value) {
         return Response
-                .ok(sourcesController.addDelta(user, sourceId, collectionId, name, "" + amount))
+                .ok(sourcesController.addDelta(user, sourceId, collectionId, name, value))
                 .build();
     }
 

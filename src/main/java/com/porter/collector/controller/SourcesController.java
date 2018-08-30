@@ -2,9 +2,8 @@ package com.porter.collector.controller;
 
 import com.porter.collector.db.DeltaDao;
 import com.porter.collector.db.SourceDao;
-import com.porter.collector.model.Delta;
-import com.porter.collector.model.SimpleUser;
-import com.porter.collector.model.Source;
+import com.porter.collector.model.*;
+import com.porter.collector.model.Values.ValueType;
 
 import javax.ws.rs.PathParam;
 import java.util.List;
@@ -44,6 +43,16 @@ public class SourcesController {
     }
 
     public Delta addDelta(SimpleUser user, long sourceId, long collectionId, String name, String value) {
-        return deltaDao.insert(name, Long.parseLong(value), collectionId, sourceId);
+        Source source = sourceDao.findById(sourceId);
+        if (source == null) {
+            return null;
+        }
+
+        ValueTypes type = source.type();
+        if (!ValueTypes.map.get(type).isValid(value)) {
+            return null;
+        }
+
+        return deltaDao.insert(name, value, collectionId, sourceId);
     }
 }

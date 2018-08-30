@@ -6,6 +6,5 @@ import org.immutables.value.Value.Immutable;
 public abstract class Value {
     public abstract long id();
     public abstract String value();
-    public abstract ValueTypes type();
 
 }

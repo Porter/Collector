@@ -201,4 +201,9 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="12" author="Porter">
+        <dropColumn tableName="values" columnName="type" />
+        <dropColumn tableName="deltas" columnName="type" />
+    </changeSet>
+
 </databaseChangeLog>
