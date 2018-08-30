@@ -2,9 +2,11 @@ package com.porter.collector.resources;
 
 
 import com.google.common.collect.ImmutableMap;
+import com.porter.collector.controller.UsersController;
 import com.porter.collector.db.UserDao;
 import com.porter.collector.errors.SignUpException;
 import com.porter.collector.model.JWTUser;
+import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.UserWithPassword;
 
 import javax.ws.rs.*;
@@ -15,10 +17,10 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 public class UsersResource {
 
-    private final UserDao userDao;
+    private final UsersController usersController;
 
-    public UsersResource(UserDao userDao) {
-        this.userDao = userDao;
+    public UsersResource(UsersController usersController) {
+        this.usersController = usersController;
     }
 
     @POST
@@ -29,15 +31,11 @@ public class UsersResource {
                            @FormParam("username") String username,
                            @FormParam("password") String password) {
         try {
-            UserWithPassword user = userDao.insert(email, username, password);
+            UserWithPassword user = usersController.create(email, username, password);
             return JWTUser.toJWT(user);
         }
         catch (SignUpException e) {
             return e.getMessage();
-        }
-        catch (Exception e) {
-            System.out.println(e);
-            return "e";
         }
     }
 
@@ -45,14 +43,7 @@ public class UsersResource {
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response auth(@FormParam("name") String name, @FormParam("password") String password) {
-        UserWithPassword user = userDao.findByLogin(name);
-        if (user == null) {
-            return Response.ok(ImmutableMap.of("error", "User not found")).build();
-        }
-        if (!user.correctPassword(password)) {
-            return Response.ok(ImmutableMap.of("error", "Incorrect password")).build();
-        }
-
+        SimpleUser user = usersController.getByLogin(name, password);
         return Response.ok(ImmutableMap.of("jwt", JWTUser.toJWT(user))).build();
     }
 }

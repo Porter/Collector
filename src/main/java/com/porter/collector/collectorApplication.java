@@ -4,6 +4,9 @@ import com.porter.collector.auth.JwtAuthenticator;
 import com.porter.collector.auth.JwtUnauthorizedHandler;
 import com.porter.collector.auth.JwtAuthFilter;
 import com.porter.collector.auth.JwtAuthorizer;
+import com.porter.collector.controller.CollectionsController;
+import com.porter.collector.controller.SourcesController;
+import com.porter.collector.controller.UsersController;
 import com.porter.collector.db.*;
 import com.porter.collector.health.BasicHealthCheck;
 import com.porter.collector.model.SimpleUser;
@@ -59,6 +62,10 @@ public class collectorApplication extends Application<collectorConfiguration> {
         DeltaDao deltaDao = jdbi.onDemand(DeltaDao.class);
         ValueDao valueDao = jdbi.onDemand(ValueDao.class);
 
+        CollectionsController collectionsController = new CollectionsController(collectionDao, sourceDao);
+        SourcesController sourcesController = new SourcesController(sourceDao, deltaDao);
+        UsersController usersController = new UsersController(userDao);
+
         environment.jersey().register(new AuthDynamicFeature(
                 new JwtAuthFilter.Builder<SimpleUser>()
                         .setAuthenticator(new JwtAuthenticator())
@@ -71,9 +78,9 @@ public class collectorApplication extends Application<collectorConfiguration> {
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(SimpleUser.class));
         environment.jersey().register(RolesAllowedDynamicFeature.class);
 
-        environment.jersey().register(new UsersResource(userDao));
-        environment.jersey().register(new CollectionsResource(collectionDao, sourceDao));
-        environment.jersey().register(new SourcesResource(sourceDao, deltaDao));
+        environment.jersey().register(new UsersResource(usersController));
+        environment.jersey().register(new CollectionsResource(collectionsController));
+        environment.jersey().register(new SourcesResource(sourcesController));
 
     }
 }

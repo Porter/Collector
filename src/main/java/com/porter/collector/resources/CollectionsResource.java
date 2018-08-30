@@ -1,6 +1,7 @@
 package com.porter.collector.resources;
 
 import com.google.common.collect.ImmutableMap;
+import com.porter.collector.controller.CollectionsController;
 import com.porter.collector.db.CollectionDao;
 import com.porter.collector.db.SourceDao;
 import com.porter.collector.errors.CollectionExistsException;
@@ -21,12 +22,10 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 public class CollectionsResource {
 
-    private final CollectionDao collectionDao;
-    private final SourceDao sourceDao;
+    private final CollectionsController collectionsController;
 
-    public CollectionsResource(CollectionDao collectionDao, SourceDao sourceDao) {
-        this.collectionDao = collectionDao;
-        this.sourceDao = sourceDao;
+    public CollectionsResource(CollectionsController collectionsController) {
+        this.collectionsController = collectionsController;
     }
 
 
@@ -34,9 +33,9 @@ public class CollectionsResource {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response list(@Auth SimpleUser user) {
-        List<Collection> collections = collectionDao.findAllWithUserId(user.id());
-
-        return Response.ok(collections).build();
+        return Response
+                .ok(collectionsController.allFromUser(user))
+                .build();
     }
 
     @POST
@@ -44,8 +43,11 @@ public class CollectionsResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response create(@Auth SimpleUser user, @FormParam("name") @NotEmpty String name) {
-        Collection collection;
-        try { collection = collectionDao.insert(name, user.id()); }
+        try {
+            return Response
+                    .ok(collectionsController.create(name, user))
+                    .build();
+        }
         catch (CollectionExistsException e) {
             return Response
                     .status(Response.Status.BAD_REQUEST)
@@ -53,7 +55,6 @@ public class CollectionsResource {
                     .build();
         }
 
-        return Response.ok(collection).build();
     }
 
     @POST
@@ -64,13 +65,18 @@ public class CollectionsResource {
                            @PathParam("id") Long collectionId,
                            @FormParam("name") @NotEmpty String name,
                            @FormParam("type") int type) {
-        Source source;
-        try { source = sourceDao.insert(name, user.id(), collectionId, ValueTypes.values()[type]); }
-        catch (Exception e) {
-            System.out.println(e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        try {
+            ValueTypes valueType = ValueTypes.values()[type];
+            return Response
+                    .ok(collectionsController.addSource(name, user, collectionId, valueType))
+                    .build();
+        }
+        catch (IllegalAccessException | ArrayIndexOutOfBoundsException e) {
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", e.getMessage()))
+                    .build();
         }
 
-        return Response.ok(source).build();
     }
 }

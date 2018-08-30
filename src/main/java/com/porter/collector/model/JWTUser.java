@@ -4,7 +4,7 @@ import io.jsonwebtoken.*;
 
 import javax.annotation.Nullable;
 
-public abstract class JWTUser extends SimpleUser {
+public abstract class JWTUser {
     private static final String key = "secret";
     private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 

@@ -93,4 +93,34 @@ public class SourceDaoTest extends BaseTest {
         Collection collection = collectionDao.insert("test", user.id());
         sourceDao.insert("source", user2.id(), collection.id(), ValueTypes.INT);
     }
+//
+//    interface myDao {
+//        default void blowUp() throws SQLException { throw new SQLException("boom"); }
+//
+//        @SqlQuery("SELECT 1")
+//        int thisMakesMyDaoASqlObject();
+//    }
+//
+//    // Fails
+//    @Test(expected = SQLException.class)
+//    public void blowUp() throws Exception {
+//        // jdbi has the SqlObjectPlugin installed
+//        Jdbi jdbi = getJdbi();
+//
+//        jdbi.onDemand(myDao.class).blowUp();
+//    }
+//
+//    // Passes, but is tedious
+//    @Test
+//    public void blowUp2() throws Exception {
+//        Jdbi jdbi = getJdbi();
+//
+//        try {
+//            jdbi.onDemand(myDao.class).blowUp();
+//            fail("Should have thrown");
+//        }
+//        catch (RuntimeException e) {
+//            assertEquals(SQLException.class, e.getCause().getClass());
+//        }
+//    }
 }
