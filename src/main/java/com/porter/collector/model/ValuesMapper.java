@@ -15,6 +15,7 @@ public class ValuesMapper implements RowMapper<Value> {
                 .builder()
                 .id(resultSet.getLong("id"))
                 .value(resultSet.getString("value"))
+                .sourceId(resultSet.getLong("source_id"))
                 .build();
     }
 }

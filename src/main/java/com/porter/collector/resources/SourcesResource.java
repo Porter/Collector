@@ -2,17 +2,12 @@ package com.porter.collector.resources;
 
 import com.google.common.collect.ImmutableMap;
 import com.porter.collector.controller.SourcesController;
-import com.porter.collector.db.DeltaDao;
-import com.porter.collector.db.SourceDao;
 import com.porter.collector.model.*;
 import io.dropwizard.auth.Auth;
-import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @Path(Urls.SOURCE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -60,7 +55,7 @@ public class SourcesResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getValuesById(@Auth SimpleUser user, @PathParam("id") Long id) {
         try {
-            return Response.ok(sourcesController.getAllDeltas(user, id)).build();
+            return Response.ok(sourcesController.getAllValues(user, id)).build();
         }
         catch (IllegalAccessException e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -77,7 +72,7 @@ public class SourcesResource {
             @FormParam("name") String name,
             @FormParam("amount") String value) {
         return Response
-                .ok(sourcesController.addDelta(user, sourceId, collectionId, name, value))
+                .ok(sourcesController.addValue(user, sourceId, value))
                 .build();
     }
 

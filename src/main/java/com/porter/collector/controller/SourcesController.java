@@ -1,9 +1,8 @@
 package com.porter.collector.controller;
 
-import com.porter.collector.db.DeltaDao;
 import com.porter.collector.db.SourceDao;
+import com.porter.collector.db.ValueDao;
 import com.porter.collector.model.*;
-import com.porter.collector.model.Values.ValueType;
 
 import javax.ws.rs.PathParam;
 import java.util.List;
@@ -11,11 +10,11 @@ import java.util.List;
 public class SourcesController {
 
     private final SourceDao sourceDao;
-    private final DeltaDao deltaDao;
+    private final ValueDao valueDao;
 
-    public SourcesController(SourceDao sourceDao, DeltaDao deltaDao) {
+    public SourcesController(SourceDao sourceDao, ValueDao valueDao) {
         this.sourceDao = sourceDao;
-        this.deltaDao = deltaDao;
+        this.valueDao = valueDao;
     }
 
     public List<Source> getAllFromUser(SimpleUser user) {
@@ -30,7 +29,7 @@ public class SourcesController {
         return source;
     }
 
-    public List<Delta> getAllDeltas(SimpleUser requesting, long sourceId) throws IllegalAccessException {
+    public List<Value> getAllValues(SimpleUser requesting, long sourceId) throws IllegalAccessException {
         Source source = sourceDao.findById(sourceId);
         if (source == null) {
             return null;
@@ -39,10 +38,10 @@ public class SourcesController {
             throw new IllegalAccessException();
         }
 
-        return deltaDao.findBySourceId(sourceId);
+        return valueDao.findBySourceId(sourceId);
     }
 
-    public Delta addDelta(SimpleUser user, long sourceId, long collectionId, String name, String value) {
+    public Value addValue(SimpleUser user, long sourceId, String value) {
         Source source = sourceDao.findById(sourceId);
         if (source == null) {
             return null;
@@ -53,6 +52,6 @@ public class SourcesController {
             return null;
         }
 
-        return deltaDao.insert(name, value, collectionId, sourceId);
+        return valueDao.insert(value, sourceId);
     }
 }

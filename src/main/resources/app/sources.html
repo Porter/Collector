@@ -28,6 +28,9 @@
                         {{collection.name}}
                     </option>
                 </select>
+                <select ng-model="source.type">
+                    <option ng-repeat="type in types" value="{{type.value}}">{{type.name}}</option>
+                </select>
                 <input ng-model="source.name" type="text" name="name" />
                 <input type="submit" name="New" value="New"/>
             </form>
@@ -41,6 +44,14 @@
     var app = angular.module("app", ["ngCookies"]);
 
     app.controller('collectionsController', function($scope, $http, $cookies) {
+
+        $scope.types = [
+            {
+                value: 0,
+                name: "Float"
+            }
+        ];
+
 
         jwt = $cookies.get("jwt");
 

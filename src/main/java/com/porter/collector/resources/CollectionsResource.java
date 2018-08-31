@@ -12,6 +12,7 @@ import com.porter.collector.model.ValueTypes;
 import io.dropwizard.auth.Auth;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -62,9 +63,9 @@ public class CollectionsResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response create(@Auth SimpleUser user,
-                           @PathParam("id") Long collectionId,
+                           @PathParam("id") @NotNull Long collectionId,
                            @FormParam("name") @NotEmpty String name,
-                           @FormParam("type") int type) {
+                           @FormParam("type") @NotNull Integer type) {
         try {
             ValueTypes valueType = ValueTypes.values()[type];
             return Response

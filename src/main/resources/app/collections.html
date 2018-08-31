@@ -22,9 +22,9 @@
                 </li>
             </ul>
 
-            <form action="/api/collections/new" method="post">
-                <input type="text" name="name" />
-                <input type="submit" name="New" value="New"/>
+            <form ng-submit="addCollection(collection)">
+                <input type="text" ng-model="collection.name" />
+                <input type="submit" value="New"/>
             </form>
         </div>
     </div>
@@ -45,6 +45,22 @@
                 $scope.collections = response.data;
             });
         }
+
+        $scope.addCollection = function(collection) {
+            var req = {
+                method: "POST",
+                url: "/api/collections/new",
+                data: $.param(collection),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    jwt: jwt
+                }
+            };
+            $http(req)
+                .then(function(resp) {
+                    console.log(resp);
+                });
+        };
     });
 </script>
 

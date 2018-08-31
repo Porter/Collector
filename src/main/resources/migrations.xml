@@ -206,4 +206,23 @@
         <dropColumn tableName="deltas" columnName="type" />
     </changeSet>
 
+    <changeSet id="13" author="Porter">
+        <dropNotNullConstraint tableName="deltas" columnName="name" />
+        <dropColumn tableName="values" columnName="delta_id" />
+        <addColumn tableName="values">
+            <column name="source_id" type="bigint" />
+            <column name="category_id" type="bigint" />
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="values" baseColumnNames="source_id"
+                                 constraintName="many_value_to_source"
+                                 referencedTableName="sources"
+                                 referencedColumnNames="id" />
+
+        <addForeignKeyConstraint baseTableName="values" baseColumnNames="category_id"
+                                 constraintName="many_value_to_category"
+                                 referencedTableName="categories"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
 </databaseChangeLog>

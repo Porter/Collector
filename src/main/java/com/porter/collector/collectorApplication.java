@@ -59,11 +59,10 @@ public class collectorApplication extends Application<collectorConfiguration> {
         UserDao userDao =  jdbi.onDemand(UserDao.class);
         CollectionDao collectionDao = jdbi.onDemand(CollectionDao.class);
         SourceDao sourceDao = jdbi.onDemand(SourceDao.class);
-        DeltaDao deltaDao = jdbi.onDemand(DeltaDao.class);
         ValueDao valueDao = jdbi.onDemand(ValueDao.class);
 
         CollectionsController collectionsController = new CollectionsController(collectionDao, sourceDao);
-        SourcesController sourcesController = new SourcesController(sourceDao, deltaDao);
+        SourcesController sourcesController = new SourcesController(sourceDao, valueDao);
         UsersController usersController = new UsersController(userDao);
 
         environment.jersey().register(new AuthDynamicFeature(
