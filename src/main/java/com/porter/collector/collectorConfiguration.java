@@ -1,9 +1,9 @@
 package com.porter.collector;
 
-import com.bazaarvoice.dropwizard.assets.AssetsBundleConfiguration;
-import com.bazaarvoice.dropwizard.assets.AssetsConfiguration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
+import io.dropwizard.bundles.assets.AssetsBundleConfiguration;
+import io.dropwizard.bundles.assets.AssetsConfiguration;
 import io.dropwizard.db.DataSourceFactory;
 
 import javax.validation.Valid;
@@ -18,7 +18,7 @@ public class collectorConfiguration extends Configuration implements AssetsBundl
     @Valid
     @NotNull
     @JsonProperty
-    private final AssetsConfiguration assets = new AssetsConfiguration();
+    private final AssetsConfiguration assets = AssetsConfiguration.builder().build();
 
     public DataSourceFactory getDataSourceFactory() {
         return dataSource;

@@ -14,9 +14,9 @@ import com.porter.collector.resources.CollectionsResource;
 import com.porter.collector.resources.SourcesResource;
 import com.porter.collector.resources.UsersResource;
 import io.dropwizard.Application;
-import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.bundles.assets.ConfiguredAssetsBundle;
 import io.dropwizard.db.PooledDataSourceFactory;
 import org.jdbi.v3.core.Jdbi;
 import io.dropwizard.migrations.MigrationsBundle;
@@ -38,7 +38,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
 
     @Override
     public void initialize(final Bootstrap<collectorConfiguration> bootstrap) {
-        bootstrap.addBundle(new AssetsBundle("/app", "/", "index.html"));
+        bootstrap.addBundle(new ConfiguredAssetsBundle("/app", "/", "index.html"));
 
         bootstrap.addBundle(new MigrationsBundle<collectorConfiguration>() {
             @Override

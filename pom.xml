@@ -56,9 +56,9 @@
             <artifactId>jdbi3-sqlobject</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.bazaarvoice.dropwizard</groupId>
+            <groupId>io.dropwizard-bundles</groupId>
             <artifactId>dropwizard-configurable-assets-bundle</artifactId>
-            <version>0.2.2</version>
+            <version>1.0.5</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
