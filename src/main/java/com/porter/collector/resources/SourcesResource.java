@@ -5,6 +5,7 @@ import com.porter.collector.controller.SourcesController;
 import com.porter.collector.model.*;
 import io.dropwizard.auth.Auth;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -68,8 +69,6 @@ public class SourcesResource {
     public Response addValue(
             @Auth SimpleUser user,
             @PathParam("id") Long sourceId,
-            @FormParam("collectionId") Long collectionId,
-            @FormParam("name") String name,
             @FormParam("amount") String value) {
         return Response
                 .ok(sourcesController.addValue(user, sourceId, value))

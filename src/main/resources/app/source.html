@@ -19,12 +19,11 @@
             {{source.name}}
             <ul>
                 <li ng-repeat="value in values">
-                    {{value.name}}: {{value.amount}}
+                    {{value.value}}
                 </li>
             </ul>
             <form ng-submit="addValue(value)">
-                <input ng-model="value.name" type="text" placeholder="name"/>
-                <input ng-model="value.amount" type="text" placeholder="amount" step="0.01"/>
+                <input ng-model="value.amount" type="text" placeholder="value" />
                 <input type="submit" name="New" value="New" />
             </form>
         </div>
@@ -42,10 +41,8 @@
 
         url = new URL($location.absUrl());
         id = url.searchParams.get("id");
-        collectionId = url.searchParams.get("collectionId");
 
         $scope.addValue = function(value) {
-            value.collectionId = collectionId;
 
             var req = {
                 method: "POST",
