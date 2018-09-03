@@ -55,7 +55,10 @@
             };
             $http(req)
                 .then(function(resp) {
-                    console.log(resp);
+                    if (resp.data) {
+                        $scope.values.push(resp.data);
+                    }
+                    value.amount = "";
                 });
         }
 
