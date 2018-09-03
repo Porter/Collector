@@ -21,22 +21,23 @@ public class MyFloat implements Addable<MyFloat>, ValueType<MyFloat> {
         return new MyFloat(value + other.value);
     }
 
-    private float _parse(String value) throws NumberFormatException {
+    private float _parse(String value) {
         return Float.parseFloat(value);
     }
 
     @Override
-    public MyFloat parse(String value) {
-        try {
-            return new MyFloat(_parse(value));
-        }
-        catch (NumberFormatException e) {
-            return null;
-        }
+    public MyFloat parse(String value) throws NumberFormatException {
+        return new MyFloat(_parse(value));
     }
 
     @Override
     public String stringify() {
         return "" + value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof MyFloat)) { return false; }
+        return ((MyFloat) o).value == value;
     }
 }

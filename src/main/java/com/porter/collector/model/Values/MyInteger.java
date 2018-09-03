@@ -8,6 +8,10 @@ public class MyInteger implements Addable<MyInteger>, ValueType<MyInteger> {
         this.value = value;
     }
 
+    public MyInteger() {
+        this.value = 0;
+    }
+
     @Override
     public MyInteger add(MyInteger other) {
         return new MyInteger(value + other.value);
@@ -21,5 +25,12 @@ public class MyInteger implements Addable<MyInteger>, ValueType<MyInteger> {
     @Override
     public String stringify() {
         return "" + value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof MyInteger)) { return false; }
+
+        return ((MyInteger) o).value == value;
     }
 }

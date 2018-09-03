@@ -46,6 +46,9 @@ public class SourcesController {
         if (source == null) {
             return null;
         }
+        if (user.id() != source.userId()) {
+            return null;
+        }
 
         ValueTypes type = source.type();
         if (!ValueTypes.map.get(type).isValid(value)) {
