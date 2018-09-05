@@ -225,4 +225,27 @@
                                  referencedColumnNames="id" />
     </changeSet>
 
+    <changeSet id="14" author="Porter">
+        <createTable tableName="reports">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false" />
+            </column>
+            <column name="formula" type="varchar(256)">
+                <constraints nullable="false" />
+            </column>
+            <column name="value" type="varchar(256)" />
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="reports" baseColumnNames="user_id"
+                                 constraintName="one_user_to_many_reports"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
 </databaseChangeLog>
