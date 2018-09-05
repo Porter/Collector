@@ -38,5 +38,17 @@ public interface ValueDao {
             "(SELECT values.*, ROW_NUMBER() OVER (ORDER BY id) AS rn FROM values WHERE source_id=:sourceId) AS sub" +
             " WHERE sub.rn > :start AND sub.rn <= :end + 1")
     @UseRowMapper(ValuesMapper.class)
-    List<Value> getRange(@Bind("sourceId") long sourceId, @Bind("start") long start, @Bind("end") long end);
+    List<Value> _getRange(@Bind("sourceId") long sourceId, @Bind("start") long start, @Bind("end") long end);
+
+    @SqlQuery("SELECT COUNT(id) FROM values WHERE source_id=:souceId")
+    long _getCount(@Bind("souceId") long sourceId);
+
+    default List<Value> getRange(long sourceId, long start, long end) {
+        if (start < 0 || end < 0) {
+            long count = _getCount(sourceId);
+            if (start < 0) { start += count; }
+            if (end < 0) { end += count - 1; }
+        }
+        return _getRange(sourceId, start, end);
+    }
 }
