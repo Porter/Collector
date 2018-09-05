@@ -8,6 +8,9 @@ import com.porter.collector.model.ValueTypes;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class ValueDaoTest extends BaseTest {
@@ -35,5 +38,43 @@ public class ValueDaoTest extends BaseTest {
         Value expected = valueDao.findById(value.id());
 
         assertEquals(expected, value);
+    }
+
+    @Test
+    public void getRange() throws Exception {
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
+        Collection collection = collectionDao.insert("test", user.id());
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
+
+        List<Value> values = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            values.add(valueDao.insert("" + i, id));
+        }
+
+        List<Value> expected = values.subList(2, 7);
+
+        // start and end are inclusive
+        List<Value> actual = valueDao.getRange(id, 2, 6);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getRangeLimited() throws Exception {
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
+        Collection collection = collectionDao.insert("test", user.id());
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
+
+        List<Value> values = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            values.add(valueDao.insert("" + i, id));
+        }
+
+        List<Value> expected = values.subList(6, 8);
+
+        // start and end are inclusive, outofbounds index treated as max
+        List<Value> actual = valueDao.getRange(id, 6, 999);
+
+        assertEquals(expected, actual);
     }
 }

@@ -57,4 +57,16 @@ public class SourcesController {
 
         return valueDao.insert(value, sourceId);
     }
+
+    public List<Value> getRange(SimpleUser requester, long sourceId, long start, long end) {
+        Source source = sourceDao.findById(sourceId);
+        if (source == null) {
+            return null;
+        }
+        if (requester.id() != source.userId()) {
+            return null;
+        }
+
+        return valueDao.getRange(sourceId, start, end);
+    }
 }

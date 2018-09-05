@@ -33,4 +33,10 @@ public interface ValueDao {
     @SqlQuery("SELECT * FROM values WHERE id=:id")
     @UseRowMapper(ValuesMapper.class)
     Value findById(@Bind("id") Long id);
+
+    @SqlQuery("SELECT * FROM " +
+            "(SELECT values.*, ROW_NUMBER() OVER (ORDER BY id) AS rn FROM values WHERE source_id=:sourceId) AS sub" +
+            " WHERE sub.rn > :start AND sub.rn <= :end + 1")
+    @UseRowMapper(ValuesMapper.class)
+    List<Value> getRange(@Bind("sourceId") long sourceId, @Bind("start") long start, @Bind("end") long end);
 }
