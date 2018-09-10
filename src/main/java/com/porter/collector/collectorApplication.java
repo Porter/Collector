@@ -4,20 +4,14 @@ import com.porter.collector.auth.JwtAuthenticator;
 import com.porter.collector.auth.JwtUnauthorizedHandler;
 import com.porter.collector.auth.JwtAuthFilter;
 import com.porter.collector.auth.JwtAuthorizer;
-import com.porter.collector.controller.CollectionsController;
-import com.porter.collector.controller.ReportsController;
-import com.porter.collector.controller.SourcesController;
-import com.porter.collector.controller.UsersController;
+import com.porter.collector.controller.*;
 import com.porter.collector.db.*;
 import com.porter.collector.health.BasicHealthCheck;
 import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.ValueTypes;
 import com.porter.collector.parser.SourceAccessor;
 import com.porter.collector.parser.Tokens;
-import com.porter.collector.resources.CollectionsResource;
-import com.porter.collector.resources.ReportsResource;
-import com.porter.collector.resources.SourcesResource;
-import com.porter.collector.resources.UsersResource;
+import com.porter.collector.resources.*;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -66,11 +60,13 @@ public class collectorApplication extends Application<collectorConfiguration> {
         SourceDao sourceDao = jdbi.onDemand(SourceDao.class);
         ValueDao valueDao = jdbi.onDemand(ValueDao.class);
         ReportDao reportDao = jdbi.onDemand(ReportDao.class);
+        GoalDao goalDao = jdbi.onDemand(GoalDao.class);
 
         CollectionsController collectionsController = new CollectionsController(collectionDao, sourceDao);
         SourcesController sourcesController = new SourcesController(sourceDao, valueDao);
         UsersController usersController = new UsersController(userDao);
         ReportsController reportsController = new ReportsController(reportDao);
+        GoalsController goalsController = new GoalsController(goalDao);
 
         environment.jersey().register(new AuthDynamicFeature(
                 new JwtAuthFilter.Builder<SimpleUser>()
@@ -88,6 +84,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
         environment.jersey().register(new CollectionsResource(collectionsController));
         environment.jersey().register(new SourcesResource(sourcesController));
         environment.jersey().register(new ReportsResource(reportsController));
+        environment.jersey().register(new GoalsResource(goalsController));
 
         Tokens.register("source", new SourceAccessor(sourceDao, valueDao));
     }
