@@ -1,7 +1,9 @@
 package com.porter.collector.parser;
 
+import com.porter.collector.model.Collection;
 import com.porter.collector.model.Values.MyFloat;
 import com.porter.collector.model.Values.MyInteger;
+import com.porter.collector.model.Values.MyString;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
@@ -57,13 +59,19 @@ public class Parser {
 
                 ));
             }
-            else if (Token.Type.COMMA.equals(token.getType()) || Token.Type.LEFT_PAREN.equals(token.getType())) {
+            else if (Token.Type.STRING.equals(token.getType())) {
+                args.add(new FunctionTree(
+                        new Constant(new MyString(token.getStringVal())),
+                        Collections.emptyList()
+                ));
+            }
+            else if (Token.Type.COMMA.equals(token.getType()) || Token.Type.RIGHT_PAREN.equals(token.getType())) {
                 // continue on
             }
             else {
                 throw new IllegalStateException("Unexpected token: " + token);
             }
-        } while (!Token.Type.LEFT_PAREN.equals(token.getType()));
+        } while (!Token.Type.RIGHT_PAREN.equals(token.getType()));
 
         return args;
     }
@@ -85,27 +93,49 @@ public class Parser {
 
         if (toParse.charAt(offset) == ')') {
             offset++;
-            return new Token(Token.Type.LEFT_PAREN);
+            return new Token(Token.Type.RIGHT_PAREN);
         }
 
         if (isNumeric(toParse.charAt(offset))) {
             StringBuilder stringBuilder = new StringBuilder();
             while (isNumeric(toParse.charAt(offset))) {
                 stringBuilder.append(toParse.charAt(offset));
-               offset++;
+                offset++;
             }
             String val = stringBuilder.toString();
             if (val.contains(".")) { return new Token(Float.parseFloat(val)); }
             return new Token(Integer.parseInt(val));
         }
 
-        for (String token : Tokens.tokens.keySet()) {
+        if (toParse.charAt(offset) == '"') {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            offset++;
+            while (toParse.charAt(offset) != '"') {
+                stringBuilder.append(toParse.charAt(offset));
+                offset++;
+            }
+            offset++;
+
+            String val = stringBuilder.toString();
+            return new Token(val);
+        }
+
+        for (String token : Tokens.getTokens().keySet()) {
             if (toParse.toLowerCase().startsWith(token)) {
                 offset += token.length();
-                return new Token(Tokens.tokens.get(token));
+                return new Token(Tokens.getTokens().get(token));
             }
         }
 
         return null;
+    }
+
+    public boolean isValid(String formula) {
+        try {
+            return parse(formula) != null;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

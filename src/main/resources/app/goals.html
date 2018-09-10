@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-cookies.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<body>
+
+<div ng-app="app" ng-controller="collectionsController">
+    <ng-include src="'partials/header.html'"></ng-include>
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ng-include src="'partials/sidebar.html'"></ng-include>
+        </div>
+        <div class="col-sm-9 col-md-10">
+            <ul>
+                <li ng-repeat="goal in goals">
+                    <a href="/goal.html?id={{goal.id}}">{{goal.name}}</a>
+                </li>
+            </ul>
+
+            <form ng-submit="addGoal(goal)">
+                <input ng-model="goal.name" type="text" placeholder="name" />
+                <select ng-model="goal.reportId">
+                    <option ng-repeat="report in reports" value="{{report.id}}">
+                        {{report.name}}
+                    </option>
+                </select>
+                <select ng-model="goal.indicator">
+                    <option ng-repeat="indicator in indicators" value="{{indicator.value}}">
+                        {{indicator.name}}
+                    </option>
+                </select>
+                <input ng-model="goal.target" type="text" placeholder="target" />
+                <input type="submit" name="New" value="New"/>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    var app = angular.module("app", ["ngCookies"]);
+
+    app.controller('collectionsController', function($scope, $http, $cookies) {
+
+        jwt = $cookies.get("jwt");
+
+        $scope.indicators = [
+            {value: 0, name: "<"},
+            {value: 1, name: "<="},
+            {value: 2, name: "="},
+            {value: 3, name: ">="},
+            {value: 4, name: ">"}
+        ];
+
+        $scope.addReport = function(report) {
+            var req = {
+                method: "POST",
+                url: "/api/reports/new",
+                data: $.param(report),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    jwt: jwt
+                }
+            };
+            $http(req)
+                .then(function(resp) {
+                    if (resp.data) {
+                        $scope.reports.push(resp.data);
+                    }
+                });
+        }
+
+        if (jwt) {
+            var reportsReq = {method: "GET", url: "/api/reports/all", headers: {jwt: jwt}};
+            $http(reportsReq).then(function(response) {
+                $scope.reports = response.data;
+            });
+
+            var goalsReq = {method: "GET", url: "/api/goals/all", headers: {jwt: jwt}};
+            $http(goalsReq).then(function(response) {
+                $scope.goals = response.data;
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

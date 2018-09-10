@@ -36,7 +36,7 @@ public class ReportDaoTest extends BaseTest {
         UserWithPassword user1 = userDao.insert("a@g.com", "name", "pass");
         UserWithPassword user2 = userDao.insert("a2@g.com", "name2", "pass");
         Report report1 = reportDao.insert(user1, "myReport", "formula");
-        Report report2 = reportDao.insert(user1, "myReport", "formula");
+        Report report2 = reportDao.insert(user1, "myReport2", "formula");
         Report report3 = reportDao.insert(user2, "myReport", "formula");
 
         List<Report> reports1 = ImmutableList.of(report1, report2);
@@ -45,4 +45,6 @@ public class ReportDaoTest extends BaseTest {
         assertEquals(reports1, reportDao.findAllFromUser(user1.id()));
         assertEquals(reports2, reportDao.findAllFromUser(user2.id()));
     }
+
+    // TODO test for unique names per user
 }

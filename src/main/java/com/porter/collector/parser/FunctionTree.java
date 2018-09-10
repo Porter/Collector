@@ -1,5 +1,6 @@
 package com.porter.collector.parser;
 
+import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.Values.ValueType;
 
 import java.util.List;
@@ -20,13 +21,13 @@ public class FunctionTree {
         return function.getClass().toString() + ": " + nodes.toString();
     }
 
-    public ValueType execute() {
+    public ValueType execute(SimpleUser user) {
         List<ValueType> args = nodes.stream()
-                .map(FunctionTree::execute)
+                .map(f -> f.execute(user))
                 .collect(Collectors.toList());
 
 
-        return function.exec(new Args(args));
+        return function.exec(new Args(args, user));
     }
 
     @Override

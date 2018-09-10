@@ -5,35 +5,41 @@ public class Token {
 
 
     public enum Type {
-        FUNCTION, COMMA, LEFT_PAREN, FLOAT, INT;
+        FUNCTION, COMMA, RIGHT_PAREN, FLOAT, INT, STRING
     }
     private final Type type;
 
     private final Function function;
     private final int intVal;
     private final float floatVal;
-//    private final
+    private final String stringVal;
+
     public Token(Type type) {
-        this(type, null, 0, 0);
+        this(type, null, 0, 0, null);
     }
 
     public Token(Function function) {
-        this(Type.FUNCTION, function, 0, 0);
+        this(Type.FUNCTION, function, 0, 0, null);
     }
 
     public Token(int val) {
-        this(Type.INT, null, val, 0);
+        this(Type.INT, null, val, 0, null);
+    }
+
+    public Token(String val) {
+        this(Type.STRING, null, 0, 0, val);
     }
 
     public Token(float val) {
-        this(Type.FLOAT, null, 0, val);
+        this(Type.FLOAT, null, 0, val, null);
     }
 
-    private Token(Type type, Function function, int intVal, float floatVal) {
+    private Token(Type type, Function function, int intVal, float floatVal, String stringVal) {
         this.type = type;
         this.function = function;
         this.intVal = intVal;
         this.floatVal = floatVal;
+        this.stringVal = stringVal;
     }
 
     public Type getType() {
@@ -52,6 +58,10 @@ public class Token {
         return floatVal;
     }
 
+    public String getStringVal() {
+        return stringVal;
+    }
+
     @Override
     public String toString() {
         return "Token{" +
@@ -59,6 +69,7 @@ public class Token {
                 ", function=" + function +
                 ", intVal=" + intVal +
                 ", floatVal=" + floatVal +
+                ", stringVal='" + stringVal + '\'' +
                 '}';
     }
 }

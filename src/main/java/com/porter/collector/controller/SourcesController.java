@@ -51,7 +51,7 @@ public class SourcesController {
         }
 
         ValueTypes type = source.type();
-        if (!ValueTypes.map.get(type).isValid(value)) {
+        if (!ValueTypes.getMap().get(type).isValid(value)) {
             return null;
         }
 

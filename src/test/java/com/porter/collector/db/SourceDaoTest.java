@@ -93,6 +93,9 @@ public class SourceDaoTest extends BaseTest {
         Collection collection = collectionDao.insert("test", user.id());
         sourceDao.insert("source", user2.id(), collection.id(), ValueTypes.INT);
     }
+
+
+//    TODO wait until https://github.com/jdbi/jdbi/pull/1225 is published
 //
 //    interface myDao {
 //        default void blowUp() throws SQLException { throw new SQLException("boom"); }

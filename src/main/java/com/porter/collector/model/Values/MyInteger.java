@@ -12,6 +12,10 @@ public class MyInteger implements Addable<MyInteger>, ValueType<MyInteger> {
         this.value = 0;
     }
 
+    public int getValue() {
+        return value;
+    }
+
     @Override
     public MyInteger add(MyInteger other) {
         return new MyInteger(value + other.value);

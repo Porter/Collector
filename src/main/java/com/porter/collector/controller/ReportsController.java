@@ -1,11 +1,11 @@
 package com.porter.collector.controller;
 
 import com.porter.collector.db.ReportDao;
-import com.porter.collector.errors.SignUpException;
 import com.porter.collector.model.Report;
 import com.porter.collector.model.SimpleUser;
-import com.porter.collector.model.UserWithPassword;
+import com.porter.collector.parser.Parser;
 
+import java.text.ParseException;
 import java.util.List;
 
 public class ReportsController {
@@ -16,11 +16,16 @@ public class ReportsController {
         this.reportDao = reportDao;
     }
 
-    public Report create(SimpleUser user, String name, String formula) {
-        return reportDao.insert(user, name, formula);
+    public Report create(SimpleUser user, String name, String formula) throws ParseException {
+        Parser parser = new Parser();
+        if (parser.isValid(formula)) {
+            String value = new Parser().parse(formula).execute(user).stringify();
+            return reportDao.insert(user, name, formula, value);
+        }
+        throw new ParseException(formula + " is not valid", 0);
     }
 
     public List<Report> getAll(SimpleUser user) {
-        return reportDao.findAllFromUser(user.id());
+        return reportDao.updateAndGetAll(user);
     }
 }

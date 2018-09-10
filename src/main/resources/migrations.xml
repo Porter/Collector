@@ -248,4 +248,44 @@
                                  referencedColumnNames="id" />
     </changeSet>
 
+    <changeSet id="15" author="Porter">
+        <addUniqueConstraint tableName="reports" columnNames="user_id, name" />
+        <createTable tableName="goals">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="report_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="target" type="real">
+                <constraints nullable="false" />
+            </column>
+            <column name="indicator" type="smallint">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="goals" baseColumnNames="report_id"
+                                 constraintName="one_report_to_many_goals"
+                                 referencedTableName="reports"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="16" author="Porter">
+        <addColumn tableName="goals">
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false" />
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="goals" baseColumnNames="user_id" constraintName="one_user_to_many_goals"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id" />
+
+        <addUniqueConstraint tableName="goals" columnNames="user_id, name" />
+    </changeSet>
+
 </databaseChangeLog>

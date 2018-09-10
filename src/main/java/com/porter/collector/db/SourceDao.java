@@ -46,7 +46,11 @@ public interface SourceDao {
     @UseRowMapper(SourcesMapper.class)
     List<Source> findAll();
 
-    @SqlQuery("SELECT * FROM sources where user_id=:user_id")
+    @SqlQuery("SELECT * FROM sources WHERE user_id=:user_id")
     @UseRowMapper(SourcesMapper.class)
     List<Source> findAllFromUser(@Bind("user_id") Long user_id);
+
+    @SqlQuery("SELECT * FROM sources WHERE user_id=:userId AND name=:source")
+    @UseRowMapper(SourcesMapper.class)
+    Source findByUsersSource(@Bind("userId") long userId, @Bind("source") String source);
 }

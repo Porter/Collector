@@ -22,4 +22,8 @@ public class MyLong implements Addable<MyLong>, ValueType<MyLong> {
     public String stringify() {
         return "" + value;
     }
+
+    public long getValue() {
+        return value;
+    }
 }

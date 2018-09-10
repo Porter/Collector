@@ -1,13 +1,24 @@
 package com.porter.collector.parser;
 
 import com.google.common.collect.ImmutableList;
+import com.porter.collector.db.SourceDao;
+import com.porter.collector.db.ValueDao;
+import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.Values.MyFloat;
 import com.porter.collector.model.Values.MyInteger;
+import com.porter.collector.model.Values.MyString;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class ParserTest {
+public class ParserTest extends BaseTest {
+
+    private void setUp() {
+        SourceDao sourceDao = getJdbi().onDemand(SourceDao.class);
+        ValueDao valueDao = getJdbi().onDemand(ValueDao.class);
+        Tokens.register("source", new SourceAccessor(sourceDao, valueDao));
+    }
 
     @Test
     public void testBasic() throws Exception {
@@ -29,7 +40,7 @@ public class ParserTest {
                 new FunctionTree(new Constant(new MyInteger(2)), ImmutableList.of())
         ));
 
-        assertEquals(new MyInteger(3), tree.execute());
+        assertEquals(new MyInteger(3), tree.execute(null));
     }
 
     @Test
@@ -60,7 +71,7 @@ public class ParserTest {
                 new FunctionTree(new Constant(new MyInteger(2)), ImmutableList.of())
         ));
 
-        assertEquals(new MyInteger(7), tree.execute());
+        assertEquals(new MyInteger(7), tree.execute(null));
     }
 
     @Test
@@ -78,5 +89,19 @@ public class ParserTest {
         ));
 
         assertEquals(expected, tree);
+    }
+
+    @Test
+    public void testSource() throws Exception {
+        setUp();
+        Parser p = new Parser();
+
+        FunctionTree expected = new FunctionTree(new SourceAccessor(null, null), ImmutableList.of(
+                new FunctionTree(new Constant(new MyString("sourceName")), ImmutableList.of())
+        ));
+
+        FunctionTree actual = p.parse("Source(\"sourceName\")");
+
+        assertEquals(expected, actual);
     }
 }

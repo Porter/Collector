@@ -79,6 +79,26 @@ public class ValueDaoTest extends BaseTest {
     }
 
     @Test
+    public void getRangeSingle() throws Exception {
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
+        Collection collection = collectionDao.insert("test", user.id());
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
+
+        List<Value> values = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            values.add(valueDao.insert("" + i, id));
+        }
+
+        List<Value> expected = values.subList(6, 7);
+
+        // start and end are inclusive, outofbounds index treated as max
+        List<Value> actual = valueDao.getRange(id, 6, 6);
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.size());
+    }
+
+    @Test
     public void testNegativeIndex() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
