@@ -9,6 +9,7 @@ import com.porter.collector.db.*;
 import com.porter.collector.health.BasicHealthCheck;
 import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.ValueTypes;
+import com.porter.collector.model.Values.CustomType;
 import com.porter.collector.parser.SourceAccessor;
 import com.porter.collector.parser.Tokens;
 import com.porter.collector.resources.*;
@@ -61,12 +62,14 @@ public class collectorApplication extends Application<collectorConfiguration> {
         ValueDao valueDao = jdbi.onDemand(ValueDao.class);
         ReportDao reportDao = jdbi.onDemand(ReportDao.class);
         GoalDao goalDao = jdbi.onDemand(GoalDao.class);
+        CustomTypeDao customTypeDao = jdbi.onDemand(CustomTypeDao.class);
 
         CollectionsController collectionsController = new CollectionsController(collectionDao, sourceDao);
         SourcesController sourcesController = new SourcesController(sourceDao, valueDao);
         UsersController usersController = new UsersController(userDao);
         ReportsController reportsController = new ReportsController(reportDao);
         GoalsController goalsController = new GoalsController(goalDao);
+        CustomTypesController customTypesController = new CustomTypesController(customTypeDao);
 
         environment.jersey().register(new AuthDynamicFeature(
                 new JwtAuthFilter.Builder<SimpleUser>()
@@ -85,6 +88,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
         environment.jersey().register(new SourcesResource(sourcesController));
         environment.jersey().register(new ReportsResource(reportsController));
         environment.jersey().register(new GoalsResource(goalsController));
+        environment.jersey().register(new CustomTypesResource(customTypesController));
 
         Tokens.register("source", new SourceAccessor(sourceDao, valueDao));
     }

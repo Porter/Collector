@@ -7,8 +7,7 @@ public interface ValueType<E extends ValueType> {
 
     default boolean isValid(String value) {
         try {
-            parse(value);
-            return true;
+            return parse(value) != null;
         } catch (Exception e) {
             return false;
         }

@@ -12,7 +12,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path(Urls.SOURCE)
+@Path(Urls.GOALS)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class GoalsResource {
@@ -40,7 +40,7 @@ public class GoalsResource {
             if (goal == null) {
                 return Response
                         .status(Response.Status.NOT_FOUND)
-                        .entity(ImmutableMap.of("error", "Source with id " + id + " does not exist"))
+                        .entity(ImmutableMap.of("error", "Goal with id " + id + " does not exist"))
                         .build();
             }
             return Response.ok(goal).build();
