@@ -288,4 +288,34 @@
         <addUniqueConstraint tableName="goals" columnNames="user_id, name" />
     </changeSet>
 
+    <changeSet id="17" author="Porter">
+        <createTable tableName="custom_types">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="varchar(256)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addColumn tableName="sources">
+            <column name="custom_type_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="sources" baseColumnNames="custom_type_id"
+                                 constraintName="one_custom_type_to_many_sources"
+                                 referencedTableName="custom_types"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="18" author="Porter">
+        <addColumn tableName="custom_types">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="custom_types" baseColumnNames="user_id"
+                                 constraintName="one_user_to_many_custom_types"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
 </databaseChangeLog>
