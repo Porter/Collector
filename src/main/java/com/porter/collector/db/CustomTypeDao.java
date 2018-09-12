@@ -12,16 +12,17 @@ import java.util.List;
 
 public interface CustomTypeDao {
 
-    @SqlUpdate("INSERT INTO custom_types (user_id, type) VALUES (:userId, :type);")
+    @SqlUpdate("INSERT INTO custom_types (user_id, name, type) VALUES (:userId, :name, :type);")
     @GetGeneratedKeys
     long executeInsert(@Bind("userId") long userId,
+                       @Bind("name") String name,
                        @Bind("type") String type);
 
 
-    default UsersCustomType insert(long userId, String type) {
+    default UsersCustomType insert(long userId, String name, String type) {
         Long id;
         try {
-            id = executeInsert(userId, type);
+            id = executeInsert(userId, name, type);
         } catch (UnableToExecuteStatementException e) {
             if (e.getMessage().contains("violates foreign key constraint \"one_user_to_many_custom_types\"")) {
                 throw new IllegalStateException("user id does not exist: " + userId);
@@ -32,6 +33,7 @@ public interface CustomTypeDao {
                 .id(id)
                 .userId(userId)
                 .type(type)
+                .name(name)
                 .build();
     }
 

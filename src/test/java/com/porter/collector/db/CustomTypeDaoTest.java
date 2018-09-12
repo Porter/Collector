@@ -27,11 +27,12 @@ public class CustomTypeDaoTest extends BaseTest {
     @Test
     public void insert_findById() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
-        Long id = customTypeDao.insert(user.id(), "string").id();
+        Long id = customTypeDao.insert(user.id(), "name", "string").id();
 
         UsersCustomType expected = ImmutableUsersCustomType
                 .builder()
                 .id(id)
+                .name("name")
                 .type("string")
                 .userId(user.id())
                 .build();
@@ -44,9 +45,9 @@ public class CustomTypeDaoTest extends BaseTest {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         UserWithPassword user2 = userDao.insert("a2@g.com", "name2", "pass");
 
-        UsersCustomType type1 = customTypeDao.insert(user.id(), "string");
-        UsersCustomType type2 = customTypeDao.insert(user2.id(), "string");
-        UsersCustomType type3 = customTypeDao.insert(user2.id(), "string");
+        UsersCustomType type1 = customTypeDao.insert(user.id(), "name", "string");
+        UsersCustomType type2 = customTypeDao.insert(user2.id(), "name", "string");
+        UsersCustomType type3 = customTypeDao.insert(user2.id(), "name", "string");
         List<UsersCustomType> expected = ImmutableList.of(type1);
         List<UsersCustomType> expected2 = ImmutableList.of(type2, type3);
 
@@ -60,7 +61,7 @@ public class CustomTypeDaoTest extends BaseTest {
     @Test(expected = IllegalStateException.class)
     public void badUserId() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
-        customTypeDao.insert(user.id()+ 1, "string");
+        customTypeDao.insert(user.id()+ 1, "name", "string");
     }
 
 }

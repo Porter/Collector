@@ -318,4 +318,12 @@
                                  referencedColumnNames="id" />
     </changeSet>
 
+    <changeSet id="19" author="Porter">
+        <addColumn tableName="custom_types">
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -10,5 +10,6 @@ public abstract class UsersCustomType {
 
     public abstract long id();
     public abstract String type();
+    public abstract String name();
     public abstract long userId();
 }

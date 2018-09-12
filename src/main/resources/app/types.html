@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-cookies.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<body>
+
+<div ng-app="app" ng-controller="collectionsController">
+    <ng-include src="'partials/header.html'"></ng-include>
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ng-include src="'partials/sidebar.html'"></ng-include>
+        </div>
+        <div class="col-sm-9 col-md-10">
+            <ul>
+                <li ng-repeat="type in types">
+                    <a href="/type.html?id={{type.id}}">{{type.name}}</a>
+                </li>
+            </ul>
+
+            <button ng-click="createNew()">Create new</button>
+            <br/>
+            <br/>
+            <form ng-submit="addType(type)">
+                <div ng-if="creatingNew">
+                    <input ng-model="$parent.type.name" type="text" placeholder="name" />
+                    <div ng-repeat="i in range(0, pairs)">
+                        <input ng-model="$parent.type.key[$index]" type="text" placeholder="name" />
+                        <input ng-model="$parent.type.value[$index]" type="text" placeholder="f" />
+                    </div>
+                    <input type="submit" name="New" value="New"/>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    var app = angular.module("app", ["ngCookies"]);
+
+    app.controller('collectionsController', function($scope, $http, $cookies) {
+
+        jwt = $cookies.get("jwt");
+
+        $scope.range = function(min, max, step) {
+            step = step || 1;
+            var input = [];
+            for (var i = min; i < max; i += step) {
+                input.push(i);
+            }
+            return input;
+        }
+
+        $scope.createNew = function() {
+            $scope.creatingNew = true;
+            $scope.pairs = $scope.pairs || 0;
+            $scope.pairs++;
+        }
+
+        function arrayify(json) {
+            arr = [];
+            for (var i = 0; i < Object.keys(json).length; i++) {
+                arr.push(json[i]);
+            }
+            return arr;
+        }
+
+        $scope.addType = function(type) {
+            type.key = arrayify(type.key);
+            type.value = arrayify(type.value);
+            console.log(type);
+            console.log($.param(type));
+            var req = {
+                method: "POST",
+                url: "/api/customTypes/new",
+                data: $.param(type),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    jwt: jwt
+                }
+            };
+            $http(req)
+                .then(function(resp) {
+                    if (resp.data) {
+                        $scope.types.push(resp.data);
+                    }
+                });
+        }
+
+        if (jwt) {
+            var typesReq = {method: "GET", url: "/api/customTypes/all", headers: {jwt: jwt}};
+            $http(typesReq).then(function(response) {
+                $scope.types = response.data;
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

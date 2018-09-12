@@ -15,6 +15,7 @@ public class UsersCustomTypeMapper implements RowMapper<UsersCustomType> {
                 .builder()
                 .id(resultSet.getLong("id"))
                 .userId(resultSet.getLong("user_id"))
+                .name(resultSet.getString("name"))
                 .type(resultSet.getString("type"))
                 .build();
     }
