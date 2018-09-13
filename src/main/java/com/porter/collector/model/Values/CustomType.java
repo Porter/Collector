@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CustomType implements ValueType {
 
@@ -51,5 +52,18 @@ public class CustomType implements ValueType {
 
     public Map<String, ValueTypes> getTypes() {
         return types;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CustomType)) return false;
+        CustomType that = (CustomType) o;
+        return Objects.equals(types, that.types);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(types);
     }
 }

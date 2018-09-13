@@ -65,14 +65,14 @@ public class CollectionsResource {
     public Response create(@Auth SimpleUser user,
                            @PathParam("id") @NotNull Long collectionId,
                            @FormParam("name") @NotEmpty String name,
-                           @FormParam("type") @NotNull Integer type) {
+                           @FormParam("type") @NotNull Integer type,
+                           @FormParam("customType") @NotNull Long customType) {
         try {
-            ValueTypes valueType = ValueTypes.values()[type];
             return Response
-                    .ok(collectionsController.addSource(name, user, collectionId, valueType))
+                    .ok(collectionsController.addSource(name, user, collectionId, type, customType))
                     .build();
         }
-        catch (IllegalAccessException | ArrayIndexOutOfBoundsException e) {
+        catch (IllegalAccessException e) {
             return Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(ImmutableMap.of("error", e.getMessage()))

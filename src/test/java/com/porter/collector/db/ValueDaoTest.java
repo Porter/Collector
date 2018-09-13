@@ -32,7 +32,7 @@ public class ValueDaoTest extends BaseTest {
     public void insert_findById() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
-        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null).id();
 
         Value value = valueDao.insert("1", id);
         Value expected = valueDao.findById(value.id());
@@ -44,7 +44,7 @@ public class ValueDaoTest extends BaseTest {
     public void getRange() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
-        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null).id();
 
         List<Value> values = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
@@ -63,7 +63,7 @@ public class ValueDaoTest extends BaseTest {
     public void getRangeLimited() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
-        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null).id();
 
         List<Value> values = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
@@ -82,7 +82,7 @@ public class ValueDaoTest extends BaseTest {
     public void getRangeSingle() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
-        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null).id();
 
         List<Value> values = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
@@ -102,7 +102,7 @@ public class ValueDaoTest extends BaseTest {
     public void testNegativeIndex() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
-        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null).id();
 
         List<Value> values = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
@@ -119,7 +119,7 @@ public class ValueDaoTest extends BaseTest {
     public void test2NegativeIndex() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
-        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT).id();
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null).id();
 
         List<Value> values = new ArrayList<>();
         for (int i = 0; i < 8; i++) {

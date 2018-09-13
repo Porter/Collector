@@ -64,7 +64,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
         GoalDao goalDao = jdbi.onDemand(GoalDao.class);
         CustomTypeDao customTypeDao = jdbi.onDemand(CustomTypeDao.class);
 
-        CollectionsController collectionsController = new CollectionsController(collectionDao, sourceDao);
+        CollectionsController collectionsController = new CollectionsController(collectionDao, sourceDao, customTypeDao);
         SourcesController sourcesController = new SourcesController(sourceDao, valueDao);
         UsersController usersController = new UsersController(userDao);
         ReportsController reportsController = new ReportsController(reportDao);

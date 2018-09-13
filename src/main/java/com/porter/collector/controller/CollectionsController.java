@@ -1,11 +1,10 @@
 package com.porter.collector.controller;
 
 import com.porter.collector.db.CollectionDao;
+import com.porter.collector.db.CustomTypeDao;
 import com.porter.collector.db.SourceDao;
-import com.porter.collector.model.Collection;
-import com.porter.collector.model.SimpleUser;
-import com.porter.collector.model.Source;
-import com.porter.collector.model.ValueTypes;
+import com.porter.collector.model.*;
+import com.porter.collector.model.Values.CustomType;
 
 import java.util.List;
 
@@ -13,10 +12,12 @@ public class CollectionsController {
 
     private final CollectionDao collectionDao;
     private final SourceDao sourceDao;
+    private final CustomTypeDao customTypeDao;
 
-    public CollectionsController(CollectionDao collectionDao, SourceDao sourceDao) {
+    public CollectionsController(CollectionDao collectionDao, SourceDao sourceDao, CustomTypeDao customTypeDao) {
         this.collectionDao = collectionDao;
         this.sourceDao = sourceDao;
+        this.customTypeDao = customTypeDao;
     }
 
     public List<Collection> allFromUser(SimpleUser user) {
@@ -27,8 +28,28 @@ public class CollectionsController {
         return collectionDao.insert(name, user.id());
     }
 
-    public Source addSource(String name, SimpleUser user, long collectionId, ValueTypes type)
+    public Source addSource(String name, SimpleUser user, long collectionId, int type, long customTypeId)
             throws IllegalAccessException {
-        return sourceDao.insert(name, user.id(), collectionId, type);
+
+        if (sourceDao.confirmUserOwnsCollection(collectionId, user.id()) == null) {
+            throw new IllegalAccessException("You can no longer modify that collection");
+        }
+
+        ValueTypes valueType = null;
+        UsersCustomType customType = null;
+        if (type == -1) {
+            customType = customTypeDao.findById(customTypeId);
+            if (customType.userId() != user.id()) {
+                throw new IllegalAccessException("That custom type no longer exists");
+            }
+        } else {
+            try {
+                valueType = ValueTypes.values()[type];
+            } catch (IndexOutOfBoundsException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        return sourceDao.insert(name, user.id(), collectionId, valueType, customType);
     }
 }

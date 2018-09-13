@@ -2,6 +2,8 @@ package com.porter.collector.db;
 
 import com.porter.collector.model.*;
 
+import com.porter.collector.model.Values.CustomType;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
@@ -12,25 +14,49 @@ import java.util.List;
 
 public interface SourceDao {
 
-    @SqlUpdate("INSERT INTO sources (name, collection_id, user_id, type) VALUES (:name, :collection_id, :user_id, :type);")
+    @SqlUpdate("INSERT INTO sources (name, collection_id, user_id, type, custom_type_id) " +
+            "VALUES (:name, :collection_id, :user_id, :type, :customType);")
     @GetGeneratedKeys
     long executeInsert(@Bind("name") String name,
                                 @Bind("user_id") Long userId,
                                 @Bind("collection_id") Long collectionId,
-                                @Bind("type") int type);
+                                @Bind("type") int type,
+                                @Bind("customType") Long customType);
 
+    default int _getOrdinal(Enum e) {
+        if (e != null) { return e.ordinal(); }
+        return -1;
+    }
 
-    default Source insert(String name, Long userId, Long collectionId, ValueTypes type) throws IllegalAccessException {
-        if (confirmUserOwnsCollection(collectionId, userId) == null) {
-            throw new IllegalAccessException("You can no longer modify that collection");
+    default Long _getId(UsersCustomType type) {
+        if (type != null) { return type.id(); }
+        return null;
+    }
+
+    default Source insert(String name, Long userId, Long collectionId, ValueTypes type, UsersCustomType usersCustomType) {
+
+        Long id;
+        try {
+            id = executeInsert(name, userId, collectionId, _getOrdinal(type), _getId(usersCustomType));
+        } catch (UnableToExecuteStatementException e) {
+            if (e.getMessage().contains("violates foreign key constraint \"sources_users_many_to_one\"")) {
+                throw new IllegalStateException(e);
+            }
+            throw e;
         }
-        Long id = executeInsert(name, userId, collectionId, type.ordinal());
+
+        CustomType customType = null;
+        try {
+            customType = new CustomType().parse(usersCustomType.type());
+        } catch (Exception ignored) { }
+
         return ImmutableSource.builder()
                 .id(id)
                 .name(name)
                 .collectionId(collectionId)
                 .userId(userId)
                 .type(type)
+                .customType(customType)
                 .build();
     }
 
@@ -38,19 +64,23 @@ public interface SourceDao {
     Long confirmUserOwnsCollection(@Bind("id") long collectionId, @Bind("userId") long userId);
 
 
-    @SqlQuery("SELECT * FROM sources WHERE id=:id")
+    @SqlQuery("SELECT sources.*, custom_types.type AS custom_type FROM sources LEFT JOIN custom_types ON " +
+            "sources.custom_type_id = custom_types.id WHERE sources.id=:id")
     @UseRowMapper(SourcesMapper.class)
     Source findById(@Bind("id") Long id);
 
-    @SqlQuery("SELECT * FROM sources")
+    @SqlQuery("SELECT sources.*, custom_types.type AS custom_type FROM sources LEFT JOIN custom_types ON " +
+            "sources.custom_type_id = custom_types.id")
     @UseRowMapper(SourcesMapper.class)
     List<Source> findAll();
 
-    @SqlQuery("SELECT * FROM sources WHERE user_id=:user_id")
+    @SqlQuery("SELECT sources.*, custom_types.type AS custom_type FROM sources LEFT JOIN custom_types ON " +
+            "sources.custom_type_id = custom_types.id WHERE sources.user_id=:user_id")
     @UseRowMapper(SourcesMapper.class)
     List<Source> findAllFromUser(@Bind("user_id") Long user_id);
 
-    @SqlQuery("SELECT * FROM sources WHERE user_id=:userId AND name=:source")
+    @SqlQuery("SELECT sources.*, custom_types.type AS custom_type FROM sources LEFT JOIN custom_types ON " +
+            "sources.custom_type_id = custom_types.id WHERE user_id=:userId AND name=:source")
     @UseRowMapper(SourcesMapper.class)
     Source findByUsersSource(@Bind("userId") long userId, @Bind("source") String source);
 }

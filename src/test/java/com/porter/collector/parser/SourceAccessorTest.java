@@ -14,8 +14,6 @@ import com.porter.collector.model.Values.ValueType;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-
 import static org.junit.Assert.*;
 
 public class SourceAccessorTest extends BaseTest {
@@ -40,7 +38,7 @@ public class SourceAccessorTest extends BaseTest {
     public void exec() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("collection", user.id());
-        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT);
+        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null);
         Args args = new Args(ImmutableList.of(
                 new MyString("source"),
                 new MyLong(0)
@@ -54,7 +52,7 @@ public class SourceAccessorTest extends BaseTest {
     public void exec2() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("collection", user.id());
-        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT);
+        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null);
         Value value = valueDao.insert("54", source.id());
         Args args = new Args(ImmutableList.of(
                 new MyString("source"),

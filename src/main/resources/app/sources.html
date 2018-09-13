@@ -67,11 +67,23 @@
 
         jwt = $cookies.get("jwt");
 
+        function prepareForPost(source) {
+            if (source.type < 0) {
+                source.customType = -source.type;
+                source.type = -1;
+            } else {
+                source.customType = -1;
+            }
+
+            return source;
+        }
+
+
         $scope.addSource = function(source) {
             var req = {
                 method: "POST",
                 url: "/api/collections/" + source.collectionId + "/sources/new",
-                data: $.param(source),
+                data: $.param(prepareForPost(source)),
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     jwt: jwt
@@ -92,6 +104,13 @@
             var sourcesReq = {method: "GET", url: "/api/sources/all", headers: {jwt: jwt}};
             $http(sourcesReq).then(function(response) {
                 $scope.sources = response.data;
+            });
+
+            var customTypesReq = {method: "GET", url: "/api/customTypes/all", headers: {jwt: jwt}};
+            $http(customTypesReq).then(function(response) {
+                response.data.forEach(function(r) {
+                    $scope.types.push({value: -r.id, name:r.name});
+                });
             });
         }
     });
