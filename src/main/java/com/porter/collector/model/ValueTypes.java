@@ -8,7 +8,7 @@ import com.porter.collector.model.Values.ValueType;
 import java.util.Map;
 
 public enum ValueTypes {
-    FLOAT ("Float"), INT ("Integer"), CUSTOM ("Custom");
+    FLOAT ("Float"), INT ("Integer"), CUSTOM ("Custom"), MONEY ("Dollars");
 
     private final String userFriendlyName;
 
