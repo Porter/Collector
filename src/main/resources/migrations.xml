@@ -330,4 +330,8 @@
         <modifyDataType tableName="custom_types" columnName="type" newDataType="int" />
     </changeSet>
 
+    <changeSet id="21" author="Porter">
+        <modifyDataType tableName="custom_types" columnName="type" newDataType="varchar(256)" />
+    </changeSet>
+
 </databaseChangeLog>

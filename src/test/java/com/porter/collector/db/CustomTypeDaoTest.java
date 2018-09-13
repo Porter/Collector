@@ -63,5 +63,4 @@ public class CustomTypeDaoTest extends BaseTest {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         customTypeDao.insert(user.id()+ 1, "name", "string");
     }
-
 }

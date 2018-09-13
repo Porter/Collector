@@ -1,14 +1,12 @@
 package com.porter.collector.model;
 
 import com.google.common.collect.ImmutableMap;
-import com.porter.collector.model.Values.MyFloat;
-import com.porter.collector.model.Values.MyInteger;
-import com.porter.collector.model.Values.ValueType;
+import com.porter.collector.model.Values.*;
 
 import java.util.Map;
 
 public enum ValueTypes {
-    FLOAT ("Float"), INT ("Integer"), CUSTOM ("Custom"), MONEY ("Dollars");
+    FLOAT ("Float"), INT ("Integer"), CUSTOM ("Custom"), MONEY ("Dollars"), STRING ("String");
 
     private final String userFriendlyName;
 
@@ -25,7 +23,9 @@ public enum ValueTypes {
     }
     private static Map<ValueTypes, ValueType<?>> map = ImmutableMap.of(
             FLOAT, new MyFloat(),
-            INT, new MyInteger()
+            INT, new MyInteger(),
+            MONEY, new Money(),
+            STRING, new MyString()
     );
 
     public String userFriendlyName() {

@@ -54,6 +54,18 @@
             {
                 value: 0,
                 name: "Float"
+            },
+            {
+                value: 1,
+                name: "Integer"
+            },
+            {
+                value: 3,
+                name: "Money"
+            },
+            {
+                value: 4,
+                name: "String"
             }
         ];
 
@@ -98,6 +110,11 @@
                 .then(function(resp) {
                     if (resp.data) {
                         $scope.types.push(resp.data);
+                        $scope.creatingNew = false;
+                        $scope.pairs = 0;
+                        type.key = {};
+                        type.value = {};
+                        type.name = "";
                     }
                 });
         }
