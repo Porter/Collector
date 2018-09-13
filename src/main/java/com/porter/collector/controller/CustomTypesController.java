@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.porter.collector.db.CustomTypeDao;
 import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.UsersCustomType;
+import com.porter.collector.model.ValueTypes;
 import io.dropwizard.jackson.Jackson;
 
 import javax.ws.rs.PathParam;
@@ -33,19 +34,24 @@ public class CustomTypesController {
         return usersCustomType;
     }
 
-    public UsersCustomType create(SimpleUser user, String name, List<String> keys, List<String> values)
+    public UsersCustomType create(SimpleUser user, String name, List<String> keys, List<Integer> values)
             throws ParseException {
         return customTypeDao.insert(user.id(), name, getStringRepresentation(keys, values));
     }
 
-    private String getStringRepresentation(List<String> keys, List<String> values) throws ParseException {
+    private String getStringRepresentation(List<String> keys, List<Integer> values) throws ParseException {
         if (keys.size() != values.size()) {
             throw new IllegalStateException("keys and values must be of same length");
         }
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, Integer> map = new HashMap<>();
+        int amount = ValueTypes.values().length;
         for (int i = 0; i < keys.size(); i++) {
-            map.put(keys.get(i), values.get(i));
+            int type = values.get(i);
+            if (type >= amount) {
+                throw new IllegalStateException("ValueType out of range: " + type);
+            }
+            map.put(keys.get(i), type);
         }
 
         ObjectMapper mapper = Jackson.newObjectMapper();

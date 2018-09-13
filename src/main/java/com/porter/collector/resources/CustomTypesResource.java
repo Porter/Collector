@@ -38,7 +38,7 @@ public class CustomTypesResource {
     public Response create(@Auth SimpleUser user,
                            @FormParam("name") String name,
                            @FormParam("key[]") List<String> keys,
-                           @FormParam("value[]") List<String> values) {
+                           @FormParam("value[]") List<Integer> values) {
         try {
             return Response.ok(customTypesController.create(user, name, keys, values)).build();
         } catch (ParseException e) {

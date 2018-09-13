@@ -30,7 +30,9 @@
                     <input ng-model="$parent.type.name" type="text" placeholder="name" />
                     <div ng-repeat="i in range(0, pairs)">
                         <input ng-model="$parent.type.key[$index]" type="text" placeholder="name" />
-                        <input ng-model="$parent.type.value[$index]" type="text" placeholder="f" />
+                        <select ng-model="$parent.type.value[$index]">
+                            <option ng-repeat="oldType in oldTypes" value="{{oldType.value}}">{{oldType.name}}</option>
+                        </select>
                     </div>
                     <input type="submit" name="New" value="New"/>
                 </div>
@@ -47,6 +49,13 @@
     app.controller('collectionsController', function($scope, $http, $cookies) {
 
         jwt = $cookies.get("jwt");
+
+        $scope.oldTypes = [
+            {
+                value: 0,
+                name: "Float"
+            }
+        ];
 
         $scope.range = function(min, max, step) {
             step = step || 1;

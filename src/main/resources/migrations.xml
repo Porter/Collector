@@ -326,4 +326,8 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20" author="Porter">
+        <modifyDataType tableName="custom_types" columnName="type" newDataType="int" />
+    </changeSet>
+
 </databaseChangeLog>
