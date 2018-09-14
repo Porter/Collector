@@ -4,21 +4,14 @@ import com.google.common.collect.ImmutableList;
 import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.*;
 import com.porter.collector.model.Values.CustomType;
-import com.sun.xml.internal.bind.v2.TODO;
-import org.glassfish.jersey.internal.inject.Custom;
-import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.sqlobject.statement.SqlQuery;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 
 public class SourceDaoTest extends BaseTest {
