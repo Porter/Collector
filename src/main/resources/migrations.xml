@@ -343,4 +343,47 @@
         <dropDefaultValue tableName="sources" columnName="external" />
     </changeSet>
 
+    <changeSet id="23" author="Porter">
+        <createTable tableName="csv">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="row" type="varchar(1024)">
+                <constraints nullable="false" />
+            </column>
+            <column name="rowNumber" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="processed" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="source_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="csv" baseColumnNames="source_id" constraintName="one_source_to_many_csv"
+                                 referencedTableName="sources"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="24" author="Porter">
+        <createTable tableName="csv_column_mapping">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="mapping" type="varchar(256)">
+                <constraints nullable="false" />
+            </column>
+            <column name="source_id" type="bigint">
+                <constraints unique="true" nullable="false" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="csv_column_mapping" baseColumnNames="source_id"
+                                 constraintName="one_csv_column_mapping_to_one_source"
+                                 referencedTableName="sources"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
 </databaseChangeLog>

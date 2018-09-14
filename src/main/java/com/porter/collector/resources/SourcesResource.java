@@ -110,7 +110,7 @@ public class SourcesResource {
         } catch (IOException e) {
             return Response
                     .status(500)
-                    .entity(ImmutableMap.of("error", "Upload interuptted. Please try again"))
+                    .entity(ImmutableMap.of("error", "Upload interrupted. Please try again"))
                     .build();
         }
     }

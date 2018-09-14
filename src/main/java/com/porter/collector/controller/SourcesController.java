@@ -2,6 +2,7 @@ package com.porter.collector.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.porter.collector.db.CsvRowDao;
 import com.porter.collector.db.SourceDao;
 import com.porter.collector.db.ValueDao;
 import com.porter.collector.model.*;
@@ -20,10 +21,12 @@ public class SourcesController {
 
     private final SourceDao sourceDao;
     private final ValueDao valueDao;
+    private final CsvRowDao csvRowDao;
 
-    public SourcesController(SourceDao sourceDao, ValueDao valueDao) {
+    public SourcesController(SourceDao sourceDao, ValueDao valueDao, CsvRowDao csvRowDao) {
         this.sourceDao = sourceDao;
         this.valueDao = valueDao;
+        this.csvRowDao = csvRowDao;
     }
 
     public List<Source> getAllFromUser(SimpleUser user) {

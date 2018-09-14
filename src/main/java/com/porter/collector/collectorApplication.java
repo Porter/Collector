@@ -7,6 +7,7 @@ import com.porter.collector.auth.JwtAuthorizer;
 import com.porter.collector.controller.*;
 import com.porter.collector.db.*;
 import com.porter.collector.health.BasicHealthCheck;
+import com.porter.collector.model.CsvRow;
 import com.porter.collector.model.SimpleUser;
 import com.porter.collector.parser.SourceAccessor;
 import com.porter.collector.parser.Tokens;
@@ -62,9 +63,10 @@ public class collectorApplication extends Application<collectorConfiguration> {
         ReportDao reportDao = jdbi.onDemand(ReportDao.class);
         GoalDao goalDao = jdbi.onDemand(GoalDao.class);
         CustomTypeDao customTypeDao = jdbi.onDemand(CustomTypeDao.class);
+        CsvRowDao csvRowDao = jdbi.onDemand(CsvRowDao.class);
 
         CollectionsController collectionsController = new CollectionsController(collectionDao, sourceDao, customTypeDao);
-        SourcesController sourcesController = new SourcesController(sourceDao, valueDao);
+        SourcesController sourcesController = new SourcesController(sourceDao, valueDao, csvRowDao);
         UsersController usersController = new UsersController(userDao);
         ReportsController reportsController = new ReportsController(reportDao);
         GoalsController goalsController = new GoalsController(goalDao);

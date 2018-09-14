@@ -29,11 +29,10 @@
                     <input type="submit" name="New" value="New" />
                 </span>
             </form>
-            <form enctype="multipart/form-data" id="uploadForm" method="POST">
-                <!--<span>`-->
-                    <input type="file" name="upload"/>
-                    <input type="submit" name="New" value="Upload" />
-                <!--</span>-->
+            <form>
+                <input data-my-Directive type="file" />
+                <input type="hidden" id="sourceId" value="{{source.id}}" />
+                <button ng-click="filePicked()">Upload</button>
             </form>
         </div>
     </div>
@@ -44,13 +43,43 @@
 <script>
     var app = angular.module("app", ["ngCookies"]);
 
-    app.controller('collectionsController', function($scope, $http, $cookies, $location) {
+    app.directive('myDirective', function (httpPostFactory) {
+        return {
+            restrict: 'A',
+            scope: false,
+            link: function (scope, element, attr) {
+
+                element.bind('change', function () {
+                    var formData = new FormData();
+                    formData.append('upload', element[0].files[0]);
+                    httpPostFactory("/api/sources/" + scope.id + "/values/upload", formData, function (callback) {
+                        console.log(callback);
+                    });
+                });
+
+            }
+        };
+    });
+
+    app.factory('httpPostFactory', function ($http) {
+        return function (file, data, callback) {
+        $http({
+                url: file,
+                method: "POST",
+                data: data,
+                headers: {'Content-Type': undefined}
+            }).then(function (response) {
+                callback(response);
+            });
+        };
+    });
+
+    app.controller('collectionsController', function($scope, $http, $cookies, $location, httpPostFactory) {
 
         jwt = $cookies.get("jwt");
 
         url = new URL($location.absUrl());
         id = url.searchParams.get("id");
-
 
         $scope.toUpload = [{key: "amount", placeholder: "value"}];
 
@@ -95,10 +124,8 @@
             var sourceReq = {method: "GET", url: "/api/sources/" + id, headers: {jwt: jwt}};
             $http(sourceReq).then(function(response) {
                 $scope.source = response.data;
-                document.getElementById("uploadForm").setAttribute("action", "/api/sources/" + $scope.source.id + "/values/upload");
                 if (response.data.type == null) {
                     $scope.toUpload = arrarify(response.data.customType.types);
-                    console.log($scope.toUpload);
                 }
             });
 
