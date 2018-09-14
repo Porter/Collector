@@ -16,6 +16,7 @@ public class SourceTest {
                 .collectionId(1L)
                 .userId(2L)
                 .type(ValueTypes.FLOAT)
+                .external(false)
                 .build();
 
         ObjectMapper mapper = Jackson.newObjectMapper();

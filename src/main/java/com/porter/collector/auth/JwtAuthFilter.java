@@ -15,7 +15,7 @@ public class JwtAuthFilter<P extends Principal> extends AuthFilter<String, P> {
     @Override
     public void filter(ContainerRequestContext containerRequestContext) throws IOException {
 
-        String jwt = containerRequestContext.getHeaderString("jwt");
+        String jwt = containerRequestContext.getCookies().get("jwt").getValue();
 
         Optional<P> p = Optional.empty();
         try { p = authenticator.authenticate(jwt); }

@@ -334,4 +334,13 @@
         <modifyDataType tableName="custom_types" columnName="type" newDataType="varchar(256)" />
     </changeSet>
 
+    <changeSet id="22" author="Porter">
+        <addColumn tableName="sources">
+            <column name="external" type="boolean" defaultValue="FALSE">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <dropDefaultValue tableName="sources" columnName="external" />
+    </changeSet>
+
 </databaseChangeLog>

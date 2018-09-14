@@ -4,7 +4,6 @@ import com.porter.collector.db.CollectionDao;
 import com.porter.collector.db.CustomTypeDao;
 import com.porter.collector.db.SourceDao;
 import com.porter.collector.model.*;
-import com.porter.collector.model.Values.CustomType;
 
 import java.util.List;
 
@@ -28,8 +27,8 @@ public class CollectionsController {
         return collectionDao.insert(name, user.id());
     }
 
-    public Source addSource(String name, SimpleUser user, long collectionId, int type, long customTypeId)
-            throws IllegalAccessException {
+    public Source addSource(String name, SimpleUser user, long collectionId, int type, long customTypeId,
+                            boolean external) throws IllegalAccessException {
 
         if (sourceDao.confirmUserOwnsCollection(collectionId, user.id()) == null) {
             throw new IllegalAccessException("You can no longer modify that collection");
@@ -50,6 +49,6 @@ public class CollectionsController {
             }
         }
 
-        return sourceDao.insert(name, user.id(), collectionId, valueType, customType);
+        return sourceDao.insert(name, user.id(), collectionId, valueType, customType, external);
     }
 }

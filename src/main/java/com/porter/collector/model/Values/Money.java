@@ -25,7 +25,7 @@ public class Money implements Addable<Money>, ValueType<Money> {
     public Money parse(String value) {
         if (value.isEmpty()) { return new Money(); }
 
-        int multiplier = 1;
+        int multiplier = 100;
         if (value.startsWith("(") && value.endsWith(")")) {
             value = value.substring(1, value.length()-1);
             multiplier *= -1;
@@ -42,7 +42,7 @@ public class Money implements Addable<Money>, ValueType<Money> {
     private Money _parse(String value, int multiplier) {
         if (value.startsWith("$")) { value = value.substring(1); }
         if (value.contains(".")) {
-            return new Money(multiplier * (int) (Float.parseFloat(value) * 100));
+            return new Money((int) (multiplier * Float.parseFloat(value)));
         }
         return new Money(multiplier * Integer.parseInt(value));
     }
@@ -64,5 +64,10 @@ public class Money implements Addable<Money>, ValueType<Money> {
         if (!(o instanceof Money)) { return false; }
 
         return ((Money) o).value == value;
+    }
+
+    @Override
+    public String toString() {
+        return stringify();
     }
 }

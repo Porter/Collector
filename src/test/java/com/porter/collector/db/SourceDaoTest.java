@@ -34,7 +34,7 @@ public class SourceDaoTest extends BaseTest {
     public void insert_findById() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
-        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null).id();
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null, false).id();
 
         Source expected = ImmutableSource
                 .builder()
@@ -43,6 +43,7 @@ public class SourceDaoTest extends BaseTest {
                 .collectionId(collection.id())
                 .userId(user.id())
                 .type(ValueTypes.INT)
+                .external(false)
                 .build();
 
         assertEquals(expected, sourceDao.findById(id));
@@ -55,7 +56,7 @@ public class SourceDaoTest extends BaseTest {
         String json = "{\"f\": 3}";
         UsersCustomType customType = customTypeDao.insert(user.id(), "name", json);
         CustomType ct = new CustomType().parse(json);
-        Long id = sourceDao.insert("source", user.id(), collection.id(), null, customType).id();
+        Long id = sourceDao.insert("source", user.id(), collection.id(), null, customType, false).id();
 
         Source expected = ImmutableSource
                 .builder()
@@ -64,6 +65,7 @@ public class SourceDaoTest extends BaseTest {
                 .collectionId(collection.id())
                 .userId(user.id())
                 .customType(ct)
+                .external(false)
                 .build();
 
         assertEquals(expected, sourceDao.findById(id));
@@ -73,8 +75,8 @@ public class SourceDaoTest extends BaseTest {
     public void findAll() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
-        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null);
-        Source source2 = sourceDao.insert("source2", user.id(), collection.id(), ValueTypes.INT, null);
+        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null, false);
+        Source source2 = sourceDao.insert("source2", user.id(), collection.id(), ValueTypes.INT, null, false);
 
         List<Source> expected = ImmutableList.of(source, source2);
 
@@ -87,8 +89,8 @@ public class SourceDaoTest extends BaseTest {
         UserWithPassword user2 = userDao.insert("a2@g.com", "name2", "pass");
         Collection collection = collectionDao.insert("test", user.id());
         Collection collection2 = collectionDao.insert("test", user2.id());
-        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null);
-        Source source2 = sourceDao.insert("source2", user2.id(), collection2.id(), ValueTypes.INT, null);
+        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null, false);
+        Source source2 = sourceDao.insert("source2", user2.id(), collection2.id(), ValueTypes.INT, null, false);
 
         List<Source> expected = ImmutableList.of(source);
         List<Source> expected2 = ImmutableList.of(source2);
@@ -102,7 +104,7 @@ public class SourceDaoTest extends BaseTest {
         thrown.expect(IllegalStateException.class);
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
-        sourceDao.insert("source", user.id() + 1, collection.id(), ValueTypes.INT, null);
+        sourceDao.insert("source", user.id() + 1, collection.id(), ValueTypes.INT, null, false);
     }
 
     @Rule

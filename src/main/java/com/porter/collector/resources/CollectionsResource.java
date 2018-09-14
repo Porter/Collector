@@ -66,10 +66,11 @@ public class CollectionsResource {
                            @PathParam("id") @NotNull Long collectionId,
                            @FormParam("name") @NotEmpty String name,
                            @FormParam("type") @NotNull Integer type,
-                           @FormParam("customType") @NotNull Long customType) {
+                           @FormParam("customType") @NotNull Long customType,
+                           @FormParam("external") boolean external) {
         try {
             return Response
-                    .ok(collectionsController.addSource(name, user, collectionId, type, customType))
+                    .ok(collectionsController.addSource(name, user, collectionId, type, customType, external))
                     .build();
         }
         catch (IllegalAccessException e) {

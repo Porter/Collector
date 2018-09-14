@@ -8,8 +8,6 @@ import com.porter.collector.controller.*;
 import com.porter.collector.db.*;
 import com.porter.collector.health.BasicHealthCheck;
 import com.porter.collector.model.SimpleUser;
-import com.porter.collector.model.ValueTypes;
-import com.porter.collector.model.Values.CustomType;
 import com.porter.collector.parser.SourceAccessor;
 import com.porter.collector.parser.Tokens;
 import com.porter.collector.resources.*;
@@ -18,6 +16,7 @@ import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.bundles.assets.ConfiguredAssetsBundle;
 import io.dropwizard.db.PooledDataSourceFactory;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.jdbi.v3.core.Jdbi;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
@@ -91,5 +90,7 @@ public class collectorApplication extends Application<collectorConfiguration> {
         environment.jersey().register(new CustomTypesResource(customTypesController));
 
         Tokens.register("source", new SourceAccessor(sourceDao, valueDao));
+
+        environment.jersey().register(MultiPartFeature.class);
     }
 }

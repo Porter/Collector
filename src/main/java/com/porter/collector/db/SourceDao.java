@@ -14,14 +14,15 @@ import java.util.List;
 
 public interface SourceDao {
 
-    @SqlUpdate("INSERT INTO sources (name, collection_id, user_id, type, custom_type_id) " +
-            "VALUES (:name, :collection_id, :user_id, :type, :customType);")
+    @SqlUpdate("INSERT INTO sources (name, collection_id, user_id, type, custom_type_id, external) " +
+            "VALUES (:name, :collection_id, :user_id, :type, :customType, :external);")
     @GetGeneratedKeys
     long executeInsert(@Bind("name") String name,
                                 @Bind("user_id") Long userId,
                                 @Bind("collection_id") Long collectionId,
                                 @Bind("type") int type,
-                                @Bind("customType") Long customType);
+                                @Bind("customType") Long customType,
+                                @Bind("external") boolean external);
 
     default int _getOrdinal(Enum e) {
         if (e != null) { return e.ordinal(); }
@@ -33,11 +34,11 @@ public interface SourceDao {
         return null;
     }
 
-    default Source insert(String name, Long userId, Long collectionId, ValueTypes type, UsersCustomType usersCustomType) {
-
+    default Source insert(String name, Long userId, Long collectionId, ValueTypes type, UsersCustomType usersCustomType,
+                          boolean external) {
         Long id;
         try {
-            id = executeInsert(name, userId, collectionId, _getOrdinal(type), _getId(usersCustomType));
+            id = executeInsert(name, userId, collectionId, _getOrdinal(type), _getId(usersCustomType), external);
         } catch (UnableToExecuteStatementException e) {
             if (e.getMessage().contains("violates foreign key constraint \"sources_users_many_to_one\"")) {
                 throw new IllegalStateException(e);
@@ -57,6 +58,7 @@ public interface SourceDao {
                 .userId(userId)
                 .type(type)
                 .customType(customType)
+                .external(external)
                 .build();
     }
 
@@ -80,7 +82,7 @@ public interface SourceDao {
     List<Source> findAllFromUser(@Bind("user_id") Long user_id);
 
     @SqlQuery("SELECT sources.*, custom_types.type AS custom_type FROM sources LEFT JOIN custom_types ON " +
-            "sources.custom_type_id = custom_types.id WHERE user_id=:userId AND name=:source")
+            "sources.custom_type_id = custom_types.id WHERE sources.user_id=:userId AND sources.name=:source")
     @UseRowMapper(SourcesMapper.class)
     Source findByUsersSource(@Bind("userId") long userId, @Bind("source") String source);
 }

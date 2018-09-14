@@ -33,6 +33,7 @@ public class SourcesMapper implements RowMapper<ImmutableSource> {
                 .userId(resultSet.getLong("user_id"))
                 .type(valueType((int) resultSet.getLong("type")))
                 .customType(customType(resultSet.getString("custom_type")))
+                .external(resultSet.getBoolean("external"))
                 .build();
     }
 }

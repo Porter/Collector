@@ -4,11 +4,23 @@ import com.google.common.collect.ImmutableMap;
 import com.porter.collector.controller.SourcesController;
 import com.porter.collector.model.*;
 import io.dropwizard.auth.Auth;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 @Path(Urls.SOURCE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -69,11 +81,37 @@ public class SourcesResource {
     public Response addValue(
             @Auth SimpleUser user,
             @PathParam("id") Long sourceId,
-            @FormParam("amount") String value) {
+            MultivaluedMap<String, String> params) {
         return Response
-                .ok(sourcesController.addValue(user, sourceId, value))
+                .ok(sourcesController.addValue(user, sourceId, params))
                 .build();
     }
 
+    @POST
+    @Path("/{id}/values/upload")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadValues(@Auth SimpleUser user,
+                                 @FormDataParam("upload") InputStream uploadedInputStream,
+                                 @FormDataParam("file") FormDataContentDisposition fileDetail) {
 
+        Reader reader = new InputStreamReader(uploadedInputStream);
+        try {
+            CSVParser parser = new CSVParser(reader, CSVFormat.DEFAULT);
+            Iterator<CSVRecord> itr = parser.iterator();
+            if (itr.hasNext()) {
+                CSVRecord record = itr.next();
+                List<String> header = new ArrayList<>();
+                record.iterator().forEachRemaining(header::add);
+
+                return Response.ok(header).build();
+            }
+
+            return null;
+        } catch (IOException e) {
+            return Response
+                    .status(500)
+                    .entity(ImmutableMap.of("error", "Upload interuptted. Please try again"))
+                    .build();
+        }
+    }
 }

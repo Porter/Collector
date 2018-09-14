@@ -38,7 +38,7 @@ public class SourceAccessorTest extends BaseTest {
     public void exec() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("collection", user.id());
-        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null);
+        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null, false);
         Args args = new Args(ImmutableList.of(
                 new MyString("source"),
                 new MyLong(0)
@@ -52,7 +52,7 @@ public class SourceAccessorTest extends BaseTest {
     public void exec2() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("collection", user.id());
-        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null);
+        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null, false);
         Value value = valueDao.insert("54", source.id());
         Args args = new Args(ImmutableList.of(
                 new MyString("source"),

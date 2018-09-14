@@ -31,6 +31,9 @@
                 <select ng-model="source.type">
                     <option ng-repeat="type in types" value="{{type.value}}">{{type.name}}</option>
                 </select>
+                <br/>
+                <label>External: </label><input type="checkbox" ng-model="source.external" />
+                <br/>
                 <input ng-model="source.name" type="text" name="name" />
                 <input type="submit" name="New" value="New"/>
             </form>
@@ -91,7 +94,11 @@
             };
             $http(req)
                 .then(function(resp) {
-                    console.log(resp);
+                    $scope.sources.push(resp.data);
+                    source.collectionId = null;
+                    source.type = null;
+                    source.external = false;
+                    source.name = "";
                 });
         }
 

@@ -39,6 +39,14 @@ public class MoneyTest {
     }
 
     @Test
+    public void parse5() {
+        Money expected = new Money(300);
+        Money parsed = expected.parse("3");
+
+        assertEquals(expected, parsed);
+    }
+
+    @Test
     public void stringify() {
         Money money = new Money(432);
 
@@ -56,5 +64,12 @@ public class MoneyTest {
         String expected = "($5.22)";
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void isValid() {
+        Money money = new Money();
+
+        assertTrue(money.isValid("12"));
     }
 }

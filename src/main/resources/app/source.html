@@ -22,9 +22,18 @@
                     {{value.value}}
                 </li>
             </ul>
-            <form ng-submit="addValue(value)">
-                <input ng-model="value.amount" type="text" placeholder="value" />
-                <input type="submit" name="New" value="New" />
+            <form ng-if="!source.external" ng-submit="addValue(value)">
+                <span ng-repeat="t in toUpload">
+                    <input ng-model="$parent.$parent.value[t.key]" type="text" placeholder="{{t.key}}" value=""/>
+                    <span ng-if="!$last"><br/></span>
+                    <input type="submit" name="New" value="New" />
+                </span>
+            </form>
+            <form enctype="multipart/form-data" id="uploadForm" method="POST">
+                <!--<span>`-->
+                    <input type="file" name="upload"/>
+                    <input type="submit" name="New" value="Upload" />
+                <!--</span>-->
             </form>
         </div>
     </div>
@@ -42,7 +51,25 @@
         url = new URL($location.absUrl());
         id = url.searchParams.get("id");
 
+
+        $scope.toUpload = [{key: "amount", placeholder: "value"}];
+
+        function arrarify(obj) {
+            arr = [];
+            for (key in obj) {
+                arr.push({key: key, type: obj[key]});
+            }
+            return arr;
+        }
+
         $scope.addValue = function(value) {
+
+            for (t in $scope.toUpload) {
+                var key = $scope.toUpload[t].key;
+                value[key] = value[key] || "";
+            }
+
+            console.log(value);
 
             var req = {
                 method: "POST",
@@ -58,7 +85,9 @@
                     if (resp.data) {
                         $scope.values.push(resp.data);
                     }
-                    value.amount = "";
+                    for (v in value) {
+                        value[v] = "";
+                    }
                 });
         }
 
@@ -66,6 +95,11 @@
             var sourceReq = {method: "GET", url: "/api/sources/" + id, headers: {jwt: jwt}};
             $http(sourceReq).then(function(response) {
                 $scope.source = response.data;
+                document.getElementById("uploadForm").setAttribute("action", "/api/sources/" + $scope.source.id + "/values/upload");
+                if (response.data.type == null) {
+                    $scope.toUpload = arrarify(response.data.customType.types);
+                    console.log($scope.toUpload);
+                }
             });
 
             var valuesReq = {method: "GET", url: "/api/sources/" + id + "/values/all", headers: {jwt: jwt}};
