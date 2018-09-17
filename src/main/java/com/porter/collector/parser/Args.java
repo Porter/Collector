@@ -2,8 +2,7 @@ package com.porter.collector.parser;
 
 import com.google.common.collect.ImmutableList;
 import com.porter.collector.model.SimpleUser;
-import com.porter.collector.model.Value;
-import com.porter.collector.model.Values.ValueType;
+import com.porter.collector.values.ValueType;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.porter.collector.model.Values;
+package com.porter.collector.values;
 
 public class MyFloat implements Addable<MyFloat>, ValueType<MyFloat> {
 
@@ -28,6 +28,11 @@ public class MyFloat implements Addable<MyFloat>, ValueType<MyFloat> {
     @Override
     public MyFloat parse(String value) throws NumberFormatException {
         return new MyFloat(_parse(value));
+    }
+
+    @Override
+    public MyFloat combine(MyFloat other) {
+        return null;
     }
 
     @Override

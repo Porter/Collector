@@ -1,8 +1,6 @@
 package com.porter.collector.parser;
 
 import com.google.common.collect.ImmutableMap;
-import com.porter.collector.model.ValueTypes;
-import com.porter.collector.model.Values.ValueType;
 
 import java.util.Map;
 

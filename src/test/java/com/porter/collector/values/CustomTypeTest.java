@@ -1,4 +1,4 @@
-package com.porter.collector.model.Values;
+package com.porter.collector.values;
 
 import com.google.common.collect.ImmutableMap;
 import com.porter.collector.model.ValueTypes;

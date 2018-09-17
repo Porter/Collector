@@ -1,4 +1,4 @@
-package com.porter.collector.model.Values;
+package com.porter.collector.values;
 
 import org.junit.Test;
 

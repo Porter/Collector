@@ -7,10 +7,10 @@ import com.porter.collector.db.UserDao;
 import com.porter.collector.db.ValueDao;
 import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.*;
-import com.porter.collector.model.Values.MyInteger;
-import com.porter.collector.model.Values.MyLong;
-import com.porter.collector.model.Values.MyString;
-import com.porter.collector.model.Values.ValueType;
+import com.porter.collector.values.MyInteger;
+import com.porter.collector.values.MyLong;
+import com.porter.collector.values.MyString;
+import com.porter.collector.values.ValueType;
 import org.junit.Before;
 import org.junit.Test;
 

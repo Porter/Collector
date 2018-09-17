@@ -1,4 +1,4 @@
-package com.porter.collector.model.Values;
+package com.porter.collector.values;
 
 public class MyString implements Addable<MyString>, ValueType<MyString> {
 
@@ -20,6 +20,22 @@ public class MyString implements Addable<MyString>, ValueType<MyString> {
     @Override
     public MyString parse(String value) {
         return new MyString(value);
+    }
+
+    @Override
+    public MyString combine(MyString other) {
+        byte[] one = value.getBytes();
+        byte[] two = value.getBytes();
+        int m = Math.max(one.length, two.length);
+        byte[] three = new byte[m];
+        for (int i = 0; i < m; i++) {
+            byte b1 = 0, b2 = 0;
+            if (i < one.length) { b1 = one[i]; }
+            if (i < two.length) { b2 = two[i]; }
+
+            three[i] = (byte) (b1 ^ b2);
+        }
+        return new MyString(new String(three));
     }
 
     @Override

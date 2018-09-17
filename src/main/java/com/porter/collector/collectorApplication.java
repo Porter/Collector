@@ -64,9 +64,11 @@ public class collectorApplication extends Application<collectorConfiguration> {
         GoalDao goalDao = jdbi.onDemand(GoalDao.class);
         CustomTypeDao customTypeDao = jdbi.onDemand(CustomTypeDao.class);
         CsvRowDao csvRowDao = jdbi.onDemand(CsvRowDao.class);
+        CsvColumnMappingDao csvColumnMappingDao = jdbi.onDemand(CsvColumnMappingDao.class);
 
         CollectionsController collectionsController = new CollectionsController(collectionDao, sourceDao, customTypeDao);
-        SourcesController sourcesController = new SourcesController(sourceDao, valueDao, csvRowDao);
+        SourcesController sourcesController = new SourcesController(sourceDao, valueDao, csvRowDao,
+                csvColumnMappingDao, customTypeDao);
         UsersController usersController = new UsersController(userDao);
         ReportsController reportsController = new ReportsController(reportDao);
         GoalsController goalsController = new GoalsController(goalDao);

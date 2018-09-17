@@ -1,9 +1,10 @@
 package com.porter.collector.db;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.*;
-import com.porter.collector.model.Values.CustomType;
+import com.porter.collector.values.CustomType;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,9 +54,8 @@ public class SourceDaoTest extends BaseTest {
     public void insert_findByIdCustomType() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
-        String json = "{\"f\": 3}";
-        UsersCustomType customType = customTypeDao.insert(user.id(), "name", json);
-        CustomType ct = new CustomType().parse(json);
+        CustomType type = new CustomType(ImmutableMap.of("f", ValueTypes.INT));
+        UsersCustomType customType = customTypeDao.insert(user.id(), "name", type);
         Long id = sourceDao.insert("source", user.id(), collection.id(), null, customType, false).id();
 
         Source expected = ImmutableSource
@@ -64,7 +64,7 @@ public class SourceDaoTest extends BaseTest {
                 .name("source")
                 .collectionId(collection.id())
                 .userId(user.id())
-                .customType(ct)
+                .customType(type)
                 .external(false)
                 .build();
 

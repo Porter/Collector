@@ -1,9 +1,8 @@
 package com.porter.collector.parser;
 
-import com.porter.collector.model.Collection;
-import com.porter.collector.model.Values.MyFloat;
-import com.porter.collector.model.Values.MyInteger;
-import com.porter.collector.model.Values.MyString;
+import com.porter.collector.values.MyFloat;
+import com.porter.collector.values.MyInteger;
+import com.porter.collector.values.MyString;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;

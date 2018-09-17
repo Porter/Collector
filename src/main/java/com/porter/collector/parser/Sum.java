@@ -1,7 +1,7 @@
 package com.porter.collector.parser;
 
-import com.porter.collector.model.Values.Addable;
-import com.porter.collector.model.Values.ValueType;
+import com.porter.collector.values.Addable;
+import com.porter.collector.values.ValueType;
 
 import java.util.ArrayList;
 import java.util.List;

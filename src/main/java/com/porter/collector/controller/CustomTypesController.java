@@ -6,6 +6,7 @@ import com.porter.collector.db.CustomTypeDao;
 import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.UsersCustomType;
 import com.porter.collector.model.ValueTypes;
+import com.porter.collector.values.CustomType;
 import io.dropwizard.jackson.Jackson;
 
 import javax.ws.rs.PathParam;
@@ -36,30 +37,24 @@ public class CustomTypesController {
 
     public UsersCustomType create(SimpleUser user, String name, List<String> keys, List<Integer> values)
             throws ParseException {
-        return customTypeDao.insert(user.id(), name, getStringRepresentation(keys, values));
+        return customTypeDao.insert(user.id(), name, getCustomType(keys, values));
     }
 
-    private String getStringRepresentation(List<String> keys, List<Integer> values) throws ParseException {
+    private CustomType getCustomType(List<String> keys, List<Integer> values) throws ParseException {
         if (keys.size() != values.size()) {
             throw new IllegalStateException("keys and values must be of same length");
         }
 
-        Map<String, Integer> map = new HashMap<>();
+        Map<String, ValueTypes> map = new HashMap<>();
         int amount = ValueTypes.values().length;
         for (int i = 0; i < keys.size(); i++) {
             int type = values.get(i);
-            if (type >= amount) {
+            if (type >= amount || type < 0) {
                 throw new IllegalStateException("ValueType out of range: " + type);
             }
-            map.put(keys.get(i), type);
+            map.put(keys.get(i), ValueTypes.values()[type]);
         }
 
-        ObjectMapper mapper = Jackson.newObjectMapper();
-        try {
-            return mapper.writeValueAsString(map);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new ParseException(e.getMessage(), 0);
-        }
+        return new CustomType(map);
     }
 }

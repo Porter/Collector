@@ -1,7 +1,7 @@
 package com.porter.collector.model;
 
 import com.google.common.collect.ImmutableMap;
-import com.porter.collector.model.Values.*;
+import com.porter.collector.values.*;
 
 import java.util.Map;
 

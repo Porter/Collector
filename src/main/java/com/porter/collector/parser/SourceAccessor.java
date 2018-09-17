@@ -5,7 +5,7 @@ import com.porter.collector.db.ValueDao;
 import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.Source;
 import com.porter.collector.model.Value;
-import com.porter.collector.model.Values.*;
+import com.porter.collector.values.*;
 
 import java.text.ParseException;
 import java.util.List;

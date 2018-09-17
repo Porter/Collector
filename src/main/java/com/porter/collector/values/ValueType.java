@@ -1,7 +1,9 @@
-package com.porter.collector.model.Values;
+package com.porter.collector.values;
 
 public interface ValueType<E extends ValueType> {
     E parse(String value) throws Exception;
+
+    E combine(E other);
 
     String stringify();
 

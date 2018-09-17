@@ -1,6 +1,9 @@
 package com.porter.collector.db;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.porter.collector.model.*;
+import com.porter.collector.values.CustomType;
+import io.dropwizard.jackson.Jackson;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
@@ -8,6 +11,7 @@ import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.jdbi.v3.sqlobject.statement.UseRowMapper;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface CustomTypeDao {
@@ -19,15 +23,20 @@ public interface CustomTypeDao {
                        @Bind("type") String type);
 
 
-    default UsersCustomType insert(long userId, String name, String type) {
+    default UsersCustomType insert(long userId, String name, CustomType type) {
         Long id;
+
+        ObjectMapper objectMapper = Jackson.newObjectMapper();
+
         try {
-            id = executeInsert(userId, name, type);
+            id = executeInsert(userId, name, objectMapper.writeValueAsString(type));
         } catch (UnableToExecuteStatementException e) {
             if (e.getMessage().contains("violates foreign key constraint \"one_user_to_many_custom_types\"")) {
                 throw new IllegalStateException("user id does not exist: " + userId);
             }
             throw e;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return ImmutableUsersCustomType.builder()
                 .id(id)
@@ -44,4 +53,9 @@ public interface CustomTypeDao {
     @SqlQuery("SELECT * FROM custom_types WHERE user_id=:user_id")
     @UseRowMapper(UsersCustomTypeMapper.class)
     List<UsersCustomType> findAllFromUser(@Bind("user_id") Long user_id);
+
+    @SqlQuery("SELECT custom_types.* FROM sources LEFT JOIN custom_types ON sources.custom_type_id=custom_types.id " +
+            "WHERE sources.id=:sourceId")
+    @UseRowMapper(UsersCustomTypeMapper.class)
+    UsersCustomType findBySourceId(@Bind("sourceId") long sourceId);
 }

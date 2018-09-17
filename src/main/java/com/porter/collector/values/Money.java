@@ -1,4 +1,4 @@
-package com.porter.collector.model.Values;
+package com.porter.collector.values;
 
 public class Money implements Addable<Money>, ValueType<Money> {
 
@@ -37,6 +37,11 @@ public class Money implements Addable<Money>, ValueType<Money> {
         }
 
         return _parse(value, multiplier);
+    }
+
+    @Override
+    public Money combine(Money other) {
+        return this.add(other);
     }
 
     private Money _parse(String value, int multiplier) {

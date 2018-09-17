@@ -29,11 +29,23 @@
                     <input type="submit" name="New" value="New" />
                 </span>
             </form>
-            <form>
+            <form ng-if="source.external">
                 <input data-my-Directive type="file" />
                 <input type="hidden" id="sourceId" value="{{source.id}}" />
                 <button ng-click="filePicked()">Upload</button>
             </form>
+
+            <form ng-if="addingMapping" ng-submit="uploadMappings(mapping)">
+                <span ng-repeat="t in toUpload">
+                    <label>{{t.key}}: </label>
+                    <select ng-model="$parent.mapping[t.key]">
+                        <option ng-repeat="header in headers" value="{{header}}">{{header}}</option>
+                    </select>
+                    <br/>
+                </span>
+                <input type="submit" value="Set headers" />
+            </form>
+
         </div>
     </div>
 
@@ -52,8 +64,13 @@
                 element.bind('change', function () {
                     var formData = new FormData();
                     formData.append('upload', element[0].files[0]);
-                    httpPostFactory("/api/sources/" + scope.id + "/values/upload", formData, function (callback) {
-                        console.log(callback);
+                    element[0].value = "";
+                    httpPostFactory("/api/sources/" + scope.source.id + "/values/upload", formData, function (resp) {
+                        if (resp.headers("status") == "needHeaders") {
+                            scope.getMapping(resp.data);
+                        } else {
+                            scope.addValues(resp.data);
+                        }
                     });
                 });
 
@@ -89,6 +106,29 @@
                 arr.push({key: key, type: obj[key]});
             }
             return arr;
+        }
+
+        $scope.addingMapping = false;
+        $scope.getMapping = function(headers) {
+            $scope.addingMapping = true;
+            $scope.headers = headers;
+        }
+
+        $scope.uploadMappings = function(mapping) {
+            var req = {
+                method: "POST",
+                url: "/api/sources/" + id + "/mapping/set",
+                data: $.param(mapping),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            };
+            $http(req)
+                .then(function(resp) {
+                    console.log(resp);
+                });
+        }
+
+        $scope.addValues = function(values) {
+            console.log(values);
         }
 
         $scope.addValue = function(value) {

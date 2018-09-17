@@ -2,7 +2,7 @@ package com.porter.collector.db;
 
 import com.porter.collector.model.*;
 
-import com.porter.collector.model.Values.CustomType;
+import com.porter.collector.values.CustomType;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
@@ -47,10 +47,7 @@ public interface SourceDao {
         }
 
         CustomType customType = null;
-        try {
-            customType = new CustomType().parse(usersCustomType.type());
-        } catch (Exception ignored) { }
-
+        if (usersCustomType != null) { customType = usersCustomType.type(); }
         return ImmutableSource.builder()
                 .id(id)
                 .name(name)

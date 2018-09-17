@@ -386,4 +386,8 @@
                                  referencedColumnNames="id" />
     </changeSet>
 
+    <changeSet id="25" author="Porter">
+        <renameColumn tableName="csv" oldColumnName="rowNumber" newColumnName="row_number" />
+    </changeSet>
+
 </databaseChangeLog>

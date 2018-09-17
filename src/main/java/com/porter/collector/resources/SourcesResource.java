@@ -2,11 +2,9 @@ package com.porter.collector.resources;
 
 import com.google.common.collect.ImmutableMap;
 import com.porter.collector.controller.SourcesController;
+import com.porter.collector.exception.CsvMappingNotSetException;
 import com.porter.collector.model.*;
 import io.dropwizard.auth.Auth;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
@@ -18,8 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Path(Urls.SOURCE)
@@ -91,25 +87,46 @@ public class SourcesResource {
     @Path("/{id}/values/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadValues(@Auth SimpleUser user,
+                                 @PathParam("id") long sourceId,
                                  @FormDataParam("upload") InputStream uploadedInputStream,
                                  @FormDataParam("file") FormDataContentDisposition fileDetail) {
 
         Reader reader = new InputStreamReader(uploadedInputStream);
         try {
-            CSVParser parser = new CSVParser(reader, CSVFormat.DEFAULT);
-            Iterator<CSVRecord> itr = parser.iterator();
-            if (itr.hasNext()) {
-                CSVRecord record = itr.next();
-                List<String> header = new ArrayList<>();
-                record.iterator().forEachRemaining(header::add);
-
-                return Response.ok(header).build();
-            }
-
-            return null;
+            List<Value> values = sourcesController.uploadCSV(user, sourceId, uploadedInputStream);
+            return Response.ok(values).build();
         } catch (IOException e) {
             return Response
                     .status(500)
+                    .entity(ImmutableMap.of("error", "Upload interrupted. Please try again"))
+                    .build();
+        } catch (IllegalAccessException e) {
+            return Response
+                    .status(401)
+                    .entity(ImmutableMap.of("error", "Upload interrupted. Please try again"))
+                    .build();
+        } catch (CsvMappingNotSetException e) {
+            return setMapping(e.getHeaders());
+        }
+    }
+
+    private Response setMapping(List<String> headers) {
+        return Response.status(200).header("status", "needHeaders").entity(headers).build();
+    }
+
+    @POST
+    @Path("/{id}/mapping/set")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response setMapping(@Auth SimpleUser user,
+                               @PathParam("id") long sourceId,
+                               MultivaluedMap<String, String> map) {
+
+        try {
+            List<String> values = sourcesController.setMapping(user, sourceId, map);
+            return Response.ok(values).build();
+        } catch (IllegalAccessException e) {
+            return Response
+                    .status(401)
                     .entity(ImmutableMap.of("error", "Upload interrupted. Please try again"))
                     .build();
         }

@@ -1,7 +1,7 @@
 package com.porter.collector.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.porter.collector.model.Values.CustomType;
+import com.porter.collector.values.CustomType;
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;

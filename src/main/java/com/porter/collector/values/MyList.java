@@ -1,7 +1,6 @@
-package com.porter.collector.model.Values;
+package com.porter.collector.values;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +26,11 @@ public class MyList implements Addable<MyList>, ValueType<MyList> {
     @Override
     public MyList parse(String value) {
         return new MyList();
+    }
+
+    @Override
+    public MyList combine(MyList other) {
+        return this.add(other);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.porter.collector.model;
 
-import com.porter.collector.model.Values.CustomType;
+import com.porter.collector.values.CustomType;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 

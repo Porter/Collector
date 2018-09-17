@@ -1,4 +1,4 @@
-package com.porter.collector.model.Values;
+package com.porter.collector.values;
 
 public class MyLong implements Addable<MyLong>, ValueType<MyLong> {
 
@@ -16,6 +16,11 @@ public class MyLong implements Addable<MyLong>, ValueType<MyLong> {
     @Override
     public MyLong parse(String value) {
         return new MyLong(Long.parseLong(value));
+    }
+
+    @Override
+    public MyLong combine(MyLong other) {
+        return this.add(other);
     }
 
     @Override

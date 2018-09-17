@@ -1,4 +1,4 @@
-package com.porter.collector.model.Values;
+package com.porter.collector.values;
 
 public class MyInteger implements Addable<MyInteger>, ValueType<MyInteger> {
 
@@ -24,6 +24,11 @@ public class MyInteger implements Addable<MyInteger>, ValueType<MyInteger> {
     @Override
     public MyInteger parse(String value) {
         return new MyInteger(Integer.parseInt(value));
+    }
+
+    @Override
+    public MyInteger combine(MyInteger other) {
+        return this.add(other);
     }
 
     @Override
