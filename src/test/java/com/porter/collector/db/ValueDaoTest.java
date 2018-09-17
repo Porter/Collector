@@ -1,5 +1,6 @@
 package com.porter.collector.db;
 
+import com.google.common.collect.ImmutableList;
 import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.Collection;
 import com.porter.collector.model.UserWithPassword;
@@ -38,6 +39,33 @@ public class ValueDaoTest extends BaseTest {
         Value expected = valueDao.findById(value.id());
 
         assertEquals(expected, value);
+    }
+
+    @Test
+    public void insert_findById_Batch() throws Exception {
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
+        Collection collection = collectionDao.insert("test", user.id());
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null, false).id();
+
+        List<String> values = ImmutableList.of("1", "2", "asdf", "f");
+        List<Long> ids = ImmutableList.of(id, id, id, id);
+        List<Value> created = valueDao.insert(values, ids);
+
+        for (Value value : created) {
+            Value expected = valueDao.findById(value.id());
+            assertEquals(expected, value);
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void insert_findById_BatchBadArgs() throws Exception {
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
+        Collection collection = collectionDao.insert("test", user.id());
+        Long id = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null, false).id();
+
+        List<String> values = ImmutableList.of("1", "2", "asdf", "f", "fifth");
+        List<Long> ids = ImmutableList.of(id, id, id, id);
+        valueDao.insert(values, ids);
     }
 
     @Test

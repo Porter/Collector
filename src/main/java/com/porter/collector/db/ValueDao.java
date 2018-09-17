@@ -2,11 +2,9 @@ package com.porter.collector.db;
 
 import com.porter.collector.model.*;
 import org.jdbi.v3.sqlobject.customizer.Bind;
-import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
-import org.jdbi.v3.sqlobject.statement.SqlQuery;
-import org.jdbi.v3.sqlobject.statement.SqlUpdate;
-import org.jdbi.v3.sqlobject.statement.UseRowMapper;
+import org.jdbi.v3.sqlobject.statement.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ValueDao {
@@ -14,6 +12,30 @@ public interface ValueDao {
     @SqlUpdate("INSERT INTO values (value, source_id) VALUES (:value, :sourceId)")
     @GetGeneratedKeys
     long executeInsert(@Bind("value") String value, @Bind("sourceId") long sourceId);
+
+    @SqlBatch("INSERT INTO values (value, source_id) VALUES (:value, :sourceId)")
+    @GetGeneratedKeys
+    List<Long> executeInsert(@Bind("value") List<String> value, @Bind("sourceId") List<Long> sourceId);
+
+    default List<Value> insert(List<String> values, List<Long> sourceIds) {
+        if (values.size() != sourceIds.size()) {
+            throw new IllegalArgumentException("Lists must be of same size");
+        }
+        List<Long> ids = executeInsert(values, sourceIds);
+
+        List<Value> created = new ArrayList<>();
+        for (int i = 0; i < values.size(); i++) {
+            created.add(ImmutableValue
+                    .builder()
+                    .id(ids.get(i))
+                    .value(values.get(i))
+                    .sourceId(sourceIds.get(i))
+                    .build()
+            );
+        }
+
+        return created;
+    }
 
     default Value insert(String value, long sourceId) {
         long id = executeInsert(value, sourceId);

@@ -72,5 +72,4 @@ public class CsvUpdaterTest {
         CsvRowsInfo info = updater.getInfo(rows1);
         assertEquals(extra, updater.newRows(info, rows2));
     }
-
 }

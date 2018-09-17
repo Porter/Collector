@@ -76,12 +76,9 @@ public class SourcesController {
                 ValueType t = ValueTypes.getMap().get(valueTypes);
                 String keysValue = value.getFirst(key);
 
-                try {
-                    value.putSingle(key, t.parse(keysValue).stringify());
-                } catch (Exception e) {
+                if (!t.isValid(keysValue)) {
                     return false;
                 }
-
             }
             return true;
         }
@@ -97,22 +94,45 @@ public class SourcesController {
         }
     }
 
-    private String stringRepr(Source source, MultivaluedMap<String, String> value) {
-        if (source.type() == null) {
-            ObjectMapper mapper = Jackson.newObjectMapper();
+    private Map<String, ValueType> parseValues(Source source, Map<String, String> values) {
+        CustomType type = source.customType();
+        Map<String, ValueType> map = new HashMap<>();
+        type.getTypes().forEach((key, valueTypes) -> {
+            ValueType valueType;
             try {
-                Map<String, String> singleMap = new HashMap<>();
-                value.forEach((key, val) -> {
-                    singleMap.put(key, val.get(0));
-                });
-
-                return mapper.writeValueAsString(singleMap);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                return "{}";
+                valueType = ValueTypes.getMap().get(valueTypes).parse(values.get(key));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
+            map.put(key, valueType);
+        });
+
+        return map;
+    }
+
+    private String stringifyValues(Map<String, ValueType> values) {
+        Map<String, String> map = new HashMap<>();
+        values.forEach((key, valueType) -> map.put(key, valueType.stringify()));
+
+        ObjectMapper mapper = Jackson.newObjectMapper();
+        try {
+            return mapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String stringRepr(Source source, Map<String, String> value) {
+        if (source.type() == null) {
+            Map<String, ValueType> parsed = parseValues(source, value);
+            return stringifyValues(parsed);
         } else {
-            return value.getFirst("amount");
+            ValueTypes types = source.type();
+            try {
+                return ValueTypes.getMap().get(types).parse(value.get("amount")).stringify();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -128,7 +148,7 @@ public class SourcesController {
             return null;
         }
 
-        String val = stringRepr(source, value);
+        String val = stringRepr(source, fromMultivaluedMap(value));
         return valueDao.insert(val, sourceId);
     }
 
@@ -173,30 +193,24 @@ public class SourcesController {
             return null;
         }
 
-        ObjectMapper mapper = Jackson.newObjectMapper();
-        List<Value> valueList = new ArrayList<>();
+        List<String> values = new ArrayList<>();
+        List<Long> sourceIds = new ArrayList<>();
+        List<Map<String, ValueType>> rows = new ArrayList<>();
         for (CSVRecord record : parser) {
             Map<String, String> internalMap = new HashMap<>();
             mapping.mapping().forEach((internalKey, csvKey) ->  internalMap.put(internalKey, record.get(csvKey)));
 
-            String value = mapper.writeValueAsString(internalMap);
-            valueList.add(valueDao.insert(value, sourceId));
+            Map<String, ValueType> mappedValues = parseValues(source, internalMap);
+            String json = stringifyValues(mappedValues);
+            rows.add(mappedValues);
+            values.add(json);
+            sourceIds.add(sourceId);
+
+            //TODO make csv row num a bigint
+            csvRowDao.insert(mappedValues, (int) record.getRecordNumber(), true, sourceId);
         }
 
-        return valueList;
-    }
-
-    private Map<String, String> fromMultivaluedMap(MultivaluedMap<String, String> map) throws IllegalArgumentException {
-        Map<String, String> singleValuedMap = new HashMap<>();
-        map.forEach((key, value) -> {
-            if (value.size() != 1) {
-                throw new IllegalArgumentException("Multivaluedmap should be convertable to normal");
-            }
-
-            singleValuedMap.put(key, value.get(0));
-        });
-
-        return singleValuedMap;
+        return valueDao.insert(values, sourceIds);
     }
 
     public List<String> setMapping(SimpleUser user, long sourceId, MultivaluedMap<String, String> map)
@@ -220,5 +234,18 @@ public class SourcesController {
         csvColumnMappingDao.insert(sourceId, fromMultivaluedMap(map));
 
         return new ArrayList<>(map.keySet());
+    }
+
+    private Map<String, String> fromMultivaluedMap(MultivaluedMap<String, String> map) throws IllegalArgumentException {
+        Map<String, String> singleValuedMap = new HashMap<>();
+        map.forEach((key, value) -> {
+            if (value.size() != 1) {
+                throw new IllegalArgumentException("Multivaluedmap should be convertable to normal");
+            }
+
+            singleValuedMap.put(key, value.get(0));
+        });
+
+        return singleValuedMap;
     }
 }
