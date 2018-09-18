@@ -13,8 +13,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 public class CsvRowDaoTest extends BaseTest {
@@ -57,6 +59,42 @@ public class CsvRowDaoTest extends BaseTest {
                 .build();
 
         Assert.assertEquals(expected, csvRowDao.findById(id));
+    }
+
+    @Test
+    public void insert_findByIdList() throws Exception {
+        UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
+        Collection collection = collectionDao.insert("test", user.id());
+        CustomType customType = new CustomType(ImmutableMap.of("i", ValueTypes.INT));
+        UsersCustomType usersCustomType = customTypeDao.insert(user.id(), "name", customType);
+        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.CUSTOM, usersCustomType, false);
+
+        List<Map<String, ValueType>> maps = new ArrayList<>();
+        List<Integer> rowNums = new ArrayList<>();
+        List<Boolean> procssed = new ArrayList<>();
+        List<Long> sourceId = new ArrayList<>();
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            maps.add(ImmutableMap.of("i", new MyInteger(4)));
+            rowNums.add(i);
+            procssed.add(random.nextBoolean());
+            sourceId.add(source.id());
+        }
+        List<CsvRow> rows = csvRowDao.insert(maps, rowNums, procssed, sourceId);
+
+
+        for (int i = 0; i < rows.size(); i++) {
+            CsvRow expected = ImmutableCsvRow
+                    .builder()
+                    .id(rows.get(i).id())
+                    .sourceId(source.id())
+                    .processed(procssed.get(i))
+                    .rowNumber(rowNums.get(i))
+                    .row(maps.get(i))
+                    .build();
+
+            Assert.assertEquals(expected, csvRowDao.findById(rows.get(i).id()));
+        }
     }
 
     @Test

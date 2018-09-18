@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.porter.collector.db.*;
 import com.porter.collector.exception.CsvMappingNotSetException;
 import com.porter.collector.model.*;
+import com.porter.collector.util.IteratorUtil;
 import com.porter.collector.values.CustomType;
 import com.porter.collector.values.ValueType;
 import io.dropwizard.jackson.Jackson;
@@ -19,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.*;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class SourcesController {
@@ -196,20 +198,25 @@ public class SourcesController {
         List<String> values = new ArrayList<>();
         List<Long> sourceIds = new ArrayList<>();
         List<Map<String, ValueType>> rows = new ArrayList<>();
+        List<Integer> rowNumbers = new ArrayList<>();
+
         for (CSVRecord record : parser) {
             Map<String, String> internalMap = new HashMap<>();
             mapping.mapping().forEach((internalKey, csvKey) ->  internalMap.put(internalKey, record.get(csvKey)));
 
             Map<String, ValueType> mappedValues = parseValues(source, internalMap);
             String json = stringifyValues(mappedValues);
+
             rows.add(mappedValues);
             values.add(json);
             sourceIds.add(sourceId);
-
             //TODO make csv row num a bigint
-            csvRowDao.insert(mappedValues, (int) record.getRecordNumber(), true, sourceId);
+            rowNumbers.add((int) record.getRecordNumber());
+
         }
 
+        List<Boolean> allTrue = IteratorUtil.listFromItrerator(IteratorUtil.nOf(rows.size(), true));
+        csvRowDao.insert(rows, rowNumbers, allTrue, sourceIds);
         return valueDao.insert(values, sourceIds);
     }
 
