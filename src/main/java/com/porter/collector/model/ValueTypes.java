@@ -6,7 +6,7 @@ import com.porter.collector.values.*;
 import java.util.Map;
 
 public enum ValueTypes {
-    FLOAT ("Float"), INT ("Integer"), CUSTOM ("Custom"), MONEY ("Dollars"), STRING ("String");
+    FLOAT ("Float"), INT ("Integer"), CUSTOM ("Custom"), MONEY ("Dollars"), STRING ("String"), DATE ("Date");
 
     private final String userFriendlyName;
 
@@ -25,7 +25,8 @@ public enum ValueTypes {
             FLOAT, new MyFloat(),
             INT, new MyInteger(),
             MONEY, new Money(),
-            STRING, new MyString()
+            STRING, new MyString(),
+            DATE, new MyDate()
     );
 
     public String userFriendlyName() {

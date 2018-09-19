@@ -72,4 +72,17 @@ public class CsvUpdaterTest {
         CsvRowsInfo info = updater.getInfo(rows1);
         assertEquals(extra, updater.newRows(info, rows2));
     }
+
+    @Test
+    public void newRowsFromEmpty() throws Exception {
+        CsvUpdater updater = new CsvUpdater();
+        List<CsvRow> rows1 = new ArrayList<>();
+        List<CsvRow> rows2 = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            rows2.add(getFakeRow(i));
+        }
+
+        CsvRowsInfo info = updater.getInfo(rows1);
+        assertEquals(rows2, updater.newRows(info, rows2));
+    }
 }

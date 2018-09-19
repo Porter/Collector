@@ -128,7 +128,7 @@
         }
 
         $scope.addValues = function(values) {
-            console.log(values);
+            $scope.values.push.apply($scope.values, values);
         }
 
         $scope.addValue = function(value) {
@@ -137,8 +137,6 @@
                 var key = $scope.toUpload[t].key;
                 value[key] = value[key] || "";
             }
-
-            console.log(value);
 
             var req = {
                 method: "POST",
@@ -165,7 +163,7 @@
             $http(sourceReq).then(function(response) {
                 $scope.source = response.data;
                 if (response.data.type == null) {
-                    $scope.toUpload = arrarify(response.data.customType.types);
+                    $scope.toUpload = arrarify(response.data.customType);
                 }
             });
 

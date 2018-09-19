@@ -24,7 +24,7 @@ public class CsvUpdater {
 
     public CsvRowsInfo getInfo(List<CsvRow> rows) {
         if (rows.isEmpty()) {
-            return null;
+            return new CsvRowsInfo(null, 0);
         }
 
         Set<String> keys = rows.get(0).row().keySet();

@@ -10,6 +10,9 @@ public class CsvRowsInfo {
     private int rowCount;
 
     public CsvRowsInfo(CsvRow infoRow, int count) {
+        if (count > 0) {
+            Objects.requireNonNull(infoRow);
+        }
         this.infoRow = infoRow;
         this.rowCount = count;
     }
