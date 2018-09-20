@@ -2,6 +2,7 @@ package com.porter.collector.db;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.porter.collector.csv.CsvRowsInfo;
 import com.porter.collector.model.*;
 import com.porter.collector.parser.Parser;
 import com.porter.collector.values.ValueType;
@@ -120,5 +121,13 @@ public interface CsvRowDao {
         }
 
         return created;
+    }
+
+    default CsvRow insert(CsvRowsInfo info) throws IllegalAccessException {
+        if (info.rowCount() == 0) {
+            return null;
+        }
+        CsvRow row = info.getInfoRow();
+        return insert(row.row(), row.rowNumber(), row.processed(), row.sourceId());
     }
 }

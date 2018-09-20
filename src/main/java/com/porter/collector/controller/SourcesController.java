@@ -2,6 +2,8 @@ package com.porter.collector.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.porter.collector.csv.CsvRowsInfo;
+import com.porter.collector.csv.CsvUpdater;
 import com.porter.collector.db.*;
 import com.porter.collector.exception.CsvMappingNotSetException;
 import com.porter.collector.model.*;
@@ -30,6 +32,7 @@ public class SourcesController {
     private final CsvRowDao csvRowDao;
     private final CsvColumnMappingDao csvColumnMappingDao;
     private final CustomTypeDao customTypeDao;
+    private final CsvUpdater updater;
 
     public SourcesController(SourceDao sourceDao, ValueDao valueDao, CsvRowDao csvRowDao,
                              CsvColumnMappingDao csvColumnMappingDao, CustomTypeDao customTypeDao) {
@@ -38,6 +41,7 @@ public class SourcesController {
         this.csvRowDao = csvRowDao;
         this.csvColumnMappingDao = csvColumnMappingDao;
         this.customTypeDao = customTypeDao;
+        this.updater = new CsvUpdater();
     }
 
     public List<Source> getAllFromUser(SimpleUser user) {
@@ -216,7 +220,9 @@ public class SourcesController {
         }
 
         List<Boolean> allTrue = IteratorUtil.listFromItrerator(IteratorUtil.nOf(rows.size(), true));
-        csvRowDao.insert(rows, rowNumbers, allTrue, sourceIds);
+        List<CsvRow> inserted = csvRowDao.insert(rows, rowNumbers, allTrue, sourceIds);
+        CsvRowsInfo info = updater.getInfo(inserted);
+        csvRowDao.insert(info);
         return valueDao.insert(values, sourceIds);
     }
 
