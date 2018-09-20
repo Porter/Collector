@@ -2,6 +2,7 @@ package com.porter.collector.db;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.*;
 import com.porter.collector.values.CustomType;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -78,9 +80,9 @@ public class SourceDaoTest extends BaseTest {
         Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null, false);
         Source source2 = sourceDao.insert("source2", user.id(), collection.id(), ValueTypes.INT, null, false);
 
-        List<Source> expected = ImmutableList.of(source, source2);
+        Set<Source> expected = ImmutableSet.of(source, source2);
 
-        assertEquals(expected, sourceDao.findAll());
+        assertEquals(expected, ImmutableSet.copyOf(sourceDao.findAll()));
     }
 
     @Test
