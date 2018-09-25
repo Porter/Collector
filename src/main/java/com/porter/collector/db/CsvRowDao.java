@@ -2,9 +2,8 @@ package com.porter.collector.db;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.porter.collector.csv.CsvRowsInfo;
+import com.porter.collector.csv.CsvInfo;
 import com.porter.collector.model.*;
-import com.porter.collector.parser.Parser;
 import com.porter.collector.values.ValueType;
 import io.dropwizard.jackson.Jackson;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
@@ -14,13 +13,22 @@ import org.jdbi.v3.sqlobject.statement.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 public interface CsvRowDao {
 
     @SqlUpdate("INSERT INTO csv (row, row_number, processed, source_id) VALUES (:row, :rowNumber, :processed, :sourceId)")
     @GetGeneratedKeys
     long executeInsert(
+            @Bind("row") String row,
+            @Bind("rowNumber") int rowNum,
+            @Bind("processed") boolean processed,
+            @Bind("sourceId") long sourceId);
+
+    @SqlUpdate("INSERT INTO csv (row, row_number, processed, source_id) VALUES (:row, :rowNumber, :processed, :sourceId) " +
+            "ON CONFLICT ON CONSTRAINT csv_source_id_row_number_key " +
+            "DO UPDATE SET row=:row, row_number=:rowNumber, processed=:processed, source_id=:sourceId")
+    @GetGeneratedKeys
+    long executeInfoInsert(
             @Bind("row") String row,
             @Bind("rowNumber") int rowNum,
             @Bind("processed") boolean processed,
@@ -34,17 +42,28 @@ public interface CsvRowDao {
             @Bind("processed") List<Boolean> processed,
             @Bind("sourceId") List<Long> sourceId);
 
-    @SqlQuery("SELECT csv.*, sources.type AS source_type, custom_types.type AS custom_type FROM csv " +
+    @SqlQuery("SELECT csv.*, custom_types.type AS custom_type FROM csv " +
             "LEFT JOIN sources ON csv.source_id = sources.id " +
-            "LEFT JOIN custom_types ON custom_types.id = sources.custom_type_id WHERE source_id=:sourceId")
+            "LEFT JOIN custom_types ON custom_types.id = sources.custom_type_id WHERE source_id=:sourceId AND row_number >= 0")
     @UseRowMapper(CsvRowMapper.class)
-    List<CsvRow> findAllFromSource(@Bind("sourceId") Long id);
+    List<CommittedCsvRow> findAllFromSource(@Bind("sourceId") Long id);
 
-    @SqlQuery("SELECT csv.*, sources.type AS source_type, custom_types.type AS custom_type FROM csv " +
+    @SqlQuery("SELECT csv.*, custom_types.type AS custom_type FROM csv " +
             "LEFT JOIN sources ON csv.source_id = sources.id " +
-            "LEFT JOIN custom_types ON custom_types.id = sources.custom_type_id WHERE csv.id=:id")
+            "LEFT JOIN custom_types ON custom_types.id = sources.custom_type_id WHERE csv.id=:id AND row_number >= 0")
     @UseRowMapper(CsvRowMapper.class)
-    CsvRow findById(@Bind("id") Long id);
+    CommittedCsvRow findById(@Bind("id") Long id);
+
+
+    default CsvInfo insertRowsInfo(CsvInfo info) throws IllegalAccessException {
+        if (info.rowCount() == 0) {
+            return info;
+        }
+        CsvRow row = null;//info.getInfo();
+        String json = _getJson(row.row());
+        long id = executeInfoInsert(json, row.rowNumber(), row.processed(), row.sourceId());
+        return info;
+    }
 
     default String _getJson(Map<String, ValueType> row) {
         Map<String, String> newMap = new HashMap<>();
@@ -58,7 +77,11 @@ public interface CsvRowDao {
         }
     }
 
-    default CsvRow insert(Map<String, ValueType> row, int rowNum, boolean processed, long sourceId)
+    default CommittedCsvRow insert(CsvRow row) throws IllegalAccessException {
+        return insert(row.row(), row.rowNumber(), row.processed(), row.sourceId());
+    }
+
+    default CommittedCsvRow insert(Map<String, ValueType> row, int rowNum, boolean processed, long sourceId)
             throws IllegalAccessException {
 
         String json = _getJson(row);
@@ -72,8 +95,7 @@ public interface CsvRowDao {
             throw e;
         }
 
-        return ImmutableCsvRow
-                .builder()
+        return new CsvRowBuilder()
                 .id(id)
                 .rowNumber(rowNum)
                 .row(row)
@@ -82,7 +104,15 @@ public interface CsvRowDao {
                 .build();
     }
 
-    default List<CsvRow> insert(List<Map<String, ValueType>> rows, List<Integer> rowNum,
+    default List<CommittedCsvRow> insert(List<CsvRow> rows) throws IllegalAccessException {
+        List<CommittedCsvRow> committedCsvRows = new ArrayList<>();
+        for (CsvRow row : rows) {
+            committedCsvRows.add(insert(row));
+        }
+        return committedCsvRows;
+    }
+
+    default List<CommittedCsvRow> insert(List<Map<String, ValueType>> rows, List<Integer> rowNum,
                                 List<Boolean> processed, List<Long> sourceId) throws IllegalAccessException {
 
 
@@ -107,10 +137,9 @@ public interface CsvRowDao {
             throw e;
         }
 
-        List<CsvRow> created = new ArrayList<>();
+        List<CommittedCsvRow> created = new ArrayList<>();
         for (int i = 0; i < ids.size(); i++) {
-            created.add(ImmutableCsvRow
-                    .builder()
+            created.add(new CsvRowBuilder()
                     .id(ids.get(i))
                     .rowNumber(rowNum.get(i))
                     .row(rows.get(i))
@@ -121,13 +150,5 @@ public interface CsvRowDao {
         }
 
         return created;
-    }
-
-    default CsvRow insert(CsvRowsInfo info) throws IllegalAccessException {
-        if (info.rowCount() == 0) {
-            return null;
-        }
-        CsvRow row = info.getInfoRow();
-        return insert(row.row(), row.rowNumber(), row.processed(), row.sourceId());
     }
 }

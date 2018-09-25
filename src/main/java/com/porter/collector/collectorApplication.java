@@ -5,18 +5,22 @@ import com.porter.collector.auth.JwtUnauthorizedHandler;
 import com.porter.collector.auth.JwtAuthFilter;
 import com.porter.collector.auth.JwtAuthorizer;
 import com.porter.collector.controller.*;
+import com.porter.collector.csv.CSVParserProvider;
+import com.porter.collector.csv.CsvParserWrapper;
+import com.porter.collector.csv.CsvUpdater;
 import com.porter.collector.db.*;
 import com.porter.collector.health.BasicHealthCheck;
-import com.porter.collector.model.CsvRow;
 import com.porter.collector.model.SimpleUser;
 import com.porter.collector.parser.SourceAccessor;
 import com.porter.collector.parser.Tokens;
 import com.porter.collector.resources.*;
+import com.porter.collector.util.ValueValidator;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.bundles.assets.ConfiguredAssetsBundle;
 import io.dropwizard.db.PooledDataSourceFactory;
+import org.apache.commons.csv.CSVFormat;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.jdbi.v3.core.Jdbi;
 import io.dropwizard.migrations.MigrationsBundle;
@@ -64,11 +68,15 @@ public class collectorApplication extends Application<collectorConfiguration> {
         GoalDao goalDao = jdbi.onDemand(GoalDao.class);
         CustomTypeDao customTypeDao = jdbi.onDemand(CustomTypeDao.class);
         CsvRowDao csvRowDao = jdbi.onDemand(CsvRowDao.class);
-        CsvColumnMappingDao csvColumnMappingDao = jdbi.onDemand(CsvColumnMappingDao.class);
+        CsvInfoDao csvInfoDao = jdbi.onDemand(CsvInfoDao.class);
+
+        ValueValidator validator = new ValueValidator();
+        CsvUpdater updater = new CsvUpdater();
+        CSVParserProvider provider = new CSVParserProvider(CSVFormat.RFC4180.withFirstRecordAsHeader());
 
         CollectionsController collectionsController = new CollectionsController(collectionDao, sourceDao, customTypeDao);
         SourcesController sourcesController = new SourcesController(sourceDao, valueDao, csvRowDao,
-                csvColumnMappingDao, customTypeDao);
+                csvInfoDao, customTypeDao, new CsvParserWrapper(validator, provider), validator, updater);
         UsersController usersController = new UsersController(userDao);
         ReportsController reportsController = new ReportsController(reportDao);
         GoalsController goalsController = new GoalsController(goalDao);

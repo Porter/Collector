@@ -1,11 +1,13 @@
 package com.porter.collector.db;
 
 import com.porter.collector.model.*;
+import com.porter.collector.util.ValueUtil;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.porter.collector.util.ValueUtil;
 
 public interface ValueDao {
 
@@ -62,8 +64,8 @@ public interface ValueDao {
     @UseRowMapper(ValuesMapper.class)
     List<Value> _getRange(@Bind("sourceId") long sourceId, @Bind("start") long start, @Bind("end") long end);
 
-    @SqlQuery("SELECT COUNT(id) FROM values WHERE source_id=:souceId")
-    long _getCount(@Bind("souceId") long sourceId);
+    @SqlQuery("SELECT COUNT(id) FROM values WHERE source_id=:sourceId")
+    long _getCount(@Bind("sourceId") long sourceId);
 
     default List<Value> getRange(long sourceId, long start, long end) {
         if (start < 0 || end < 0) {
@@ -72,5 +74,17 @@ public interface ValueDao {
             if (end < 0) { end += count - 1; }
         }
         return _getRange(sourceId, start, end);
+    }
+
+    default List<Value> insert(List<CsvRow> rows) {
+        List<String> values = new ArrayList<>(rows.size());
+        List<Long> sourceIds = new ArrayList<>(rows.size());
+
+        for (CsvRow row : rows) {
+            values.add(ValueUtil.stringifyValues(row.row()));
+            sourceIds.add(row.sourceId());
+        }
+
+        return insert(values, sourceIds);
     }
 }

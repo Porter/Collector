@@ -28,10 +28,14 @@ public class CollectionsController {
     }
 
     public Source addSource(String name, SimpleUser user, long collectionId, int type, long customTypeId,
-                            boolean external) throws IllegalAccessException {
+                            boolean external) throws IllegalAccessException, IllegalArgumentException {
 
         if (sourceDao.confirmUserOwnsCollection(collectionId, user.id()) == null) {
             throw new IllegalAccessException("You can no longer modify that collection");
+        }
+
+        if ((type == -1) == (customTypeId == -1)) {
+            throw new IllegalArgumentException("Exactly one of type and customTypeId should be -1");
         }
 
         ValueTypes valueType = null;
@@ -45,7 +49,7 @@ public class CollectionsController {
             try {
                 valueType = ValueTypes.values()[type];
             } catch (IndexOutOfBoundsException e) {
-                throw new IllegalStateException(e);
+                throw new IllegalArgumentException(e);
             }
         }
 

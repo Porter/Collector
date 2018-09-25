@@ -41,7 +41,7 @@ public class CustomTypesResource {
                            @FormParam("value[]") List<Integer> values) {
         try {
             return Response.ok(customTypesController.create(user, name, keys, values)).build();
-        } catch (ParseException e) {
+        } catch (IllegalArgumentException e) {
             return Response.status(400).entity(ImmutableMap.of("error", e.getMessage())).build();
         }
     }

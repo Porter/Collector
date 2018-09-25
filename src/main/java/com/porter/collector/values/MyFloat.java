@@ -41,6 +41,11 @@ public class MyFloat implements Addable<MyFloat>, ValueType<MyFloat> {
     }
 
     @Override
+    public MyFloat zero() {
+        return new MyFloat(0);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof MyFloat)) { return false; }
         return ((MyFloat) o).value == value;

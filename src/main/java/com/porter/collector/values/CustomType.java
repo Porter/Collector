@@ -1,18 +1,14 @@
 package com.porter.collector.values;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.porter.collector.model.CustomTypeDeserializer;
 import com.porter.collector.model.CustomTypeSerializer;
 import com.porter.collector.model.ValueTypes;
 import io.dropwizard.jackson.Jackson;
-import org.glassfish.jersey.internal.inject.Custom;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -63,6 +59,11 @@ public class CustomType implements ValueType<CustomType> {
         } catch (JsonProcessingException e) {
             return "";
         }
+    }
+
+    @Override
+    public CustomType zero() {
+        return new CustomType();
     }
 
     public Map<String, ValueTypes> getTypes() {

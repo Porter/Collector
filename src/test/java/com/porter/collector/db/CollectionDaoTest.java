@@ -1,7 +1,7 @@
 package com.porter.collector.db;
 
 import com.google.common.collect.ImmutableList;
-import com.porter.collector.errors.CollectionExistsException;
+import com.porter.collector.exception.CollectionExistsException;
 import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.Collection;
 import com.porter.collector.model.ImmutableCollection;

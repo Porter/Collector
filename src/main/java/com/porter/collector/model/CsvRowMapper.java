@@ -15,9 +15,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CsvRowMapper implements RowMapper<ImmutableCsvRow> {
+public class CsvRowMapper implements RowMapper<ImmutableCommittedCsvRow> {
 
-    private Map<String, ValueType> getMap(String row, String customType) {
+    static Map<String, ValueType> getMap(String row, String customType) {
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<HashMap<String, String>> typeRefRow = new TypeReference<HashMap<String, String>>() {};
         TypeReference<HashMap<String, Integer>> typeRefType = new TypeReference<HashMap<String, Integer>>() {};
@@ -48,16 +48,17 @@ public class CsvRowMapper implements RowMapper<ImmutableCsvRow> {
     }
 
     @Override
-    public ImmutableCsvRow map(ResultSet resultSet, StatementContext ctx) throws SQLException {
-        int type = resultSet.getInt("source_type");
+    public ImmutableCommittedCsvRow map(ResultSet resultSet, StatementContext ctx) throws SQLException {
         String customType = resultSet.getString("custom_type");
-        return ImmutableCsvRow
-                .builder()
+        return ImmutableCommittedCsvRow.builder()
                 .id(resultSet.getLong("id"))
-                .row(getMap(resultSet.getString("row"), customType))
-                .rowNumber(resultSet.getInt("row_number"))
-                .processed(resultSet.getBoolean("processed"))
-                .sourceId(resultSet.getLong("source_id"))
+                .csvRow(ImmutableCsvRow.builder()
+                        .row(getMap(resultSet.getString("row"), customType))
+                        .rowNumber(resultSet.getInt("row_number"))
+                        .processed(resultSet.getBoolean("processed"))
+                        .sourceId(resultSet.getLong("source_id"))
+                        .build()
+                )
                 .build();
     }
 }

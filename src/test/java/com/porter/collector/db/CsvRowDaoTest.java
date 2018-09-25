@@ -2,21 +2,22 @@ package com.porter.collector.db;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.porter.collector.csv.CsvInfo;
+import com.porter.collector.csv.CsvUpdater;
 import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.*;
+import com.porter.collector.model.Collection;
 import com.porter.collector.values.CustomType;
 import com.porter.collector.values.MyInteger;
 import com.porter.collector.values.ValueType;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 
 
 public class CsvRowDaoTest extends BaseTest {
@@ -49,8 +50,7 @@ public class CsvRowDaoTest extends BaseTest {
         Long id = csvRowDao.insert(map, 1, true, source.id()).id();
 
 
-        CsvRow expected = ImmutableCsvRow
-                .builder()
+        CommittedCsvRow expected = new CsvRowBuilder()
                 .id(id)
                 .sourceId(source.id())
                 .processed(true)
@@ -58,7 +58,7 @@ public class CsvRowDaoTest extends BaseTest {
                 .row(map)
                 .build();
 
-        Assert.assertEquals(expected, csvRowDao.findById(id));
+        assertEquals(expected, csvRowDao.findById(id));
     }
 
     @Test
@@ -69,31 +69,21 @@ public class CsvRowDaoTest extends BaseTest {
         UsersCustomType usersCustomType = customTypeDao.insert(user.id(), "name", customType);
         Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.CUSTOM, usersCustomType, false);
 
-        List<Map<String, ValueType>> maps = new ArrayList<>();
-        List<Integer> rowNums = new ArrayList<>();
-        List<Boolean> procssed = new ArrayList<>();
-        List<Long> sourceId = new ArrayList<>();
+        List<CsvRow> rows = new ArrayList<>();
         Random random = new Random();
         for (int i = 0; i < 10; i++) {
-            maps.add(ImmutableMap.of("i", new MyInteger(4)));
-            rowNums.add(i);
-            procssed.add(random.nextBoolean());
-            sourceId.add(source.id());
+            rows.add(ImmutableCsvRow.builder()
+                    .row(ImmutableMap.of("i", new MyInteger(4)))
+                    .processed(random.nextBoolean())
+                    .rowNumber(i)
+                    .sourceId(source.id())
+                    .build());
         }
-        List<CsvRow> rows = csvRowDao.insert(maps, rowNums, procssed, sourceId);
-
+        List<CommittedCsvRow> saved = csvRowDao.insert(rows);
 
         for (int i = 0; i < rows.size(); i++) {
-            CsvRow expected = ImmutableCsvRow
-                    .builder()
-                    .id(rows.get(i).id())
-                    .sourceId(source.id())
-                    .processed(procssed.get(i))
-                    .rowNumber(rowNums.get(i))
-                    .row(maps.get(i))
-                    .build();
-
-            Assert.assertEquals(expected, csvRowDao.findById(rows.get(i).id()));
+            CsvRow expected = rows.get(i);
+            assertEquals(expected, csvRowDao.findById(saved.get(i).id()).csvRow());
         }
     }
 
@@ -108,15 +98,15 @@ public class CsvRowDaoTest extends BaseTest {
         Source source2 = sourceDao.insert("source2", user.id(), collection.id(), ValueTypes.CUSTOM, usersCustomType, false);
 
 
-        CsvRow csvRow1 = csvRowDao.insert(map, 1, true, source1.id());
-        CsvRow csvRow2 = csvRowDao.insert(map, 1, true, source2.id());
-        CsvRow csvRow3 = csvRowDao.insert(map, 1, true, source2.id());
+        CommittedCsvRow csvRow1 = csvRowDao.insert(map, 1, true, source1.id());
+        CommittedCsvRow csvRow2 = csvRowDao.insert(map, 1, true, source2.id());
+        CommittedCsvRow csvRow3 = csvRowDao.insert(map, 2, true, source2.id());
 
-        List<CsvRow> expected = ImmutableList.of(csvRow1);
-        List<CsvRow> expected2 = ImmutableList.of(csvRow2, csvRow3);
+        List<CommittedCsvRow> expected = ImmutableList.of(csvRow1);
+        List<CommittedCsvRow> expected2 = ImmutableList.of(csvRow2, csvRow3);
 
-        Assert.assertEquals(expected, csvRowDao.findAllFromSource(source1.id()));
-        Assert.assertEquals(expected2, csvRowDao.findAllFromSource(source2.id()));
+        assertEquals(expected, csvRowDao.findAllFromSource(source1.id()));
+        assertEquals(expected2, csvRowDao.findAllFromSource(source2.id()));
     }
 
     @Rule

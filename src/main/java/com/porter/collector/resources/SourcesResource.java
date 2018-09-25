@@ -2,6 +2,8 @@ package com.porter.collector.resources;
 
 import com.google.common.collect.ImmutableMap;
 import com.porter.collector.controller.SourcesController;
+import com.porter.collector.exception.InconsistentDataException;
+import com.porter.collector.exception.UnableToProcessCsvException;
 import com.porter.collector.exception.CsvMappingNotSetException;
 import com.porter.collector.model.*;
 import io.dropwizard.auth.Auth;
@@ -78,9 +80,13 @@ public class SourcesResource {
             @Auth SimpleUser user,
             @PathParam("id") Long sourceId,
             MultivaluedMap<String, String> params) {
-        return Response
-                .ok(sourcesController.addValue(user, sourceId, params))
-                .build();
+        try {
+            return Response
+                    .ok(sourcesController.addValue(user, sourceId, params))
+                    .build();
+        } catch (IllegalAccessException e) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
     }
 
     @POST
@@ -107,6 +113,15 @@ public class SourcesResource {
                     .build();
         } catch (CsvMappingNotSetException e) {
             return setMapping(e.getHeaders());
+        } catch (InconsistentDataException e) {
+            return Response.status(500).entity(
+                    ImmutableMap.of("error", "Csv is inconsistent")
+            ).build();
+        } catch (UnableToProcessCsvException e) {
+            e.printStackTrace();
+            return Response.status(500).entity(
+                    ImmutableMap.of("error", "Unable to process CSV")
+            ).build();
         }
     }
 

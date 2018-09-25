@@ -4,34 +4,45 @@ import com.porter.collector.model.CsvRow;
 import com.porter.collector.model.ImmutableCsvRow;
 import com.porter.collector.values.ValueType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CsvUpdater {
 
-    public List<CsvRow> newRows(CsvRowsInfo old, List<CsvRow> current) {
-        return current.subList(old.rowCount(), current.size());
+    public List<CsvRow> newRows(Map<String, ValueType> oldInfo, int oldRowCount, List<CsvRow> current) {
+        return current.subList(oldRowCount, current.size());
     }
 
-    public boolean isConsistent(CsvRowsInfo old, List<CsvRow> current) {
-        if (current.size() < old.rowCount()) { return false; }
-
-        CsvRowsInfo info = getInfo(current.subList(0, old.rowCount()));
-        return old.equals(info);
+    public List<CsvRow> newRows(CsvInfo info, List<CsvRow> parsedRows) {
+        return newRows(info.info(), info.rowCount(), parsedRows);
     }
 
-    public CsvRowsInfo getInfo(List<CsvRow> rows) {
+    public boolean isConsistent(Map<String, ValueType> oldInfo, int oldRowCount, List<CsvRow> current) {
+        if (current.size() < oldRowCount) { return false; }
+        if (oldRowCount == 0) { return true; }
+
+        Map<String, ValueType> info = getInfo(current.subList(0, oldRowCount));
+        return oldInfo.equals(info);
+    }
+
+    public boolean isConsistent(CsvInfo info, List<CsvRow> parsedRows) {
+        return isConsistent(info.info(), info.rowCount(), parsedRows);
+    }
+
+    public Map<String, ValueType> getInfo(List<CsvRow> rows) {
         if (rows.isEmpty()) {
-            return new CsvRowsInfo(null, 0);
+            return Collections.emptyMap();
         }
 
         Set<String> keys = rows.get(0).row().keySet();
         boolean allSame = rows.stream().allMatch(r -> r.row().keySet().equals(keys));
-
         if (!allSame) {
             throw new IllegalArgumentException("All rows must have the same keyset");
+        }
+
+        long sourceId = rows.get(0).sourceId();
+        boolean consistentSourceId = rows.stream().allMatch(r -> r.sourceId() == sourceId);
+        if (!consistentSourceId) {
+            throw new IllegalArgumentException("All of the rows must have a single source id");
         }
 
         Map<String, ValueType> map = new HashMap<>(rows.get(0).row());
@@ -43,14 +54,6 @@ public class CsvUpdater {
             }
         }
 
-        CsvRow infoRow = ImmutableCsvRow.builder()
-                .row(map)
-                .rowNumber(-1)
-                .processed(true)
-                .sourceId(-1)
-                .id(-1)
-                .build();
-
-        return new CsvRowsInfo(infoRow, rows.size());
+        return map;
     }
 }

@@ -10,7 +10,6 @@ import java.util.Map;
 @Value.Immutable
 @JsonSerialize(as = ImmutableCsvRow.class)
 public abstract class CsvRow {
-    public abstract long id();
     public abstract long sourceId();
     public abstract Map<String, ValueType> row();
     public abstract int rowNumber();

@@ -1,4 +1,4 @@
-package com.porter.collector.errors;
+package com.porter.collector.exception;
 
 public class InvalidEmailException extends SignUpException {
     public InvalidEmailException() {

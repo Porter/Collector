@@ -2,7 +2,7 @@ package com.porter.collector.exception;
 
 import java.util.List;
 
-public class CsvMappingNotSetException extends Exception {
+public class CsvMappingNotSetException extends UnableToProcessCsvException {
 
     private final List<String> headers;
 

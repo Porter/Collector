@@ -2,13 +2,8 @@ package com.porter.collector.resources;
 
 import com.google.common.collect.ImmutableMap;
 import com.porter.collector.controller.CollectionsController;
-import com.porter.collector.db.CollectionDao;
-import com.porter.collector.db.SourceDao;
-import com.porter.collector.errors.CollectionExistsException;
-import com.porter.collector.model.Collection;
+import com.porter.collector.exception.CollectionExistsException;
 import com.porter.collector.model.SimpleUser;
-import com.porter.collector.model.Source;
-import com.porter.collector.model.ValueTypes;
 import io.dropwizard.auth.Auth;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -16,7 +11,6 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @Path(Urls.COLLECTION)
 @Produces(MediaType.APPLICATION_JSON)

@@ -24,18 +24,17 @@ public class MyString implements Addable<MyString>, ValueType<MyString> {
 
     @Override
     public MyString combine(MyString other) {
-        byte[] one = value.getBytes();
-        byte[] two = value.getBytes();
-        int m = Math.max(one.length, two.length);
-        byte[] three = new byte[m];
-        for (int i = 0; i < m; i++) {
-            byte b1 = 0, b2 = 0;
-            if (i < one.length) { b1 = one[i]; }
-            if (i < two.length) { b2 = two[i]; }
+        int size = Math.max(value.length(), other.value.length());
+        StringBuilder sb = new StringBuilder(size);
 
-            three[i] = (byte) (b1 ^ b2);
+        for (int i = 0; i < size; i++) {
+            char c1 = 0, c2 = 0;
+            if (i < value.length()) { c1 = value.charAt(i); }
+            if (i < other.value.length()) { c2 = other.value.charAt(i); }
+            sb.append((char) Math.max(c1, c2));
         }
-        return new MyString(new String(three));
+
+        return new MyString(sb.toString());
     }
 
     @Override
@@ -44,9 +43,21 @@ public class MyString implements Addable<MyString>, ValueType<MyString> {
     }
 
     @Override
+    public MyString zero() {
+        return new MyString("");
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof MyString)) { return false; }
 
         return ((MyString) o).value.equals(value);
+    }
+
+    @Override
+    public String toString() {
+        return "MyString{" +
+                "value='" + value + '\'' +
+                '}';
     }
 }

@@ -390,4 +390,25 @@
         <renameColumn tableName="csv" oldColumnName="rowNumber" newColumnName="row_number" />
     </changeSet>
 
+    <changeSet id="26" author="Porter">
+        <addUniqueConstraint tableName="csv" columnNames="source_id, row_number" />
+    </changeSet>
+    
+    <changeSet id="27" author="Porter">
+        <addColumn tableName="csv_column_mapping">
+            <column name="info" type="varchar(256)">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <renameTable oldTableName="csv_column_mapping" newTableName="csv_info" />
+    </changeSet>
+
+    <changeSet id="28" author="Porter">
+        <addColumn tableName="csv_info">
+            <column name="row_count" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

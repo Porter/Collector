@@ -21,13 +21,14 @@ public enum ValueTypes {
     public static void register(ValueTypes type, ValueType<?> typeObj) {
         map = ImmutableMap.<ValueTypes, ValueType<?>>builder().putAll(map).put(type, typeObj).build();
     }
-    private static Map<ValueTypes, ValueType<?>> map = ImmutableMap.of(
-            FLOAT, new MyFloat(),
-            INT, new MyInteger(),
-            MONEY, new Money(),
-            STRING, new MyString(),
-            DATE, new MyDate()
-    );
+    private static Map<ValueTypes, ValueType<?>> map = ImmutableMap.<ValueTypes, ValueType<?>>builder()
+            .put(FLOAT, new MyFloat())
+            .put(INT, new MyInteger())
+            .put(CUSTOM, new CustomType())
+            .put(MONEY, new Money())
+            .put(STRING, new MyString())
+            .put(DATE, new MyDate())
+            .build();
 
     public String userFriendlyName() {
         return userFriendlyName;

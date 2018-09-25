@@ -42,6 +42,11 @@ public class MyList implements Addable<MyList>, ValueType<MyList> {
     }
 
     @Override
+    public MyList zero() {
+        return new MyList();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o == this) { return true; }
         if (o == null) { return false; }

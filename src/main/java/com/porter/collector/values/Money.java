@@ -65,6 +65,11 @@ public class Money implements Addable<Money>, ValueType<Money> {
     }
 
     @Override
+    public Money zero() {
+        return new Money(0);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Money)) { return false; }
 

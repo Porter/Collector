@@ -1,6 +1,6 @@
 package com.porter.collector.db;
 
-import com.porter.collector.errors.*;
+import com.porter.collector.exception.*;
 import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.UserWithPassword;
 import org.junit.Before;

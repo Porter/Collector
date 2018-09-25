@@ -28,6 +28,11 @@ public class MyLong implements Addable<MyLong>, ValueType<MyLong> {
         return "" + value;
     }
 
+    @Override
+    public MyLong zero() {
+        return new MyLong(0);
+    }
+
     public long getValue() {
         return value;
     }

@@ -1,7 +1,7 @@
 package com.porter.collector.controller;
 
 import com.porter.collector.db.UserDao;
-import com.porter.collector.errors.SignUpException;
+import com.porter.collector.exception.SignUpException;
 import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.UserWithPassword;
 

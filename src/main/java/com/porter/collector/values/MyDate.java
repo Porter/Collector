@@ -26,12 +26,17 @@ public class MyDate implements ValueType<MyDate> {
 
     @Override
     public MyDate combine(MyDate other) {
-        return null;
+        return zero();
     }
 
     @Override
     public String stringify() {
         return date.toString(formatter);
+    }
+
+    @Override
+    public MyDate zero() {
+        return new MyDate(new LocalDate(0));
     }
 
     @Override

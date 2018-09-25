@@ -37,6 +37,11 @@ public class MyInteger implements Addable<MyInteger>, ValueType<MyInteger> {
     }
 
     @Override
+    public MyInteger zero() {
+        return new MyInteger(0);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof MyInteger)) { return false; }
 

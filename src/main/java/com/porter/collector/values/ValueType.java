@@ -7,6 +7,8 @@ public interface ValueType<E extends ValueType> {
 
     String stringify();
 
+    E zero();
+
     default boolean isValid(String value) {
         try {
             return parse(value) != null;

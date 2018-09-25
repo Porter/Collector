@@ -3,8 +3,7 @@ package com.porter.collector.resources;
 
 import com.google.common.collect.ImmutableMap;
 import com.porter.collector.controller.UsersController;
-import com.porter.collector.db.UserDao;
-import com.porter.collector.errors.SignUpException;
+import com.porter.collector.exception.SignUpException;
 import com.porter.collector.model.JWTUser;
 import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.UserWithPassword;

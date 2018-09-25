@@ -1,7 +1,5 @@
 package com.porter.collector.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.porter.collector.db.CustomTypeDao;
 import com.porter.collector.model.SimpleUser;
 import com.porter.collector.model.UsersCustomType;
@@ -10,7 +8,6 @@ import com.porter.collector.values.CustomType;
 import io.dropwizard.jackson.Jackson;
 
 import javax.ws.rs.PathParam;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,13 +33,13 @@ public class CustomTypesController {
     }
 
     public UsersCustomType create(SimpleUser user, String name, List<String> keys, List<Integer> values)
-            throws ParseException {
+            throws IllegalArgumentException{
         return customTypeDao.insert(user.id(), name, getCustomType(keys, values));
     }
 
-    private CustomType getCustomType(List<String> keys, List<Integer> values) throws ParseException {
+    private CustomType getCustomType(List<String> keys, List<Integer> values) throws IllegalArgumentException {
         if (keys.size() != values.size()) {
-            throw new IllegalStateException("keys and values must be of same length");
+            throw new IllegalArgumentException("keys and values must be of same length");
         }
 
         Map<String, ValueTypes> map = new HashMap<>();
@@ -50,7 +47,7 @@ public class CustomTypesController {
         for (int i = 0; i < keys.size(); i++) {
             int type = values.get(i);
             if (type >= amount || type < 0) {
-                throw new IllegalStateException("ValueType out of range: " + type);
+                throw new IllegalArgumentException("ValueType out of range: " + type);
             }
             map.put(keys.get(i), ValueTypes.values()[type]);
         }

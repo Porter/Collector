@@ -1,6 +1,6 @@
 package com.porter.collector.db;
 
-import com.porter.collector.errors.SignUpException;
+import com.porter.collector.exception.SignUpException;
 import com.porter.collector.model.Category;
 import com.porter.collector.model.CategoryMapper;
 import com.porter.collector.model.ImmutableCategory;

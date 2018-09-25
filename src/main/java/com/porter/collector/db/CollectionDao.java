@@ -1,6 +1,6 @@
 package com.porter.collector.db;
 
-import com.porter.collector.errors.CollectionExistsException;
+import com.porter.collector.exception.CollectionExistsException;
 import com.porter.collector.model.*;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.jdbi.v3.sqlobject.customizer.Bind;
