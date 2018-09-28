@@ -4,18 +4,23 @@ import com.google.common.collect.ImmutableList;
 import com.porter.collector.db.SourceDao;
 import com.porter.collector.db.ValueDao;
 import com.porter.collector.helper.BaseTest;
+import com.porter.collector.model.ValuesMapper;
+import com.porter.collector.util.ValueValidator;
 import com.porter.collector.values.MyFloat;
 import com.porter.collector.values.MyInteger;
 import com.porter.collector.values.MyString;
+import io.dropwizard.jackson.Jackson;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ParserTest extends BaseTest {
 
     private void setUp() {
         SourceDao sourceDao = getJdbi().onDemand(SourceDao.class);
-        ValueDao valueDao = getJdbi().onDemand(ValueDao.class);
+
+        ValueValidator validator = new ValueValidator(Jackson.newObjectMapper());
+        ValueDao valueDao = new ValueDao(getJdbi(), validator, new ValuesMapper());
         Tokens.register("source", new SourceAccessor(sourceDao, valueDao));
     }
 

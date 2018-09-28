@@ -1,10 +1,12 @@
 package com.porter.collector.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.porter.collector.model.Source;
 import com.porter.collector.model.ValueTypes;
 import com.porter.collector.values.CustomType;
+import io.dropwizard.jackson.Jackson;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,11 +20,13 @@ import static org.mockito.Mockito.*;
 
 public class ValueValidatorTest {
 
+    private ObjectMapper mapper;
     private ValueValidator validator;
 
     @Before
     public void setUp() {
-        validator = new ValueValidator();
+        mapper = spy(Jackson.newObjectMapper());
+        validator = new ValueValidator(mapper);
     }
 
     @Test(expected = IllegalStateException.class)

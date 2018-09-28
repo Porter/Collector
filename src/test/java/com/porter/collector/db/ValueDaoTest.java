@@ -2,10 +2,9 @@ package com.porter.collector.db;
 
 import com.google.common.collect.ImmutableList;
 import com.porter.collector.helper.BaseTest;
-import com.porter.collector.model.Collection;
-import com.porter.collector.model.UserWithPassword;
-import com.porter.collector.model.Value;
-import com.porter.collector.model.ValueTypes;
+import com.porter.collector.model.*;
+import com.porter.collector.util.ValueValidator;
+import io.dropwizard.jackson.Jackson;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,10 +19,13 @@ public class ValueDaoTest extends BaseTest {
     private CollectionDao collectionDao;
     private UserDao userDao;
     private SourceDao sourceDao;
+    private ValueValidator validator;
 
     @Before
     public void getDao() {
-        valueDao = getJdbi().onDemand(ValueDao.class);
+        validator = new ValueValidator(Jackson.newObjectMapper());
+
+        valueDao = new ValueDao(getJdbi(), validator, new ValuesMapper());
         collectionDao = getJdbi().onDemand(CollectionDao.class);
         userDao = getJdbi().onDemand(UserDao.class);
         sourceDao      = getJdbi().onDemand(SourceDao.class);

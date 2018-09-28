@@ -5,14 +5,13 @@ import com.porter.collector.csv.CsvInfo;
 import com.porter.collector.csv.ImmutableCsvInfo;
 import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.*;
+import com.porter.collector.util.ValueValidator;
 import com.porter.collector.values.CustomType;
 import com.porter.collector.values.MyString;
 import com.porter.collector.values.ValueType;
-import org.junit.Assert;
+import io.dropwizard.jackson.Jackson;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.util.Map;
 
@@ -29,10 +28,12 @@ public class CsvInfoDaoTest extends BaseTest {
 
     @Before
     public void getDAOs() {
+        ValueValidator validator = new ValueValidator(Jackson.newObjectMapper());
+
         userDao = getJdbi().onDemand(UserDao.class);
         sourceDao      = getJdbi().onDemand(SourceDao.class);
         collectionDao  = getJdbi().onDemand(CollectionDao.class);
-        csvInfoDao     = getJdbi().onDemand(CsvInfoDao.class);
+        csvInfoDao     = new CsvInfoDao(getJdbi(), new CsvInfoMapper(validator), validator);
         customTypeDao  = getJdbi().onDemand(CustomTypeDao.class);
     }
 
@@ -77,13 +78,8 @@ public class CsvInfoDaoTest extends BaseTest {
         assertEquals(inserted, csvInfoDao.findBySourceId(inserted.sourceId()));
     }
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    @Test
+    @Test(expected = IllegalAccessException.class)
     public void badUserId() throws Exception {
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage("java.lang.IllegalAccessException: You can no longer access that source");
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("test", user.id());
         UsersCustomType customType = customTypeDao.insert(user.id(), "myType", new CustomType(

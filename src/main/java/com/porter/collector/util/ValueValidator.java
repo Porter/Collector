@@ -1,5 +1,7 @@
 package com.porter.collector.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.porter.collector.model.Source;
 import com.porter.collector.model.ValueTypes;
 import com.porter.collector.values.CustomType;
@@ -10,6 +12,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ValueValidator {
+
+    private final ObjectMapper objectMapper;
+
+    public ValueValidator(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     public Map<String, ValueType> parseValues(Map<String, String> values, CustomType type) {
         Map<String, ValueType> map = new HashMap<>();
@@ -38,23 +46,6 @@ public class ValueValidator {
         return valueType.isValid(value);
     }
 
-    public String stringRepr(Map<String, String> values, CustomType customType) {
-        return ValueUtil.stringifyValues(parseValues(values, customType));
-    }
-
-    public String stringRepr(String value, ValueTypes types) {
-        return parseValue(value, types).stringify();
-    }
-
-    public boolean isValid(Source source, Map<String, String> value) {
-        if (hasCustomType(source)) {
-            return isCustomTypeValid(source.customType(), value);
-        }
-        else {
-            return isTypeValid(source.type(), value);
-        }
-    }
-
     public boolean isCustomTypeValid(CustomType customType, Map<String, String> value) {
         if (!customType.getTypes().keySet().equals(value.keySet())) { return false; }
 
@@ -70,11 +61,39 @@ public class ValueValidator {
         return amount != null && isValid(type, amount);
     }
 
+    public String stringRepr(String value, ValueTypes types) {
+        return parseValue(value, types).stringify();
+    }
+
+    public String stringRepr(Map<String, ValueType> values) {
+        Map<String, String> map = new HashMap<>();
+        values.forEach((key, valueType) -> map.put(key, valueType.stringify()));
+
+        try {
+            return objectMapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String stringRepr(Map<String, String> values, CustomType customType) {
+        return stringRepr(parseValues(values, customType));
+    }
+
     public String stringRepr(Source source, Map<String, String> value) {
         if (hasCustomType(source)) {
             return stringRepr(value, source.customType());
         } else {
             return stringRepr(value.get("amount"), source.type());
+        }
+    }
+
+    public boolean isValid(Source source, Map<String, String> value) {
+        if (hasCustomType(source)) {
+            return isCustomTypeValid(source.customType(), value);
+        }
+        else {
+            return isTypeValid(source.type(), value);
         }
     }
 
@@ -96,5 +115,22 @@ public class ValueValidator {
             throw new IllegalStateException("Source: " + source + "must have exactly one of type or custom type");
         }
         return source.type() == null;
+    }
+
+    public Map<String, ValueType> emptyInfo(CustomType customType) {
+        Map<String, ValueType> map = new HashMap<>();
+        customType.getTypes().forEach((string, valueTypes) -> {
+            map.put(string, ValueTypes.getMap().get(valueTypes).zero());
+        });
+
+        return map;
+    }
+
+    public String toJson(Map<String, String> map) {
+        try {
+            return objectMapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

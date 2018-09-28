@@ -1,29 +1,51 @@
 package com.porter.collector.db;
 
-import com.porter.collector.model.*;
-import com.porter.collector.util.ValueUtil;
+import com.porter.collector.model.CsvRow;
+import com.porter.collector.model.ImmutableValue;
+import com.porter.collector.model.Value;
+import com.porter.collector.model.ValuesMapper;
+import com.porter.collector.util.ValueValidator;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.porter.collector.util.ValueUtil;
 
-public interface ValueDao {
+public class ValueDao {
 
-    @SqlUpdate("INSERT INTO values (value, source_id) VALUES (:value, :sourceId)")
-    @GetGeneratedKeys
-    long executeInsert(@Bind("value") String value, @Bind("sourceId") long sourceId);
+    private final Jdbi jdbi;
+    private final ValueValidator validator;
+    private final ValuesMapper valuesMapper;
 
-    @SqlBatch("INSERT INTO values (value, source_id) VALUES (:value, :sourceId)")
-    @GetGeneratedKeys
-    List<Long> executeInsert(@Bind("value") List<String> value, @Bind("sourceId") List<Long> sourceId);
+    public ValueDao(Jdbi jdbi, ValueValidator validator, ValuesMapper valuesMapper) {
+        this.jdbi = jdbi;
+        this.validator = validator;
+        this.valuesMapper = valuesMapper;
+    }
 
-    default List<Value> insert(List<String> values, List<Long> sourceIds) {
+    public List<Value> insert(List<String> values, List<Long> sourceIds) {
         if (values.size() != sourceIds.size()) {
             throw new IllegalArgumentException("Lists must be of same size");
         }
-        List<Long> ids = executeInsert(values, sourceIds);
+
+        List<Long> ids = jdbi.withHandle(handle -> {
+                    PreparedBatch batch = handle
+                            .prepareBatch("INSERT INTO values (value, source_id) VALUES (:value, :sourceId)");
+
+                    for (int i = 0; i < values.size(); i++) {
+                        batch
+                                .bind("value", values.get(i))
+                                .bind("sourceId", sourceIds.get(i))
+                                .add();
+                    }
+
+                    return batch.executeAndReturnGeneratedKeys("id")
+                            .mapTo(Long.class)
+                            .list();
+                }
+        );
 
         List<Value> created = new ArrayList<>();
         for (int i = 0; i < values.size(); i++) {
@@ -39,8 +61,16 @@ public interface ValueDao {
         return created;
     }
 
-    default Value insert(String value, long sourceId) {
-        long id = executeInsert(value, sourceId);
+    public Value insert(String value, long sourceId) {
+        Long id = jdbi.withHandle(handle ->
+                handle
+                        .createUpdate("INSERT INTO values (value, source_id) VALUES (:value, :sourceId)")
+                        .bind("value", value)
+                        .bind("sourceId", sourceId)
+                        .executeAndReturnGeneratedKeys("id")
+                        .mapTo(Long.class)
+                        .findOnly()
+        );
 
         return ImmutableValue
                 .builder()
@@ -50,24 +80,48 @@ public interface ValueDao {
                 .build();
     }
 
-    @SqlQuery("SELECT * FROM values WHERE source_id=:sourceId")
-    @UseRowMapper(ValuesMapper.class)
-    List<Value> findBySourceId(@Bind("sourceId") Long id);
+    public List<Value> findBySourceId(@Bind("sourceId") Long id) {
+        return jdbi.withHandle(handle -> handle
+                .createQuery("SELECT * FROM values WHERE source_id=:sourceId")
+                .bind("sourceId", id)
+                .map(valuesMapper)
+                .list()
+        );
+    }
 
-    @SqlQuery("SELECT * FROM values WHERE id=:id")
-    @UseRowMapper(ValuesMapper.class)
-    Value findById(@Bind("id") Long id);
+    public Value findById(@Bind("id") Long id) {
+        return jdbi.withHandle(handle -> handle
+                .createQuery("SELECT * FROM values WHERE id=:id")
+                .bind("id", id)
+                .map(valuesMapper)
+                .findOnly()
+        );
+    }
 
-    @SqlQuery("SELECT * FROM " +
-            "(SELECT values.*, ROW_NUMBER() OVER (ORDER BY id) AS rn FROM values WHERE source_id=:sourceId) AS sub" +
-            " WHERE sub.rn > :start AND sub.rn <= :end + 1")
-    @UseRowMapper(ValuesMapper.class)
-    List<Value> _getRange(@Bind("sourceId") long sourceId, @Bind("start") long start, @Bind("end") long end);
+    public List<Value> _getRange(long sourceId, long start, long end) {
+        return jdbi.withHandle(handle -> handle
+                .createQuery("SELECT * FROM " +
+                        "(SELECT values.*, ROW_NUMBER() OVER (ORDER BY id) AS rn FROM values WHERE source_id=:sourceId) AS sub" +
+                        " WHERE sub.rn > :start AND sub.rn <= :end + 1")
+                .bind("sourceId", sourceId)
+                .bind("start", start)
+                .bind("end", end)
+                .map(valuesMapper)
+                .list()
+        );
+    }
 
     @SqlQuery("SELECT COUNT(id) FROM values WHERE source_id=:sourceId")
-    long _getCount(@Bind("sourceId") long sourceId);
+    public long _getCount(@Bind("sourceId") long sourceId) {
+        return jdbi.withHandle(handle -> handle
+                .createQuery("SELECT COUNT(id) FROM values WHERE source_id=:sourceId")
+                .bind("sourceId", sourceId)
+                .mapTo(Long.class)
+                .findOnly()
+        );
+    }
 
-    default List<Value> getRange(long sourceId, long start, long end) {
+    public List<Value> getRange(long sourceId, long start, long end) {
         if (start < 0 || end < 0) {
             long count = _getCount(sourceId);
             if (start < 0) { start += count; }
@@ -76,12 +130,12 @@ public interface ValueDao {
         return _getRange(sourceId, start, end);
     }
 
-    default List<Value> insert(List<CsvRow> rows) {
+    public List<Value> insert(List<CsvRow> rows) {
         List<String> values = new ArrayList<>(rows.size());
         List<Long> sourceIds = new ArrayList<>(rows.size());
 
         for (CsvRow row : rows) {
-            values.add(ValueUtil.stringifyValues(row.row()));
+            values.add(validator.stringRepr(row.row()));
             sourceIds.add(row.sourceId());
         }
 

@@ -7,14 +7,17 @@ import com.porter.collector.db.UserDao;
 import com.porter.collector.db.ValueDao;
 import com.porter.collector.helper.BaseTest;
 import com.porter.collector.model.*;
+import com.porter.collector.util.ValueValidator;
 import com.porter.collector.values.MyInteger;
 import com.porter.collector.values.MyLong;
 import com.porter.collector.values.MyString;
 import com.porter.collector.values.ValueType;
+import io.dropwizard.jackson.Jackson;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class SourceAccessorTest extends BaseTest {
 
@@ -27,7 +30,9 @@ public class SourceAccessorTest extends BaseTest {
     @Before
     public void setUp() {
         sourceDao = getJdbi().onDemand(SourceDao.class);
-        valueDao = getJdbi().onDemand(ValueDao.class);
+
+        ValueValidator validator = new ValueValidator(Jackson.newObjectMapper());
+        valueDao = new ValueDao(getJdbi(), validator, new ValuesMapper());
         sourceAccessor = new SourceAccessor(sourceDao, valueDao);
 
         userDao = getJdbi().onDemand(UserDao.class);
@@ -38,7 +43,7 @@ public class SourceAccessorTest extends BaseTest {
     public void exec() throws Exception {
         UserWithPassword user = userDao.insert("a@g.com", "name", "pass");
         Collection collection = collectionDao.insert("collection", user.id());
-        Source source = sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null, false);
+        sourceDao.insert("source", user.id(), collection.id(), ValueTypes.INT, null, false);
         Args args = new Args(ImmutableList.of(
                 new MyString("source"),
                 new MyLong(0)

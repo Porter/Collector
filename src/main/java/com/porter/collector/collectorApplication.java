@@ -1,5 +1,6 @@
 package com.porter.collector;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.porter.collector.auth.JwtAuthenticator;
 import com.porter.collector.auth.JwtUnauthorizedHandler;
 import com.porter.collector.auth.JwtAuthFilter;
@@ -10,7 +11,9 @@ import com.porter.collector.csv.CsvParserWrapper;
 import com.porter.collector.csv.CsvUpdater;
 import com.porter.collector.db.*;
 import com.porter.collector.health.BasicHealthCheck;
+import com.porter.collector.model.CsvInfoMapper;
 import com.porter.collector.model.SimpleUser;
+import com.porter.collector.model.ValuesMapper;
 import com.porter.collector.parser.SourceAccessor;
 import com.porter.collector.parser.Tokens;
 import com.porter.collector.resources.*;
@@ -20,6 +23,7 @@ import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.bundles.assets.ConfiguredAssetsBundle;
 import io.dropwizard.db.PooledDataSourceFactory;
+import io.dropwizard.jackson.Jackson;
 import org.apache.commons.csv.CSVFormat;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.jdbi.v3.core.Jdbi;
@@ -60,17 +64,21 @@ public class collectorApplication extends Application<collectorConfiguration> {
         Jdbi jdbi = Jdbi.create(configuration.getDataSourceFactory().getUrl());
         jdbi.installPlugin(new SqlObjectPlugin());
 
+        ObjectMapper objectMapper = Jackson.newObjectMapper();
+        ValueValidator validator = new ValueValidator(objectMapper);
+        CsvInfoMapper csvInfoMapper = new CsvInfoMapper(validator);
+        ValuesMapper valuesMapper = new ValuesMapper();
+
         UserDao userDao =  jdbi.onDemand(UserDao.class);
         CollectionDao collectionDao = jdbi.onDemand(CollectionDao.class);
         SourceDao sourceDao = jdbi.onDemand(SourceDao.class);
-        ValueDao valueDao = jdbi.onDemand(ValueDao.class);
+        ValueDao valueDao = new ValueDao(jdbi, validator, valuesMapper);
         ReportDao reportDao = jdbi.onDemand(ReportDao.class);
         GoalDao goalDao = jdbi.onDemand(GoalDao.class);
         CustomTypeDao customTypeDao = jdbi.onDemand(CustomTypeDao.class);
         CsvRowDao csvRowDao = jdbi.onDemand(CsvRowDao.class);
-        CsvInfoDao csvInfoDao = jdbi.onDemand(CsvInfoDao.class);
+        CsvInfoDao csvInfoDao = new CsvInfoDao(jdbi, csvInfoMapper, validator);
 
-        ValueValidator validator = new ValueValidator();
         CsvUpdater updater = new CsvUpdater();
         CSVParserProvider provider = new CSVParserProvider(CSVFormat.RFC4180.withFirstRecordAsHeader());
 

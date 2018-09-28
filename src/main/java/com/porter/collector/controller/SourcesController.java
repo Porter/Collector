@@ -7,7 +7,6 @@ import com.porter.collector.db.*;
 import com.porter.collector.exception.InconsistentDataException;
 import com.porter.collector.exception.UnableToProcessCsvException;
 import com.porter.collector.model.*;
-import com.porter.collector.util.ValueUtil;
 import com.porter.collector.util.ValueValidator;
 import com.porter.collector.values.ValueType;
 
@@ -132,7 +131,7 @@ public class SourcesController {
             throw new IllegalStateException("keys required: " + requiredKeys);
         }
 
-        csvInfoDao.insert(sourceId, validator.fromMultivaluedMap(map), ValueUtil.emptyInfo(customType.type()), 0);
+        csvInfoDao.insert(sourceId, validator.fromMultivaluedMap(map), validator.emptyInfo(customType.type()), 0);
 
         return new ArrayList<>(map.keySet());
     }

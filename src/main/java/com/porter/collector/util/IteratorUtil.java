@@ -6,6 +6,10 @@ import java.util.List;
 
 public class IteratorUtil {
 
+    public IteratorUtil() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Util class has only static methods");
+    }
+
     private static class nItr<T> implements Iterator<T> {
 
         private int n;

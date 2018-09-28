@@ -3,13 +3,17 @@ package com.porter.collector.util;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class IteratorUtilTest {
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void instantiate() throws Exception {
+        new IteratorUtil();
+    }
 
     @Test
     public void nOf() {
